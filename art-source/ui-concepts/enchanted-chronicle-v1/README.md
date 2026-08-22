@@ -23,9 +23,9 @@ Use one friendly, readable family pair rather than ornamental fantasy lettering.
 
 | Role | Typeface | Weight | 1280×720 size | Use |
 | --- | --- | --- | ---: | --- |
-| Display | Alegreya SC | Semibold | 32–40 px | Screen and chapter titles |
-| Heading | Alegreya SC | Semibold | 20–24 px | Panel names and NPC names |
-| Button | Alegreya Sans | Semibold | 17–18 px | Actions and tabs |
+| Display | Alegreya SC | Medium | 32–40 px | Screen and chapter titles |
+| Heading | Alegreya SC | Medium | 20–24 px | Panel names and NPC names |
+| Button | Alegreya Sans | Medium | 17–18 px | Actions and tabs |
 | Body | Alegreya Sans | Regular | 17–18 px | Dialogue, descriptions, chat |
 | Caption | Alegreya Sans | Medium | 14–15 px | Hints, timestamps, metadata |
 | Numeric | Alegreya Sans | Medium, tabular figures | 15–17 px | Health, currency, cooldowns |
