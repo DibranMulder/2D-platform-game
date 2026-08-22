@@ -25,6 +25,10 @@ _Avoid_: Login, connection
 A Hero's playable people, determining bodily form, inherited traits, and cultural origin but not combat profession.
 _Avoid_: Race, class, species
 
+**Lineage Variant**:
+An allowed gender and bodily presentation within one Lineage; availability is Lineage-specific rather than universally male and female.
+_Avoid_: Skin, Combat Class, mandatory gender pair
+
 **Combat Class**:
 A Hero's learned combat profession or role, chosen separately from Lineage.
 _Avoid_: Lineage, Discipline

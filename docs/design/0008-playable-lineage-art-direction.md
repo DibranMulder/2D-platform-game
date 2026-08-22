@@ -95,6 +95,29 @@ middle and distant layers.
 | Dark | Sunscour | The Ember Desert | Disciplined desert people built around heat and distance |
 | Dark | Rimeborn | The Ice Lands | Layered, cold-adapted clans beneath glaciers and auroras |
 
+## Lineage Variant availability
+
+Gender and bodily presentation options are **Lineage Variants**, and their
+availability is specific to each Lineage rather than a universal male/female
+pair.
+
+| Lineage | Current production availability |
+| --- | --- |
+| Tidekin | Undecided; do not infer Human-style dimorphism |
+| Humans | Male and female |
+| Grove Centaurs | Male and female |
+| Aeralith | Female only |
+| Crag Trolls | Male only |
+| Deep Goblins | Male only |
+| Sunscour | Male and female |
+| Rimeborn | Male and female |
+
+A single-gender Lineage is complete by design and does not require a mirrored
+counterpart. All available Lineage Variants retain identical access to Combat
+Classes, Weapon Families, armor, equipment, progression, and gameplay systems.
+Tidekin presentation remains an explicit open art-direction question; concepts
+must not canonize an answer until it is selected.
+
 ## Light Allegiance
 
 ### Tidekin — The Sea
