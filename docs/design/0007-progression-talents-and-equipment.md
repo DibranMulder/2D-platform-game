@@ -120,10 +120,14 @@ versions of the same weapon as unrelated concepts.
 | Blunt | One-Handed, Two-Handed | Mace, club, hammer, maul |
 
 A Shield is off-hand Combat Equipment rather than a Weapon Family. Any
-One-Handed Weapon may be equipped with a Shield; it may also be used with an
-empty off hand. Equipping a Two-Handed Weapon reserves both hands and excludes a
-Shield. Dual wielding two One-Handed Weapons is not part of the current decision
-and must not be inferred from Shield compatibility.
+One-Handed Weapon may be equipped with a Shield when the Hero's Combat Class
+permits Shields; it may also be used with an empty off hand. Equipping a
+Two-Handed Weapon reserves both hands and excludes a Shield.
+
+Dual Wield is approved specifically for the Duelist Combat Class. A Duelist may
+equip one permitted One-Handed Weapon in Main Hand and another in Off Hand. This
+does not grant dual wielding to other Combat Classes, and an Off-Hand Weapon and
+a Shield remain mutually exclusive.
 
 The prototype's `rusty_sword` is a One-Handed Sword and its
 `driftwood_buckler` is a Shield. Other families are approved gameplay vocabulary

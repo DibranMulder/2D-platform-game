@@ -4,7 +4,7 @@ config_version=5
 
 [application]
 
-config/name="Platform MMORPG Foundation"
+config/name="The Veiled Realms"
 run/main_scene="res://prototypes/onboarding/onboarding.tscn"
 config/features=PackedStringArray("4.4")
 

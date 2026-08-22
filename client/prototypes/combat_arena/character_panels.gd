@@ -3,6 +3,8 @@ class_name PrototypeCharacterPanels
 extends Control
 
 const ProfileStateScript := preload("res://prototypes/combat_arena/hero_profile_state.gd")
+const WorldMapScript := preload("res://prototypes/combat_arena/world_map_prototype.gd")
+const ChronicleButtonScript := preload("res://scripts/chronicle_button.gd")
 
 var _profile: PrototypeHeroProfileState
 var _hero_data: Dictionary = {}
@@ -69,6 +71,8 @@ func _unhandled_key_input(event: InputEvent) -> void:
             _toggle_panel("disciplines")
         KEY_K:
             _toggle_panel("talents")
+        KEY_M:
+            _toggle_panel("world_map")
         KEY_I:
             _toggle_panel("hints")
         KEY_ESCAPE:
@@ -86,8 +90,8 @@ func _toggle_panel(panel_id: String) -> void:
 func _build_quick_buttons() -> void:
     var quick_bar := HBoxContainer.new()
     quick_bar.set_anchors_preset(Control.PRESET_TOP_RIGHT)
-    quick_bar.position = Vector2(-615.0, 238.0)
-    quick_bar.size = Vector2(595.0, 42.0)
+    quick_bar.position = Vector2(-732.0, 238.0)
+    quick_bar.size = Vector2(712.0, 42.0)
     quick_bar.add_theme_constant_override("separation", 7)
     quick_bar.mouse_filter = Control.MOUSE_FILTER_PASS
     add_child(quick_bar)
@@ -97,6 +101,7 @@ func _build_quick_buttons() -> void:
         {"id": "equipment", "text": "C · GEAR"},
         {"id": "disciplines", "text": "L · LEVELS"},
         {"id": "talents", "text": "K · TALENTS"},
+        {"id": "world_map", "text": "M · MAP"},
         {"id": "hints", "text": "I · HINTS"},
     ]:
         var button := _button(str(definition["text"]), Color("354459"))
@@ -154,6 +159,7 @@ func _build_window() -> void:
         {"id": "equipment", "text": "EQUIPMENT [C]"},
         {"id": "disciplines", "text": "DISCIPLINES [L]"},
         {"id": "talents", "text": "TALENT TREE [K]"},
+        {"id": "world_map", "text": "WORLD MAP [M]"},
         {"id": "hints", "text": "HINTS [I]"},
     ]:
         var tab := _button(str(definition["text"]), Color("34455f"))
@@ -179,6 +185,8 @@ func _rebuild_panel() -> void:
             _build_disciplines_panel()
         "talents":
             _build_talents_panel()
+        "world_map":
+            _build_world_map_panel()
         "hints":
             _build_hints_panel()
         _:
@@ -194,6 +202,12 @@ func _refresh_header() -> void:
         _profile.total_level(),
         _profile.unspent_talent_points(),
     ]
+
+
+func _build_world_map_panel() -> void:
+    var world_map: Control = WorldMapScript.new()
+    world_map.call("configure_hero", _hero_data)
+    _window_content.add_child(world_map)
 
 
 func _build_hints_panel() -> void:
@@ -232,9 +246,9 @@ func _build_hints_panel() -> void:
         + "Staff and Wand use Mana for attacks and hold an Arcane Ward with 2 or Shift.",
     ))
     controls.add_child(_hint_block(
-        "HERO SECTIONS",
+        "HERO & WORLD SECTIONS",
         "B  Item Pouch     C  Equipment     L  Discipline Levels\n"
-        + "K  Talent Tree     I  Battle Hints     E  Merchant Trade",
+        + "K  Talent Tree     M  World Map     I  Battle Hints     E  Merchant Trade",
     ))
     controls.add_child(_hint_block(
         "PORTALS & MERCHANTS",
@@ -541,13 +555,10 @@ func _label(text: String, size: int, color: Color) -> Label:
 
 
 func _button(text: String, color: Color) -> Button:
-    var button := Button.new()
+    var button := ChronicleButtonScript.new() as Button
     button.text = text
-    button.focus_mode = Control.FOCUS_NONE
-    button.add_theme_font_size_override("font_size", 14)
-    button.add_theme_stylebox_override("normal", _style(color, color.lightened(0.18), 1))
-    button.add_theme_stylebox_override("hover", _style(color.lightened(0.1), Color("d5e0eb"), 2))
-    button.add_theme_stylebox_override("pressed", _style(color.darkened(0.1), Color("efd590"), 2))
+    button.set("touch_safe", false)
+    button.call("adopt_color_hint", color)
     return button
 
 

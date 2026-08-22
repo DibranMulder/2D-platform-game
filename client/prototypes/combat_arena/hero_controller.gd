@@ -16,6 +16,8 @@ const GROUND_ACCELERATION := 1800.0
 const AIR_ACCELERATION := 850.0
 const GRAVITY := 1850.0
 const JUMP_VELOCITY := -670.0
+const CLIMB_SPEED := 185.0
+const CLIMB_SNAP_SPEED := 520.0
 const WEAPON_ORDER: Array[String] = ["sword", "axe_shield", "bow", "staff", "wand"]
 const WEAPON_NAMES := {
     "sword": "SWORD",
@@ -46,7 +48,9 @@ var is_blocking := false
 var is_alive := true
 var lineage_id := "human"
 var weapon_id := "sword"
+var is_climbing := false
 var _move_axis := 0.0
+var _climb_axis := 0.0
 var _jump_queued := false
 var _action_lock := 0.0
 var _attack_flash := 0.0
@@ -57,6 +61,9 @@ var _magic_flash := 0.0
 var _magic_color := Color("72d8ff")
 var _magic_radius := 0.0
 var _target: Node2D
+var _climbables: Dictionary = {}
+var _active_climbable_id := -1
+var _collision_mask_before_climb := 1
 var _cooldowns := {
     "attack": 0.0,
     "power_strike": 0.0,
@@ -99,7 +106,44 @@ func set_move_axis(axis: float) -> void:
     _move_axis = clampf(axis, -1.0, 1.0)
 
 
+func set_climb_axis(axis: float) -> void:
+    _climb_axis = clampf(axis, -1.0, 1.0)
+
+
+func register_climbable(
+    source: Node,
+    center_x: float,
+    top_exit_y: float,
+    bottom_exit_y: float,
+) -> void:
+    _climbables[source.get_instance_id()] = {
+        "source": source,
+        "center_x": center_x,
+        "top_exit_y": minf(top_exit_y, bottom_exit_y),
+        "bottom_exit_y": maxf(top_exit_y, bottom_exit_y),
+    }
+
+
+func unregister_climbable(source: Node) -> void:
+    var source_id := source.get_instance_id()
+    _climbables.erase(source_id)
+    if _active_climbable_id == source_id:
+        _stop_climbing("Ready")
+
+
+func can_climb() -> bool:
+    return is_alive and not _climbables.is_empty()
+
+
 func queue_jump() -> void:
+    if is_climbing:
+        if absf(_move_axis) > 0.1:
+            facing = 1 if _move_axis > 0.0 else -1
+        _stop_climbing("Jump")
+        velocity.y = JUMP_VELOCITY * 0.78
+        velocity.x = float(facing) * MOVE_SPEED * 0.72
+        combat_event.emit("Hero jumps away from the climbable.")
+        return
     _jump_queued = true
 
 
@@ -108,7 +152,10 @@ func set_guard(guarding: bool) -> void:
 
 
 func set_secondary(held: bool) -> void:
-    if not is_alive:
+    if not is_alive or is_climbing:
+        if is_climbing:
+            _is_aiming = false
+            is_blocking = false
         return
     _is_aiming = weapon_id == "bow" and held and stamina > 0.0
     var uses_stamina_guard := weapon_id == "sword" or weapon_id == "axe_shield"
@@ -178,7 +225,7 @@ func try_combat_slot(slot: int) -> void:
     if slot == 2:
         return
     var action := action_id_for_slot(slot)
-    if action.is_empty() or not is_alive or _action_lock > 0.0 or float(_cooldowns.get(action, 0.0)) > 0.0:
+    if action.is_empty() or not is_alive or is_climbing or _action_lock > 0.0 or float(_cooldowns.get(action, 0.0)) > 0.0:
         return
 
     match action:
@@ -285,6 +332,9 @@ func receive_damage(amount: int, attacker_side: int) -> void:
     if not is_alive:
         return
 
+    if is_climbing:
+        _stop_climbing("Hurt")
+
     var final_damage := amount
     var frontal_attack := attacker_side == facing
     var magical_ward := weapon_id == "staff" or weapon_id == "wand"
@@ -338,10 +388,16 @@ func _physics_process(delta: float) -> void:
     _magic_flash = maxf(0.0, _magic_flash - delta)
     _update_projectiles(delta)
 
-    if not is_on_floor():
-        velocity.y += GRAVITY * delta
+    if is_alive and not is_climbing:
+        _try_start_climbing()
 
-    if is_alive:
+    if is_climbing:
+        _update_climbing_motion(delta)
+        stamina = minf(MAX_STAMINA, stamina + 12.0 * delta)
+        mana = minf(MAX_MANA, mana + 5.0 * delta)
+    elif is_alive:
+        if not is_on_floor():
+            velocity.y += GRAVITY * delta
         if absf(_move_axis) > 0.1:
             facing = 1 if _move_axis > 0.0 else -1
         var speed_scale := 0.38 if is_blocking else 0.58 if _is_aiming else 1.0
@@ -370,9 +426,88 @@ func _physics_process(delta: float) -> void:
 
     _jump_queued = false
     move_and_slide()
+    if is_climbing:
+        _finish_climb_at_boundary()
     position.x = clampf(position.x, 44.0, 1236.0)
     _update_human_sprite()
     queue_redraw()
+
+
+func _try_start_climbing() -> void:
+    if not can_climb() or absf(_climb_axis) < 0.2:
+        return
+    var nearest_id := -1
+    var nearest_distance := INF
+    for source_id in _climbables:
+        var candidate := _climbables[source_id] as Dictionary
+        var distance := absf(position.x - float(candidate["center_x"]))
+        if distance < nearest_distance:
+            nearest_id = int(source_id)
+            nearest_distance = distance
+    if nearest_id == -1:
+        return
+
+    var climbable := _climbables[nearest_id] as Dictionary
+    var top_exit_y := float(climbable["top_exit_y"])
+    var bottom_exit_y := float(climbable["bottom_exit_y"])
+    if _climb_axis < 0.0 and position.y <= top_exit_y + 7.0:
+        return
+    if _climb_axis > 0.0 and position.y >= bottom_exit_y - 7.0:
+        return
+
+    set_secondary(false)
+    is_climbing = true
+    _active_climbable_id = nearest_id
+    _collision_mask_before_climb = collision_mask
+    collision_mask = 0
+    velocity = Vector2.ZERO
+    _jump_queued = false
+    current_action = "Climbing"
+    combat_event.emit("Hero begins climbing.")
+
+
+func _update_climbing_motion(delta: float) -> void:
+    if not _climbables.has(_active_climbable_id):
+        _stop_climbing("Ready")
+        return
+    var climbable := _climbables[_active_climbable_id] as Dictionary
+    position.x = move_toward(position.x, float(climbable["center_x"]), CLIMB_SNAP_SPEED * delta)
+    velocity.x = 0.0
+    velocity.y = _climb_axis * CLIMB_SPEED if absf(_climb_axis) >= 0.12 else 0.0
+    current_action = "Climbing" if absf(_climb_axis) >= 0.12 else "Holding Ladder"
+
+    if absf(_climb_axis) < 0.12 and absf(_move_axis) > 0.65:
+        facing = 1 if _move_axis > 0.0 else -1
+        _stop_climbing("Jump")
+        velocity.x = _move_axis * MOVE_SPEED * 0.75
+        velocity.y = -185.0
+
+
+func _finish_climb_at_boundary() -> void:
+    if not _climbables.has(_active_climbable_id):
+        _stop_climbing("Ready")
+        return
+    var climbable := _climbables[_active_climbable_id] as Dictionary
+    var top_exit_y := float(climbable["top_exit_y"])
+    var bottom_exit_y := float(climbable["bottom_exit_y"])
+    if _climb_axis < 0.0 and position.y <= top_exit_y:
+        position.y = top_exit_y
+        _stop_climbing("Ready")
+        combat_event.emit("Hero reaches the upper platform.")
+    elif _climb_axis > 0.0 and position.y >= bottom_exit_y:
+        position.y = bottom_exit_y
+        _stop_climbing("Ready")
+        combat_event.emit("Hero reaches the ground.")
+
+
+func _stop_climbing(next_action: String) -> void:
+    if not is_climbing:
+        return
+    is_climbing = false
+    _active_climbable_id = -1
+    collision_mask = _collision_mask_before_climb
+    velocity.y = 0.0
+    current_action = next_action
 
 
 func _uses_human_sprite() -> bool:
@@ -389,6 +524,7 @@ func _update_human_sprite() -> void:
         return
 
     human_sprite.flip_h = facing < 0
+    human_sprite.speed_scale = 0.68 if is_climbing else 1.0
 
     var next_animation := &"idle"
     if not is_alive:
@@ -399,6 +535,8 @@ func _update_human_sprite() -> void:
         next_animation = &"block"
     elif _attack_flash > 0.0:
         next_animation = &"attack"
+    elif is_climbing:
+        next_animation = &"run"
     elif human_sprite.animation == &"attack" and human_sprite.is_playing():
         return
     elif not is_on_floor():

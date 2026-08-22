@@ -1,6 +1,7 @@
 extends SceneTree
 
 const ARENA := preload("res://prototypes/combat_arena/combat_arena.tscn")
+const ONBOARDING_STATE := preload("res://prototypes/onboarding/onboarding_state.gd")
 const HUMAN_FRAMES := preload(
     "res://assets/characters/human_m03/v1/human_m03_sprite_frames.tres"
 )
@@ -36,6 +37,18 @@ func _run() -> void:
             )
             quit(1)
             return
+
+    var onboarding := ONBOARDING_STATE.new() as PrototypeOnboardingState
+    if not onboarding.login("demo@realm.test", "123")["ok"]:
+        push_error("Demo login failed before the Human sprite integration test")
+        quit(1)
+        return
+    var creation := onboarding.create_hero("Sprite Tester", "human")
+    if not creation["ok"]:
+        push_error("Human creation failed before the sprite integration test")
+        quit(1)
+        return
+    set_meta("selected_hero", (creation["hero"] as Dictionary).duplicate(true))
 
     var arena := ARENA.instantiate()
     root.add_child(arena)

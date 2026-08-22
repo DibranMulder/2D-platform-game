@@ -1,4 +1,4 @@
-[gd_scene load_steps=21 format=3]
+[gd_scene load_steps=24 format=3]
 
 [ext_resource type="Script" path="res://prototypes/combat_arena/combat_arena.gd" id="1_arena"]
 [ext_resource type="Script" path="res://prototypes/combat_arena/hero_controller.gd" id="2_hero"]
@@ -6,6 +6,8 @@
 [ext_resource type="Script" path="res://prototypes/combat_arena/virtual_joystick.gd" id="4_joystick"]
 [ext_resource type="Texture2D" path="res://assets/backgrounds/storybook-forest-battleground-v1.png" id="5_background"]
 [ext_resource type="SpriteFrames" path="res://assets/characters/human_m03/v1/human_m03_sprite_frames.tres" id="6_human_frames"]
+[ext_resource type="Script" path="res://prototypes/combat_arena/climbable.gd" id="7_climbable"]
+[ext_resource type="Script" path="res://scripts/chronicle_button.gd" id="8_chronicle_button"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleHero"]
 radius = 19.0
@@ -20,6 +22,9 @@ size = Vector2(1280, 170)
 
 [sub_resource type="RectangleShape2D" id="JumpPlatformShape"]
 size = Vector2(210, 22)
+
+[sub_resource type="RectangleShape2D" id="ClimbableShape"]
+size = Vector2(70, 166)
 
 [sub_resource type="RectangleShape2D" id="PortalShape"]
 size = Vector2(70, 130)
@@ -149,6 +154,16 @@ shape = SubResource("JumpPlatformShape")
 one_way_collision = true
 one_way_collision_margin = 8.0
 
+[node name="ForestLadder" type="Area2D" parent="."]
+position = Vector2(590, 493)
+collision_layer = 0
+collision_mask = 2
+script = ExtResource("7_climbable")
+bottom_exit_offset_y = 56.0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="ForestLadder"]
+shape = SubResource("ClimbableShape")
+
 [node name="PortalArea" type="Area2D" parent="."]
 position = Vector2(1205, 500)
 collision_layer = 0
@@ -257,13 +272,10 @@ offset_left = 1110.0
 offset_top = 8.0
 offset_right = 1260.0
 offset_bottom = 42.0
-focus_mode = 0
-theme_override_colors/font_color = Color(0.95, 0.88, 0.65, 1)
-theme_override_font_sizes/font_size = 14
-theme_override_styles/normal = SubResource("ActionNormal")
-theme_override_styles/hover = SubResource("ActionHover")
-theme_override_styles/pressed = SubResource("ActionPressed")
 text = "LOG OUT"
+script = ExtResource("8_chronicle_button")
+variant = 3
+touch_safe = false
 
 [node name="HeroIdentity" type="Label" parent="HUD"]
 offset_left = 20.0
@@ -419,6 +431,8 @@ theme_override_styles/normal = SubResource("ActionNormal")
 theme_override_styles/hover = SubResource("ActionHover")
 theme_override_styles/pressed = SubResource("ActionPressed")
 text = "E · TRADE"
+script = ExtResource("8_chronicle_button")
+variant = 0
 
 [node name="WeaponBar" type="HBoxContainer" parent="HUD"]
 offset_left = 20.0
@@ -448,6 +462,9 @@ theme_override_styles/normal = SubResource("ActionNormal")
 theme_override_styles/hover = SubResource("ActionHover")
 theme_override_styles/pressed = SubResource("ActionPressed")
 text = "> SWORD"
+script = ExtResource("8_chronicle_button")
+variant = 2
+touch_safe = false
 
 [node name="AxeShield" type="Button" parent="HUD/WeaponBar"]
 custom_minimum_size = Vector2(128, 38)
@@ -459,6 +476,9 @@ theme_override_styles/normal = SubResource("ActionNormal")
 theme_override_styles/hover = SubResource("ActionHover")
 theme_override_styles/pressed = SubResource("ActionPressed")
 text = "AXE + SHIELD"
+script = ExtResource("8_chronicle_button")
+variant = 2
+touch_safe = false
 
 [node name="Bow" type="Button" parent="HUD/WeaponBar"]
 custom_minimum_size = Vector2(78, 38)
@@ -470,6 +490,9 @@ theme_override_styles/normal = SubResource("ActionNormal")
 theme_override_styles/hover = SubResource("ActionHover")
 theme_override_styles/pressed = SubResource("ActionPressed")
 text = "BOW"
+script = ExtResource("8_chronicle_button")
+variant = 2
+touch_safe = false
 
 [node name="Staff" type="Button" parent="HUD/WeaponBar"]
 custom_minimum_size = Vector2(82, 38)
@@ -481,6 +504,9 @@ theme_override_styles/normal = SubResource("ActionNormal")
 theme_override_styles/hover = SubResource("ActionHover")
 theme_override_styles/pressed = SubResource("ActionPressed")
 text = "STAFF"
+script = ExtResource("8_chronicle_button")
+variant = 2
+touch_safe = false
 
 [node name="Wand" type="Button" parent="HUD/WeaponBar"]
 custom_minimum_size = Vector2(82, 38)
@@ -492,6 +518,9 @@ theme_override_styles/normal = SubResource("ActionNormal")
 theme_override_styles/hover = SubResource("ActionHover")
 theme_override_styles/pressed = SubResource("ActionPressed")
 text = "WAND"
+script = ExtResource("8_chronicle_button")
+variant = 2
+touch_safe = false
 
 [node name="Hotbar" type="HBoxContainer" parent="HUD"]
 offset_left = 20.0
@@ -509,6 +538,8 @@ theme_override_styles/normal = SubResource("ActionNormal")
 theme_override_styles/hover = SubResource("ActionHover")
 theme_override_styles/pressed = SubResource("ActionPressed")
 text = "1\nATTACK\nREADY"
+script = ExtResource("8_chronicle_button")
+variant = 0
 
 [node name="Guard" type="Button" parent="HUD/Hotbar"]
 custom_minimum_size = Vector2(96, 82)
@@ -519,6 +550,8 @@ theme_override_styles/normal = SubResource("ActionNormal")
 theme_override_styles/hover = SubResource("ActionHover")
 theme_override_styles/pressed = SubResource("ActionPressed")
 text = "2\nGUARD\nhold"
+script = ExtResource("8_chronicle_button")
+variant = 1
 
 [node name="PowerStrike" type="Button" parent="HUD/Hotbar"]
 custom_minimum_size = Vector2(96, 82)
@@ -529,6 +562,8 @@ theme_override_styles/normal = SubResource("ActionNormal")
 theme_override_styles/hover = SubResource("ActionHover")
 theme_override_styles/pressed = SubResource("ActionPressed")
 text = "3\nPOWER\nREADY"
+script = ExtResource("8_chronicle_button")
+variant = 1
 
 [node name="Whirlwind" type="Button" parent="HUD/Hotbar"]
 custom_minimum_size = Vector2(96, 82)
@@ -539,6 +574,8 @@ theme_override_styles/normal = SubResource("ActionNormal")
 theme_override_styles/hover = SubResource("ActionHover")
 theme_override_styles/pressed = SubResource("ActionPressed")
 text = "4\nWHIRL\nREADY"
+script = ExtResource("8_chronicle_button")
+variant = 1
 
 [node name="Lunge" type="Button" parent="HUD/Hotbar"]
 custom_minimum_size = Vector2(96, 82)
@@ -549,6 +586,8 @@ theme_override_styles/normal = SubResource("ActionNormal")
 theme_override_styles/hover = SubResource("ActionHover")
 theme_override_styles/pressed = SubResource("ActionPressed")
 text = "5\nLUNGE\nREADY"
+script = ExtResource("8_chronicle_button")
+variant = 1
 
 [node name="SecondWind" type="Button" parent="HUD/Hotbar"]
 custom_minimum_size = Vector2(96, 82)
@@ -559,6 +598,8 @@ theme_override_styles/normal = SubResource("ActionNormal")
 theme_override_styles/hover = SubResource("ActionHover")
 theme_override_styles/pressed = SubResource("ActionPressed")
 text = "6\nHEAL\nREADY"
+script = ExtResource("8_chronicle_button")
+variant = 2
 
 [node name="Jump" type="Button" parent="HUD/Hotbar"]
 custom_minimum_size = Vector2(96, 82)
@@ -569,6 +610,8 @@ theme_override_styles/normal = SubResource("ActionNormal")
 theme_override_styles/hover = SubResource("ActionHover")
 theme_override_styles/pressed = SubResource("ActionPressed")
 text = "SPACE\nJUMP\nREADY"
+script = ExtResource("8_chronicle_button")
+variant = 2
 
 [node name="RestartButton" type="Button" parent="HUD"]
 visible = false
@@ -583,3 +626,5 @@ theme_override_styles/normal = SubResource("ActionNormal")
 theme_override_styles/hover = SubResource("ActionHover")
 theme_override_styles/pressed = SubResource("ActionPressed")
 text = "VICTORY — TAP OR PRESS R TO FIGHT AGAIN"
+script = ExtResource("8_chronicle_button")
+variant = 0

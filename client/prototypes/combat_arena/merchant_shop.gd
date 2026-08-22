@@ -4,6 +4,7 @@ extends Control
 
 signal shop_closed
 
+const ChronicleButtonScript := preload("res://scripts/chronicle_button.gd")
 const STARTING_GOLD := 300
 const STOCK_IDS := [
     "iron_longsword",
@@ -113,6 +114,7 @@ func _build_shop() -> void:
     _gold_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
     header.add_child(_gold_label)
     var close := _button("CLOSE · E / ESC", Color("5d4356"))
+    close.set("variant", 3)
     close.custom_minimum_size = Vector2(155.0, 48.0)
     close.pressed.connect(close_shop)
     header.add_child(close)
@@ -199,14 +201,10 @@ func _label(text: String, size: int, color: Color) -> Label:
 
 
 func _button(text: String, color: Color) -> Button:
-    var button := Button.new()
+    var button := ChronicleButtonScript.new() as Button
     button.text = text
-    button.focus_mode = Control.FOCUS_NONE
-    button.add_theme_font_size_override("font_size", 14)
-    button.add_theme_color_override("font_color", Color("f4e9c8"))
-    button.add_theme_stylebox_override("normal", _style(color, color.lightened(0.25), 1))
-    button.add_theme_stylebox_override("hover", _style(color.lightened(0.1), Color("f2d787"), 2))
-    button.add_theme_stylebox_override("pressed", _style(color.darkened(0.12), Color("fff0b2"), 2))
+    button.set("touch_safe", false)
+    button.call("adopt_color_hint", color)
     return button
 
 

@@ -1,7 +1,7 @@
 # PROTOTYPE — throwaway mechanics scene. Do not promote unchanged.
 extends Node2D
 
-const CharacterPanelsScript := preload("res://prototypes/combat_arena/character_panels.gd")
+const CharacterPanelsScript := preload("res://prototypes/combat_arena/chronicle_character_panels.gd")
 const MerchantShopScript := preload("res://prototypes/combat_arena/merchant_shop.gd")
 const MoonlitMarketTexture := preload("res://assets/backgrounds/storybook-moonlit-market-v1.png")
 const MAP_FOREST := "sunlit_forest"
@@ -12,6 +12,7 @@ const MAP_MARKET := "moonlit_market"
 @onready var storybook_background: TextureRect = $StorybookBackground
 @onready var jump_platform: StaticBody2D = $JumpPlatform
 @onready var jump_platform_collision: CollisionShape2D = $JumpPlatform/CollisionShape2D
+@onready var forest_ladder: Area2D = $ForestLadder
 @onready var portal_area: Area2D = $PortalArea
 @onready var portal_label: Label = $PortalLabel
 @onready var merchant_area: Area2D = $MerchantArea
@@ -52,7 +53,7 @@ var _previous_joystick_y := 0.0
 var _touch_guard_held := false
 var _combat_messages: Array[String] = []
 var _encounter_finished := false
-var _character_panels: PrototypeCharacterPanels
+var _character_panels: PrototypeChronicleCharacterPanels
 var _shop: PrototypeMerchantShop
 var _current_map := MAP_FOREST
 var _near_merchant := false
@@ -78,9 +79,9 @@ func _ready() -> void:
         str(selected_hero.get("name", "Prototype Hero")).to_upper(),
         hero.level,
     ]
-    _character_panels = CharacterPanelsScript.new() as PrototypeCharacterPanels
+    _character_panels = CharacterPanelsScript.new() as PrototypeChronicleCharacterPanels
     $HUD.add_child(_character_panels)
-    _character_panels.configure_hero(selected_hero)
+    _character_panels.configure_hero(selected_hero, hero)
     _shop = MerchantShopScript.new() as PrototypeMerchantShop
     $HUD.add_child(_shop)
     _shop.shop_closed.connect(_on_shop_closed)
@@ -126,6 +127,7 @@ func _ready() -> void:
 func _process(_delta: float) -> void:
     if _shop.visible:
         hero.set_move_axis(0.0)
+        hero.set_climb_axis(0.0)
         hero.set_guard(false)
         _update_hud()
         return
@@ -138,6 +140,14 @@ func _process(_delta: float) -> void:
 
     var movement_axis := keyboard_axis if absf(keyboard_axis) > 0.1 else _joystick_value.x
     hero.set_move_axis(movement_axis)
+
+    var keyboard_climb_axis := 0.0
+    if Input.is_key_pressed(KEY_UP) or Input.is_key_pressed(KEY_W):
+        keyboard_climb_axis -= 1.0
+    if Input.is_key_pressed(KEY_DOWN) or Input.is_key_pressed(KEY_S):
+        keyboard_climb_axis += 1.0
+    var climb_axis := keyboard_climb_axis if absf(keyboard_climb_axis) > 0.1 else _joystick_value.y
+    hero.set_climb_axis(climb_axis)
 
     var keyboard_guard := Input.is_key_pressed(KEY_2) or Input.is_key_pressed(KEY_SHIFT)
     hero.set_guard(_touch_guard_held or keyboard_guard)
@@ -165,8 +175,11 @@ func _unhandled_key_input(event: InputEvent) -> void:
         KEY_ESCAPE:
             if _shop.visible:
                 _shop.close_shop()
-        KEY_SPACE, KEY_UP:
+        KEY_SPACE:
             hero.queue_jump()
+        KEY_UP:
+            if not hero.can_climb():
+                hero.queue_jump()
         KEY_TAB:
             hero.cycle_weapon()
         KEY_1:
@@ -186,7 +199,7 @@ func _unhandled_key_input(event: InputEvent) -> void:
 
 func _on_joystick_changed(value: Vector2) -> void:
     _joystick_value = value
-    if value.y < -0.78 and _previous_joystick_y >= -0.78:
+    if value.y < -0.78 and _previous_joystick_y >= -0.78 and not hero.can_climb():
         hero.queue_jump()
     _previous_joystick_y = value.y
 
@@ -261,6 +274,7 @@ func _configure_map(map_id: String) -> void:
     merchant_area.set_deferred("monitoring", not in_forest)
     jump_platform.visible = in_forest
     jump_platform_collision.set_deferred("disabled", not in_forest)
+    forest_ladder.call("set_climbing_enabled", in_forest)
     monster.visible = in_forest
     monster.process_mode = Node.PROCESS_MODE_INHERIT if in_forest else Node.PROCESS_MODE_DISABLED
     _near_merchant = false

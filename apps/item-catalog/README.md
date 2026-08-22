@@ -89,7 +89,28 @@ actions tied to the current ChatGPT user. Leave public content anonymous.
 - `npm run dev`: start local development
 - `npm run build`: verify the vinext build output
 - `npm test`: build the starter and verify its rendered loading skeleton
+- `npm run catalog:generate`: rebuild the synchronized website and Godot item
+  snapshots from `DESIGN-0012` and rebuild the class codex from `DESIGN-0013`
 - `npm run db:generate`: generate Drizzle migrations after schema changes
+
+## Curating generated equipment and talents
+
+The catalogue preserves the original prototype records and adds 1,200 generated
+class-equipment records: 864 armor pieces and 336 weapons or shields. Generated
+items deliberately use `Acquisition not assigned` until shops, quests, recipes,
+and creature drop tables are designed. Generic Capes remain independent of
+Class armor sets.
+
+The Class Codex contains the six launch Combat Classes and all 108 proposed
+Talents. Equipment and Talent review records share the durable curator ledger;
+their stable IDs allow approvals and notes to survive catalogue regeneration.
+
+The Creature Bestiary contains the 64 drafted Homeland creatures spanning
+Levels 1–40. Its filters distinguish level cohort, Territory, Disposition,
+rank, artwork state, and curator review state. The first two cohorts—Levels
+1–5 and 6–10—have sixteen generated storybook portraits. Monster review IDs use
+the same durable ledger, while item drops and other acquisitions remain
+deliberately unassigned.
 
 ## Learn More
 

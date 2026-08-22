@@ -14,6 +14,8 @@ themes, and content can be added without reshaping the runtime.
 | [Account and hero onboarding](0006-account-and-hero-onboarding.md) | Exploring | Account flow, naming rules, and eight playable Lineages |
 | [Progression, Talents, and equipment](0007-progression-talents-and-equipment.md) | Exploring | Generic Discipline levels, Hero-specific Talent Trees, Item Pouch, and equipment |
 | [Playable Lineage art direction](0008-playable-lineage-art-direction.md) | Exploring | Designer handoff for silhouettes, materials, palettes, movement, and Homelands |
+| [Exchange and Lineage Strongholds](0009-exchange-and-strongholds.md) | Proposed | Central player market, protected Strongholds, open Outer Villages, and Guardian rules |
+| [Interactive world map](0010-interactive-world-map.md) | Exploring | Eight Homelands, four Frontiers, Dungeon Sites, routes, access, and three interactive layouts |
 
 Durable decisions whose reversal would be expensive are recorded separately in
 [`docs/adr`](../adr/). Project-specific terminology is defined in

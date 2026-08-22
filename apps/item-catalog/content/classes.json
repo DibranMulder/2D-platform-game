@@ -1,0 +1,847 @@
+{
+  "schema_version": 1,
+  "design_origin": "design-0013",
+  "classes": [
+    {
+      "id": "vanguard",
+      "name": "Vanguard",
+      "promise": "Guard, counters, formation play, and dependable melee.",
+      "weapons": [
+        "One-Handed Sword",
+        "One-Handed Axe",
+        "One-Handed Blunt",
+        "Spear",
+        "Shield"
+      ],
+      "armor": "Heavy plate with broad shoulders and a readable shield silhouette.",
+      "signatureStat": "guard",
+      "branches": [
+        {
+          "id": "bulwark",
+          "name": "Bulwark",
+          "talents": [
+            {
+              "id": "talent_vanguard_bulwark_brace_the_line",
+              "name": "Brace the Line",
+              "level": 10,
+              "description": "Guard costs less Stamina and resists forced movement"
+            },
+            {
+              "id": "talent_vanguard_bulwark_shield_wake",
+              "name": "Shield Wake",
+              "level": 30,
+              "description": "a guarded hit empowers the next Shield strike with a short shockwave"
+            },
+            {
+              "id": "talent_vanguard_bulwark_interpose",
+              "name": "Interpose",
+              "level": 50,
+              "description": "rush to an ally and receive their next direct hit"
+            },
+            {
+              "id": "talent_vanguard_bulwark_unbroken_guard",
+              "name": "Unbroken Guard",
+              "level": 70,
+              "description": "a Perfect Guard restores Stamina and Guard stability"
+            },
+            {
+              "id": "talent_vanguard_bulwark_bastion_field",
+              "name": "Bastion Field",
+              "level": 90,
+              "description": "allies immediately behind the Vanguard take less frontal ranged damage"
+            },
+            {
+              "id": "talent_vanguard_bulwark_living_fortress",
+              "name": "Living Fortress",
+              "level": 110,
+              "description": "enter a slow fortified stance with immense Guard and protective pulses"
+            }
+          ]
+        },
+        {
+          "id": "standard_bearer",
+          "name": "Standard Bearer",
+          "talents": [
+            {
+              "id": "talent_vanguard_standard_bearer_rallying_cry",
+              "name": "Rallying Cry",
+              "level": 10,
+              "description": "briefly improve nearby allies' movement and Guard recovery"
+            },
+            {
+              "id": "talent_vanguard_standard_bearer_claim_the_ground",
+              "name": "Claim the Ground",
+              "level": 30,
+              "description": "plant a banner that strengthens allies inside its area"
+            },
+            {
+              "id": "talent_vanguard_standard_bearer_shared_resolve",
+              "name": "Shared Resolve",
+              "level": 50,
+              "description": "protecting a wounded ally grants both Heroes temporary Defense"
+            },
+            {
+              "id": "talent_vanguard_standard_bearer_formation_step",
+              "name": "Formation Step",
+              "level": 70,
+              "description": "moving near allies gives the group slow-resistance and stability"
+            },
+            {
+              "id": "talent_vanguard_standard_bearer_last_line",
+              "name": "Last Line",
+              "level": 90,
+              "description": "the banner pulses a shield when an ally first falls below critical health"
+            },
+            {
+              "id": "talent_vanguard_standard_bearer_crowned_vanguard",
+              "name": "Crowned Vanguard",
+              "level": 110,
+              "description": "the banner follows the Vanguard and strengthens every formation effect"
+            }
+          ]
+        },
+        {
+          "id": "weaponmaster",
+          "name": "Weaponmaster",
+          "talents": [
+            {
+              "id": "talent_vanguard_weaponmaster_measured_counter",
+              "name": "Measured Counter",
+              "level": 10,
+              "description": "the first attack after a Perfect Guard deals bonus stagger"
+            },
+            {
+              "id": "talent_vanguard_weaponmaster_sweeping_reprisal",
+              "name": "Sweeping Reprisal",
+              "level": 30,
+              "description": "a counterattack may strike enemies on both sides"
+            },
+            {
+              "id": "talent_vanguard_weaponmaster_hampering_blow",
+              "name": "Hampering Blow",
+              "level": 50,
+              "description": "a precise hit reduces enemy attack speed instead of unequipping gear"
+            },
+            {
+              "id": "talent_vanguard_weaponmaster_iron_tempo",
+              "name": "Iron Tempo",
+              "level": 70,
+              "description": "alternating Guard and attack steadily accelerates recovery"
+            },
+            {
+              "id": "talent_vanguard_weaponmaster_judgment_counter",
+              "name": "Judgment Counter",
+              "level": 90,
+              "description": "countering a telegraphed Elite action exposes its weakness"
+            },
+            {
+              "id": "talent_vanguard_weaponmaster_perfect_retort",
+              "name": "Perfect Retort",
+              "level": 110,
+              "description": "a Perfect Guard may immediately reset one counter action"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ravager",
+      "name": "Ravager",
+      "promise": "Committed heavy swings, stagger, armor breaking, and controlled risk.",
+      "weapons": [
+        "Two-Handed Sword",
+        "Two-Handed Axe",
+        "Two-Handed Blunt",
+        "Polearm"
+      ],
+      "armor": "Heavy or reinforced medium armor with a weight-forward silhouette.",
+      "signatureStat": "power",
+      "branches": [
+        {
+          "id": "fury",
+          "name": "Fury",
+          "talents": [
+            {
+              "id": "talent_ravager_fury_rising_heat",
+              "name": "Rising Heat",
+              "level": 10,
+              "description": "consecutive committed hits build temporary attack speed"
+            },
+            {
+              "id": "talent_ravager_fury_relentless_advance",
+              "name": "Relentless Advance",
+              "level": 30,
+              "description": "heavy attacks resist minor interruption while moving forward"
+            },
+            {
+              "id": "talent_ravager_fury_pain_into_power",
+              "name": "Pain into Power",
+              "level": 50,
+              "description": "taking damage empowers the next fully charged swing"
+            },
+            {
+              "id": "talent_ravager_fury_fury_unbound",
+              "name": "Fury Unbound",
+              "level": 70,
+              "description": "spending maximum Heat grants a brief burst of movement and recovery"
+            },
+            {
+              "id": "talent_ravager_fury_no_surrender",
+              "name": "No Surrender",
+              "level": 90,
+              "description": "once per encounter, a would-be stagger instead fills Heat"
+            },
+            {
+              "id": "talent_ravager_fury_heart_of_thunder",
+              "name": "Heart of Thunder",
+              "level": 110,
+              "description": "maximum Heat transforms heavy attacks into chaining thunderous impacts"
+            }
+          ]
+        },
+        {
+          "id": "breaker",
+          "name": "Breaker",
+          "talents": [
+            {
+              "id": "talent_ravager_breaker_splinter_armor",
+              "name": "Splinter Armor",
+              "level": 10,
+              "description": "charged hits apply a stacking Defense reduction"
+            },
+            {
+              "id": "talent_ravager_breaker_crushing_arc",
+              "name": "Crushing Arc",
+              "level": 30,
+              "description": "downward attacks damage shields, constructs, and breakable terrain more strongly"
+            },
+            {
+              "id": "talent_ravager_breaker_faultline",
+              "name": "Faultline",
+              "level": 50,
+              "description": "a ground strike sends a short rupture along the platform"
+            },
+            {
+              "id": "talent_ravager_breaker_sundered_guard",
+              "name": "Sundered Guard",
+              "level": 70,
+              "description": "breaking Guard briefly prevents its full recovery"
+            },
+            {
+              "id": "talent_ravager_breaker_ruinous_impact",
+              "name": "Ruinous Impact",
+              "level": 90,
+              "description": "striking an exposed Elite creates a party-wide damage opening"
+            },
+            {
+              "id": "talent_ravager_breaker_worldbreaker",
+              "name": "Worldbreaker",
+              "level": 110,
+              "description": "the next charged attack creates three sequential faultline eruptions"
+            }
+          ]
+        },
+        {
+          "id": "colossus",
+          "name": "Colossus",
+          "talents": [
+            {
+              "id": "talent_ravager_colossus_heavy_hands",
+              "name": "Heavy Hands",
+              "level": 10,
+              "description": "Two-Handed Weapon reach and stagger increase slightly"
+            },
+            {
+              "id": "talent_ravager_colossus_anchored_swing",
+              "name": "Anchored Swing",
+              "level": 30,
+              "description": "charging an attack resists pull and knockback"
+            },
+            {
+              "id": "talent_ravager_colossus_giants_reach",
+              "name": "Giant's Reach",
+              "level": 50,
+              "description": "the final strike of a combo gains a much wider arc"
+            },
+            {
+              "id": "talent_ravager_colossus_aftershock",
+              "name": "Aftershock",
+              "level": 70,
+              "description": "fully charged hits repeat a weaker impact after a delay"
+            },
+            {
+              "id": "talent_ravager_colossus_mountain_step",
+              "name": "Mountain Step",
+              "level": 90,
+              "description": "a short armored step passes through lesser creatures"
+            },
+            {
+              "id": "talent_ravager_colossus_titan_form",
+              "name": "Titan Form",
+              "level": 110,
+              "description": "temporarily enlarge weapon arcs, stability, and environmental break power"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ranger",
+      "name": "Ranger",
+      "promise": "Ranged pressure, weak-point shots, traps, and mobile fieldcraft.",
+      "weapons": [
+        "Bow",
+        "Crossbow",
+        "Spear"
+      ],
+      "armor": "Medium leather and light mail with compact, practical shapes.",
+      "signatureStat": "agility",
+      "branches": [
+        {
+          "id": "marksman",
+          "name": "Marksman",
+          "talents": [
+            {
+              "id": "talent_ranger_marksman_patient_aim",
+              "name": "Patient Aim",
+              "level": 10,
+              "description": "remaining still briefly improves the next projectile's precision"
+            },
+            {
+              "id": "talent_ranger_marksman_piercing_shot",
+              "name": "Piercing Shot",
+              "level": 30,
+              "description": "a charged projectile passes through one additional target"
+            },
+            {
+              "id": "talent_ranger_marksman_marked_weakness",
+              "name": "Marked Weakness",
+              "level": 50,
+              "description": "hitting a telegraphed weak point marks it for the party"
+            },
+            {
+              "id": "talent_ranger_marksman_trueflight",
+              "name": "Trueflight",
+              "level": 70,
+              "description": "long-range attacks lose less damage and accuracy"
+            },
+            {
+              "id": "talent_ranger_marksman_thread_the_needle",
+              "name": "Thread the Needle",
+              "level": 90,
+              "description": "striking through a small opening guarantees a critical weak-point hit"
+            },
+            {
+              "id": "talent_ranger_marksman_horizon_shot",
+              "name": "Horizon Shot",
+              "level": 110,
+              "description": "fire a screen-spanning shot that gains power for every marked target crossed"
+            }
+          ]
+        },
+        {
+          "id": "pathfinder",
+          "name": "Pathfinder",
+          "talents": [
+            {
+              "id": "talent_ranger_pathfinder_quick_vault",
+              "name": "Quick Vault",
+              "level": 10,
+              "description": "vaulting over a creature reloads or readies the next ranged attack"
+            },
+            {
+              "id": "talent_ranger_pathfinder_snareline",
+              "name": "Snareline",
+              "level": 30,
+              "description": "place a visible line trap that roots the first lesser creature crossing it"
+            },
+            {
+              "id": "talent_ranger_pathfinder_smokeleaf_roll",
+              "name": "Smokeleaf Roll",
+              "level": 50,
+              "description": "a dodge leaves a brief concealment cloud"
+            },
+            {
+              "id": "talent_ranger_pathfinder_high_ground",
+              "name": "High Ground",
+              "level": 70,
+              "description": "attacks from above gain stagger and trap damage"
+            },
+            {
+              "id": "talent_ranger_pathfinder_trail_without_trace",
+              "name": "Trail Without Trace",
+              "level": 90,
+              "description": "movement no longer triggers ordinary environmental snares"
+            },
+            {
+              "id": "talent_ranger_pathfinder_every_road_is_mine",
+              "name": "Every Road Is Mine",
+              "level": 110,
+              "description": "deploy two traps at once and gain a reset when either is used cleverly"
+            }
+          ]
+        },
+        {
+          "id": "wildbond",
+          "name": "Wildbond",
+          "talents": [
+            {
+              "id": "talent_ranger_wildbond_gentle_approach",
+              "name": "Gentle Approach",
+              "level": 10,
+              "description": "calm eligible neutral creatures and begin Companion bonds"
+            },
+            {
+              "id": "talent_ranger_wildbond_companion_call",
+              "name": "Companion Call",
+              "level": 30,
+              "description": "summon one bonded creature with a simple support action"
+            },
+            {
+              "id": "talent_ranger_wildbond_shared_senses",
+              "name": "Shared Senses",
+              "level": 50,
+              "description": "the Companion reveals nearby tracks, Hidden Zone clues, and weak points"
+            },
+            {
+              "id": "talent_ranger_wildbond_protective_instinct",
+              "name": "Protective Instinct",
+              "level": 70,
+              "description": "Hero and Companion shield one another when either is threatened"
+            },
+            {
+              "id": "talent_ranger_wildbond_pack_tactics",
+              "name": "Pack Tactics",
+              "level": 90,
+              "description": "marked targets take coordinated attacks from both partners"
+            },
+            {
+              "id": "talent_ranger_wildbond_legendary_bond",
+              "name": "Legendary Bond",
+              "level": 110,
+              "description": "unlock the Companion's signature action and prevent its first defeat each encounter"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "duelist",
+      "name": "Duelist",
+      "promise": "Two one-handed weapons, evasive footwork, bleeds, and precise counters.",
+      "weapons": [
+        "One-Handed Sword",
+        "One-Handed Axe",
+        "Dagger"
+      ],
+      "armor": "Light leather and cloth with deliberate asymmetry.",
+      "signatureStat": "agility",
+      "branches": [
+        {
+          "id": "twin_dance",
+          "name": "Twin Dance",
+          "talents": [
+            {
+              "id": "talent_duelist_twin_dance_crosscut",
+              "name": "Crosscut",
+              "level": 10,
+              "description": "alternating Main Hand and Off Hand attacks adds a crossing finisher"
+            },
+            {
+              "id": "talent_duelist_twin_dance_opposed_edges",
+              "name": "Opposed Edges",
+              "level": 30,
+              "description": "using two different Weapon Families grants both a small signature bonus"
+            },
+            {
+              "id": "talent_duelist_twin_dance_twin_parry",
+              "name": "Twin Parry",
+              "level": 50,
+              "description": "a precisely timed paired block can answer attacks from either side"
+            },
+            {
+              "id": "talent_duelist_twin_dance_flowing_combination",
+              "name": "Flowing Combination",
+              "level": 70,
+              "description": "switching hands extends the combo instead of restarting it"
+            },
+            {
+              "id": "talent_duelist_twin_dance_mirror_blades",
+              "name": "Mirror Blades",
+              "level": 90,
+              "description": "a critical strike empowers the opposite hand's next action"
+            },
+            {
+              "id": "talent_duelist_twin_dance_hundred_step_finale",
+              "name": "Hundred-Step Finale",
+              "level": 110,
+              "description": "unleash a rapid finisher whose pattern reflects the equipped pair"
+            }
+          ]
+        },
+        {
+          "id": "footwork",
+          "name": "Footwork",
+          "talents": [
+            {
+              "id": "talent_duelist_footwork_quickstep",
+              "name": "Quickstep",
+              "level": 10,
+              "description": "gain a short low-cooldown evasive step"
+            },
+            {
+              "id": "talent_duelist_footwork_passing_cut",
+              "name": "Passing Cut",
+              "level": 30,
+              "description": "Quickstep through an enemy to deliver a light crossing strike"
+            },
+            {
+              "id": "talent_duelist_footwork_perfect_distance",
+              "name": "Perfect Distance",
+              "level": 50,
+              "description": "attacks at the edge of weapon reach gain precision"
+            },
+            {
+              "id": "talent_duelist_footwork_airborne_feint",
+              "name": "Airborne Feint",
+              "level": 70,
+              "description": "redirect once in the air and conceal the landing direction"
+            },
+            {
+              "id": "talent_duelist_footwork_untouchable_rhythm",
+              "name": "Untouchable Rhythm",
+              "level": 90,
+              "description": "successive near-misses shorten Quickstep recovery"
+            },
+            {
+              "id": "talent_duelist_footwork_dance_between_raindrops",
+              "name": "Dance Between Raindrops",
+              "level": 110,
+              "description": "briefly chain Quicksteps while every successful evade empowers the finale"
+            }
+          ]
+        },
+        {
+          "id": "trickery",
+          "name": "Trickery",
+          "talents": [
+            {
+              "id": "talent_duelist_trickery_false_opening",
+              "name": "False Opening",
+              "level": 10,
+              "description": "intentionally delay a strike to provoke an early enemy response"
+            },
+            {
+              "id": "talent_duelist_trickery_pommel_trick",
+              "name": "Pommel Trick",
+              "level": 30,
+              "description": "a close interruption deals high stagger but low damage"
+            },
+            {
+              "id": "talent_duelist_trickery_bleeding_nick",
+              "name": "Bleeding Nick",
+              "level": 50,
+              "description": "precision hits apply a short non-stacking bleed"
+            },
+            {
+              "id": "talent_duelist_trickery_disarming_flourish",
+              "name": "Disarming Flourish",
+              "level": 70,
+              "description": "reduce a creature's damage or suppress one weapon action; never steals player gear"
+            },
+            {
+              "id": "talent_duelist_trickery_final_feint",
+              "name": "Final Feint",
+              "level": 90,
+              "description": "once per combo, cancel a finisher into the opposite hand"
+            },
+            {
+              "id": "talent_duelist_trickery_curtain_call",
+              "name": "Curtain Call",
+              "level": 110,
+              "description": "marked feints collapse at once, repeating part of the damage they enabled"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "arcanist",
+      "name": "Arcanist",
+      "promise": "Elemental projectiles, zones, control, and fragile magical burst.",
+      "weapons": [
+        "Wand",
+        "Staff"
+      ],
+      "armor": "Layered elemental robes with large readable sleeves.",
+      "signatureStat": "arcana",
+      "branches": [
+        {
+          "id": "embercraft",
+          "name": "Embercraft",
+          "talents": [
+            {
+              "id": "talent_arcanist_embercraft_kindle",
+              "name": "Kindle",
+              "level": 10,
+              "description": "repeated fire hits build a small Burning effect"
+            },
+            {
+              "id": "talent_arcanist_embercraft_searing_sigil",
+              "name": "Searing Sigil",
+              "level": 30,
+              "description": "place a delayed fire rune on terrain"
+            },
+            {
+              "id": "talent_arcanist_embercraft_flame_step",
+              "name": "Flame Step",
+              "level": 50,
+              "description": "dash through a short flame path without taking contact damage"
+            },
+            {
+              "id": "talent_arcanist_embercraft_hungry_flame",
+              "name": "Hungry Flame",
+              "level": 70,
+              "description": "fire zones grow when they consume another elemental effect"
+            },
+            {
+              "id": "talent_arcanist_embercraft_phoenix_script",
+              "name": "Phoenix Script",
+              "level": 90,
+              "description": "once per encounter, critical health triggers a fiery escape and shield"
+            },
+            {
+              "id": "talent_arcanist_embercraft_living_inferno",
+              "name": "Living Inferno",
+              "level": 110,
+              "description": "combine active fire zones into a moving elemental storm"
+            }
+          ]
+        },
+        {
+          "id": "frostweaving",
+          "name": "Frostweaving",
+          "talents": [
+            {
+              "id": "talent_arcanist_frostweaving_rime_dart",
+              "name": "Rime Dart",
+              "level": 10,
+              "description": "frost projectiles progressively slow lesser creatures"
+            },
+            {
+              "id": "talent_arcanist_frostweaving_crystal_ward",
+              "name": "Crystal Ward",
+              "level": 30,
+              "description": "form a breakable ice barrier on a platform"
+            },
+            {
+              "id": "talent_arcanist_frostweaving_freeze_line",
+              "name": "Freeze Line",
+              "level": 50,
+              "description": "draw a short freezing path across the ground"
+            },
+            {
+              "id": "talent_arcanist_frostweaving_shattercraft",
+              "name": "Shattercraft",
+              "level": 70,
+              "description": "breaking the Arcanist's ice effects launches safe fragments outward"
+            },
+            {
+              "id": "talent_arcanist_frostweaving_winter_room",
+              "name": "Winter Room",
+              "level": 90,
+              "description": "create a large zone that slows actions and projectiles"
+            },
+            {
+              "id": "talent_arcanist_frostweaving_still_world",
+              "name": "Still World",
+              "level": 110,
+              "description": "briefly freeze lesser creatures and suspend Elite telegraphs without cancelling them"
+            }
+          ]
+        },
+        {
+          "id": "stormscript",
+          "name": "Stormscript",
+          "talents": [
+            {
+              "id": "talent_arcanist_stormscript_spark_chain",
+              "name": "Spark Chain",
+              "level": 10,
+              "description": "lightning jumps once to a nearby marked target"
+            },
+            {
+              "id": "talent_arcanist_stormscript_gale_lift",
+              "name": "Gale Lift",
+              "level": 30,
+              "description": "create an updraft for the Arcanist and allies"
+            },
+            {
+              "id": "talent_arcanist_stormscript_thunder_mark",
+              "name": "Thunder Mark",
+              "level": 50,
+              "description": "delayed lightning strikes a target after an obvious count"
+            },
+            {
+              "id": "talent_arcanist_stormscript_blink_current",
+              "name": "Blink Current",
+              "level": 70,
+              "description": "teleport a short distance along an active lightning connection"
+            },
+            {
+              "id": "talent_arcanist_stormscript_tempest_crown",
+              "name": "Tempest Crown",
+              "level": 90,
+              "description": "orbiting sparks answer nearby spell casts"
+            },
+            {
+              "id": "talent_arcanist_stormscript_skybreak",
+              "name": "Skybreak",
+              "level": 110,
+              "description": "call a storm column that repeatedly lifts, chains, and grounds targets"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "warden",
+      "name": "Warden",
+      "promise": "Radiance protection, Gloam curses, life transfer, or an Eclipse balance.",
+      "weapons": [
+        "Wand",
+        "Staff"
+      ],
+      "armor": "Asymmetric polarity robes with paired luminous and umbral details.",
+      "signatureStat": "focus",
+      "branches": [
+        {
+          "id": "radiance",
+          "name": "Radiance",
+          "talents": [
+            {
+              "id": "talent_warden_radiance_kindle_light",
+              "name": "Kindle Light",
+              "level": 10,
+              "description": "healing or shielding leaves a small lingering glow"
+            },
+            {
+              "id": "talent_warden_radiance_mending_ray",
+              "name": "Mending Ray",
+              "level": 30,
+              "description": "channel a beam that heals an ally or harms a corrupted creature"
+            },
+            {
+              "id": "talent_warden_radiance_halo_ward",
+              "name": "Halo Ward",
+              "level": 50,
+              "description": "place a circular barrier that absorbs one heavy hit"
+            },
+            {
+              "id": "talent_warden_radiance_revealing_flare",
+              "name": "Revealing Flare",
+              "level": 70,
+              "description": "expose concealed creatures, traps, and Gloam effects"
+            },
+            {
+              "id": "talent_warden_radiance_sanctuary",
+              "name": "Sanctuary",
+              "level": 90,
+              "description": "create a zone of healing and control resistance"
+            },
+            {
+              "id": "talent_warden_radiance_second_sunrise",
+              "name": "Second Sunrise",
+              "level": 110,
+              "description": "once per encounter, restore a recently defeated ally with partial health"
+            }
+          ]
+        },
+        {
+          "id": "gloam",
+          "name": "Gloam",
+          "talents": [
+            {
+              "id": "talent_warden_gloam_gloam_bolt",
+              "name": "Gloam Bolt",
+              "level": 10,
+              "description": "damaging spells leave a short shadow vulnerability"
+            },
+            {
+              "id": "talent_warden_gloam_withering_mark",
+              "name": "Withering Mark",
+              "level": 30,
+              "description": "reduce a target's outgoing damage and healing"
+            },
+            {
+              "id": "talent_warden_gloam_shadebind",
+              "name": "Shadebind",
+              "level": 50,
+              "description": "pin a lesser creature's shadow to the ground"
+            },
+            {
+              "id": "talent_warden_gloam_life_siphon",
+              "name": "Life Siphon",
+              "level": 70,
+              "description": "transfer a portion of damage dealt into healing for the weakest nearby ally"
+            },
+            {
+              "id": "talent_warden_gloam_night_mantle",
+              "name": "Night Mantle",
+              "level": 90,
+              "description": "cloak the party from ordinary creature detection until they attack"
+            },
+            {
+              "id": "talent_warden_gloam_long_eclipse",
+              "name": "Long Eclipse",
+              "level": 110,
+              "description": "spread active Gloam marks and extend their final tick"
+            }
+          ]
+        },
+        {
+          "id": "eclipse",
+          "name": "Eclipse",
+          "talents": [
+            {
+              "id": "talent_warden_eclipse_twilight_attunement",
+              "name": "Twilight Attunement",
+              "level": 10,
+              "description": "alternating Radiance and Gloam reduces the second spell's cost"
+            },
+            {
+              "id": "talent_warden_eclipse_balanced_weave",
+              "name": "Balanced Weave",
+              "level": 30,
+              "description": "each school strengthens the next spell of the other school"
+            },
+            {
+              "id": "talent_warden_eclipse_dusk_exchange",
+              "name": "Dusk Exchange",
+              "level": 50,
+              "description": "move one removable harmful effect from an ally onto a valid enemy"
+            },
+            {
+              "id": "talent_warden_eclipse_convergence",
+              "name": "Convergence",
+              "level": 70,
+              "description": "overlapping Radiance and Gloam zones create a Twilight field"
+            },
+            {
+              "id": "talent_warden_eclipse_equinox",
+              "name": "Equinox",
+              "level": 90,
+              "description": "keeping both Attunements balanced improves cast speed and stability"
+            },
+            {
+              "id": "talent_warden_eclipse_eclipse_incarnate",
+              "name": "Eclipse Incarnate",
+              "level": 110,
+              "description": "temporarily let every Warden spell count as both schools for interactions"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

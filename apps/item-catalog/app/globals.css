@@ -13,6 +13,10 @@ button,input,select,textarea { font: inherit; } button { color: inherit; }
 .brand-mark { width:74px; height:74px; border:1px solid var(--gold-light); border-radius:50% 50% 44% 44%; display:grid; place-items:center; font:26px "Alegreya SC"; color:var(--gold-light); box-shadow:inset 0 0 0 5px var(--night),inset 0 0 0 6px rgba(235,198,111,.45); }
 .brand-copy { flex:1; } .brand-copy h1 { font:46px/1 "Alegreya SC"; letter-spacing:.025em; margin:1px 0 4px; } .brand-copy p { margin:0; color:#c7d2c7; font-size:16px; }
 .eyebrow,.section-kicker { margin:0; color:var(--gold); font:14px "Alegreya SC"; letter-spacing:.14em; text-transform:uppercase; }
+.archive-switch { display:flex; padding:4px; border:1px solid rgba(235,198,111,.28); border-radius:4px; background:rgba(5,28,35,.32); }
+.archive-switch button { padding:8px 12px; border:0; border-radius:2px; color:#c3d0c9; background:transparent; cursor:pointer; white-space:nowrap; }
+.archive-switch button:hover { color:#fff2d1; }
+.archive-switch button.active { color:var(--night); background:var(--gold-light); font-weight:600; }
 .archive-tally { text-align:center; padding:0 25px; border-left:1px solid rgba(235,198,111,.26); } .archive-tally strong { display:block; font:35px "Alegreya SC"; color:var(--gold-light); } .archive-tally span { color:#b8c7c2; text-transform:uppercase; letter-spacing:.12em; font-size:11px; }
 
 .tool-ribbon { min-height:91px; padding:17px max(38px,calc((100vw - 1524px)/2)); display:flex; align-items:center; gap:12px; background:#e8d3a3; border-bottom:1px solid #b9a273; box-shadow:0 5px 16px rgba(48,38,19,.12); }
@@ -36,6 +40,8 @@ button,input,select,textarea { font: inherit; } button { color: inherit; }
 .rarity-bar { position:absolute; inset:0 auto 0 0; width:3px; background:#9a927d; } .rarity-bar.uncommon { background:#4f886b; } .rarity-bar.rare { background:#4c72a2; } .rarity-bar.epic { background:#795c9e; }
 .review-dot { position:absolute; top:8px; right:8px; width:8px; height:8px; border-radius:50%; background:#aaa28f; } .review-dot.approved { background:#4e8c69; } .review-dot.needs-work { background:#c07c3e; } .review-dot.rejected { background:#a54e4b; }
 .empty-state { padding:70px 20px; text-align:center; color:#766e5d; border:1px dashed #b5a17b; }
+.load-more { width:100%; margin-top:16px; padding:12px; border:1px solid #9d8355; border-radius:3px; color:#584a31; background:rgba(255,250,232,.5); cursor:pointer; }
+.load-more:hover { background:#fff3d2; border-color:#7e6336; }
 
 .curator-panel { position:sticky; top:18px; padding:18px 20px 22px; background:#fff3d2; border:1px solid #b99a61; box-shadow:0 12px 26px rgba(54,37,13,.13); } .curator-panel::before { content:""; position:absolute; inset:5px; border:1px solid rgba(166,125,54,.2); pointer-events:none; }
 .hero-icon { position:relative; width:112px; height:112px; margin:2px auto 10px; border:1px solid #b69255; border-radius:50%; overflow:hidden; background:#ead8aa; } .hero-icon img { width:100%; height:100%; object-fit:cover; mix-blend-mode:multiply; }
@@ -47,5 +53,58 @@ button,input,select,textarea { font: inherit; } button { color: inherit; }
 .curator-form select,.curator-form textarea { width:100%; margin-top:4px; border:1px solid #b79b68; border-radius:3px; color:var(--ink); background:rgba(255,252,238,.8); } .curator-form select { height:37px; padding:0 8px; } .curator-form textarea { min-height:89px; padding:8px; resize:vertical; }
 .curator-form .check-row { display:flex; align-items:center; gap:8px; text-transform:none; font-size:13px; } .save-button { width:100%; margin-top:13px; padding:10px; border:1px solid #203f45; border-radius:3px; color:#f8edcf; background:var(--night-2); cursor:pointer; } .save-button:hover { background:#23505a; } .save-state { display:block; margin-top:5px; color:#84775f; text-align:center; font-size:11px; }
 
-@media (max-width:1120px) { .archive-layout { grid-template-columns:160px 1fr; } .curator-panel { position:relative; top:0; grid-column:1/-1; display:grid; grid-template-columns:130px 1fr 1fr; gap:0 20px; } .curator-panel .hero-icon { grid-row:1/4; } .curator-panel .item-id,.curator-panel h2,.curator-panel .item-description { text-align:left; } .curator-panel .facts { grid-column:2; } .curator-panel .curator-form { grid-column:3; grid-row:1/6; margin-top:0; border-top:0; } .stats-block,.compatibility { grid-column:2; } }
-@media (max-width:760px) { .archive-shell { background:linear-gradient(180deg,var(--night) 0 150px,var(--paper) 150px); } .masthead { height:150px; padding:22px 18px; } .brand-mark { width:56px; height:56px; } .brand-copy h1 { font-size:34px; } .brand-copy>p:last-child,.archive-tally { display:none; } .tool-ribbon { padding:12px 18px; flex-wrap:wrap; } .search-box { min-width:100%; } .storage-chip { margin-left:0; } .summary-chip { flex:1; } .archive-layout { padding:22px 18px 40px; grid-template-columns:1fr; } .filter-rail { display:grid; grid-template-columns:1fr 1fr; gap:0 15px; } .filter-rail>.section-kicker,.legend { grid-column:1/-1; } .item-grid { grid-template-columns:1fr; } .curator-panel { grid-column:1; display:block; } .curator-panel .item-id,.curator-panel h2,.curator-panel .item-description { text-align:center; } .curator-panel .curator-form { border-top:1px solid var(--line); margin-top:17px; } }
+.talent-ribbon { justify-content:flex-start; }
+.talent-ribbon>div:first-child { flex:1; max-width:850px; }
+.talent-ribbon>div:first-child strong { display:block; margin-top:4px; color:#4e594f; font-size:17px; font-weight:500; }
+.talent-layout { max-width:1600px; margin:auto; padding:28px 38px 60px; display:grid; grid-template-columns:230px minmax(650px,1fr) 320px; gap:25px; align-items:start; }
+.class-rail { padding-top:8px; }
+.class-rail>button { width:100%; padding:11px 12px; border:0; border-left:3px solid transparent; background:transparent; text-align:left; cursor:pointer; }
+.class-rail>button:hover { background:rgba(255,255,255,.3); }
+.class-rail>button.active { border-left-color:var(--gold); background:linear-gradient(90deg,rgba(199,151,67,.18),transparent); }
+.class-rail>button strong { display:block; font:18px "Alegreya SC"; }
+.class-rail>button span { display:block; margin-top:2px; color:#7a7466; font-size:11px; line-height:1.3; }
+.class-profile { margin-top:20px; padding:14px; border:1px solid var(--line); background:rgba(255,255,255,.23); }
+.class-profile p:not(.section-kicker) { margin:11px 0 0; color:#5f665e; font-size:13px; line-height:1.35; }
+.class-profile b { display:block; color:#78623e; font:12px "Alegreya SC"; letter-spacing:.06em; text-transform:uppercase; }
+.talent-branches { display:grid; grid-template-columns:repeat(3,minmax(190px,1fr)); gap:14px; align-items:start; }
+.talent-branch { padding:12px; border:1px solid var(--line); background:rgba(255,250,232,.4); }
+.talent-branch>header { display:flex; align-items:center; gap:9px; margin-bottom:13px; padding-bottom:9px; border-bottom:1px solid var(--line); }
+.talent-branch>header span,.talent-seal { display:grid; place-items:center; width:38px; height:38px; border:1px solid #b18b4e; border-radius:50%; color:#765b2f; background:#eedaa7; font:14px "Alegreya SC"; }
+.talent-branch h3 { margin:0; font:21px "Alegreya SC"; }
+.talent-node { position:relative; width:100%; min-height:118px; margin-bottom:18px; padding:11px 10px; display:flex; gap:8px; border:1px solid rgba(89,68,35,.25); border-radius:3px; background:#f8edce; text-align:left; cursor:pointer; }
+.talent-node:hover { border-color:#a17a39; transform:translateY(-1px); }
+.talent-node.selected { border-color:#805f29; box-shadow:0 0 0 2px rgba(199,151,67,.2); background:#fff4d5; }
+.talent-node i { position:absolute; left:50%; bottom:-19px; width:1px; height:18px; background:#b99a61; }
+.talent-level { flex:0 0 38px; height:25px; display:grid; place-items:center; border-radius:13px; color:#f9edcb; background:var(--night-2); font-size:10px; }
+.talent-copy { display:block; min-width:0; }
+.talent-copy strong { display:block; padding-right:8px; font:16px/1.05 "Alegreya SC"; }
+.talent-copy small { display:block; margin-top:5px; color:#676c64; font-size:12px; line-height:1.25; }
+.talent-curator { top:18px; }
+.talent-seal { width:76px; height:76px; margin:4px auto 12px; border-width:2px; box-shadow:inset 0 0 0 5px #fff1cc; font-size:24px; }
+
+.monster-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(190px,1fr)); gap:12px; }
+.monster-card { position:relative; min-width:0; padding:0 0 11px; overflow:hidden; border:1px solid var(--line); border-radius:5px; background:rgba(255,250,232,.5); text-align:left; cursor:pointer; transition:transform .15s ease,border-color .15s ease,box-shadow .15s ease; }
+.monster-card:hover { transform:translateY(-2px); border-color:rgba(110,75,27,.45); box-shadow:0 7px 16px rgba(61,43,17,.11); }
+.monster-card.selected { border-color:#9b7335; box-shadow:0 0 0 2px rgba(199,151,67,.2); background:#fbf0d1; }
+.monster-card img,.monster-placeholder { display:block; width:100%; aspect-ratio:1; object-fit:cover; background:#f6e6b9; }
+.monster-placeholder { display:grid; place-items:center; color:#96733d; font:42px "Alegreya SC"; background:radial-gradient(circle,#f8edce,#e7d19e); }
+.monster-card-copy { display:block; padding:9px 11px 0; }
+.monster-card-copy small { display:block; color:#88734e; font-size:11px; letter-spacing:.04em; text-transform:uppercase; }
+.monster-card-copy strong { display:block; margin:3px 0; font:18px/1.05 "Alegreya SC"; }
+.monster-card-copy em { display:block; color:#6d746c; font-size:12px; font-style:normal; }
+.disposition-band { position:absolute; z-index:1; inset:0 auto 0 0; width:4px; background:#9a927d; }
+.disposition-band.benevolent { background:#4d8a69; }
+.disposition-band.neutral { background:#4e7790; }
+.disposition-band.hostile { background:#a95a42; }
+.disposition-band.corrupted { background:#78538b; }
+.monster-hero { width:100%; aspect-ratio:1; margin:0 auto 12px; overflow:hidden; border:1px solid #b69255; background:#ead8aa; }
+.monster-hero img { width:100%; height:100%; object-fit:cover; }
+.monster-hero>span { width:100%; height:100%; display:grid; place-items:center; color:#8b6935; font:64px "Alegreya SC"; }
+.monster-hero.benevolent { border-color:#6e997c; }
+.monster-hero.hostile { border-color:#ad705d; }
+.monster-hero.corrupted { border-color:#8b6b99; }
+
+@media (max-width:1260px) { .talent-layout { grid-template-columns:190px 1fr; } .talent-curator { position:relative; top:0; grid-column:1/-1; } }
+@media (max-width:1120px) { .archive-layout { grid-template-columns:160px 1fr; } .curator-panel { position:relative; top:0; grid-column:1/-1; display:grid; grid-template-columns:130px 1fr 1fr; gap:0 20px; } .curator-panel .hero-icon { grid-row:1/4; } .curator-panel .item-id,.curator-panel h2,.curator-panel .item-description { text-align:left; } .curator-panel .facts { grid-column:2; } .curator-panel .curator-form { grid-column:3; grid-row:1/6; margin-top:0; border-top:0; } .stats-block,.compatibility { grid-column:2; } .talent-curator .talent-seal { grid-row:1/4; } .monster-curator .monster-hero { grid-row:1/6; } }
+@media (max-width:900px) { .archive-switch { order:3; } .talent-layout { grid-template-columns:1fr; } .class-rail { display:grid; grid-template-columns:repeat(3,1fr); gap:5px; } .class-rail>.section-kicker,.class-profile { grid-column:1/-1; } .talent-branches { grid-template-columns:1fr; } .talent-node { min-height:92px; } }
+@media (max-width:760px) { .archive-shell { background:linear-gradient(180deg,var(--night) 0 174px,var(--paper) 174px); } .masthead { height:174px; padding:18px; flex-wrap:wrap; gap:10px; } .brand-mark { width:50px; height:50px; } .brand-copy h1 { font-size:31px; } .brand-copy>p:last-child,.archive-tally { display:none; } .archive-switch { width:100%; order:4; } .archive-switch button { flex:1; } .tool-ribbon { padding:12px 18px; flex-wrap:wrap; } .search-box { min-width:100%; } .storage-chip { margin-left:0; } .summary-chip { flex:1; } .archive-layout,.talent-layout { padding:22px 18px 40px; grid-template-columns:1fr; } .filter-rail { display:grid; grid-template-columns:1fr 1fr; gap:0 15px; } .filter-rail>.section-kicker,.legend { grid-column:1/-1; } .item-grid { grid-template-columns:1fr; } .curator-panel { grid-column:1; display:block; } .curator-panel .item-id,.curator-panel h2,.curator-panel .item-description { text-align:center; } .curator-panel .curator-form { border-top:1px solid var(--line); margin-top:17px; } .class-rail { grid-template-columns:1fr 1fr; } .talent-ribbon>div:first-child { min-width:100%; } .talent-library .library-heading { display:block; } .talent-library .library-heading>span { display:block; margin-top:6px; } }

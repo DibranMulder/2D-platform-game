@@ -16,6 +16,7 @@ the action bar:
 - `C`: Equipment overview
 - `L`: generic Discipline levels and simulated XP
 - `K`: Hero-specific Talent Tree and point allocation
+- `M`: interactive World Map prototype
 - `I`: battle controls and encounter hints
 
 Battle guidance is collected in the Hints section instead of occupying the
@@ -38,6 +39,21 @@ Walk into the glowing portal at the edge of the Sunlit Forest to travel to
 Mira's Moonlit Market. Approach Mira and press `E`, or tap **Trade**, to open
 the local-only shop. Purchases use prototype gold and remain in memory until
 the game closes; weapons are unique while supplies may be bought repeatedly.
+
+The World Map includes three prototype layouts. Use the bottom arrows or the
+keyboard Left/Right arrows while the map is open to compare them. It supports
+click/tap selection, drag panning, wheel/button zoom, Stronghold access status,
+and Dungeon marker filters.
+
+To open a specific map variant directly for review:
+
+```sh
+godot --path client \
+  --scene res://prototypes/combat_arena/combat_arena.tscn \
+  -- --preview-panel=world_map --map-variant=A
+```
+
+Replace `A` with `B` or `C` to open the other layouts.
 
 The **Log Out** button in the upper-right ends the local prototype Session,
 clears transient Hero state, and returns to the login screen.
