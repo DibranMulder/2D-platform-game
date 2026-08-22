@@ -6,16 +6,36 @@ are enforced by servers and presented by cross-platform clients.
 ## Identity and world
 
 **Account**:
-A player's authenticated identity, entitlements, and security history. An Account may own multiple Characters.
+A player's authenticated identity, entitlements, and security history. An Account may own multiple Heroes.
 _Avoid_: User, login
 
 **Character**:
-A persistent in-world persona owned by one Account, including progression, equipment, and social identity.
-_Avoid_: Avatar, player
+Any person-like figure represented in the world, whether player-controlled or not.
+_Avoid_: Entity, player
+
+**Hero**:
+A persistent player-created Character owned by one Account, including a unique name, Lineage, progression, equipment, and social identity.
+_Avoid_: Avatar, toon, player
 
 **Session**:
-A time-bounded, authenticated connection that permits one Account to control one Character in a World Instance.
+A time-bounded, authenticated connection that permits one Account to control one Hero in a World Instance.
 _Avoid_: Login, connection
+
+**Lineage**:
+A Hero's playable people, determining bodily form, inherited traits, and cultural origin but not combat profession.
+_Avoid_: Race, class, species
+
+**Combat Class**:
+A Hero's learned combat profession or role, chosen separately from Lineage.
+_Avoid_: Lineage, Progression Skill
+
+**Allegiance**:
+One of the world's two provisional cosmic-political groupings, Light or Dark, to which each Lineage currently belongs.
+_Avoid_: White class, good race, faction
+
+**Homeland**:
+The terrain realm from which a Lineage originates and whose play space expresses that Lineage's culture.
+_Avoid_: Terrain class, biome
 
 **World Instance**:
 An authoritative running partition of the world that simulates Characters and other Entities within one Zone.
@@ -26,7 +46,7 @@ A persistent place definition containing traversal, encounters, portals, and soc
 _Avoid_: Level, map
 
 **Entity**:
-Anything with an authoritative identity and state inside a World Instance, including Characters, creatures, projectiles, and loot.
+Anything with an authoritative identity and state inside a World Instance, including Heroes, creatures, projectiles, and loot.
 _Avoid_: Object, actor
 
 ## Play
@@ -44,7 +64,7 @@ One fixed-duration advancement of authoritative world rules.
 _Avoid_: Frame, update
 
 **Progression Skill**:
-A trainable discipline that gains experience through relevant play and has its own level, independent of a Character's overall combat standing.
+A trainable discipline that gains experience through relevant play and has its own level, independent of a Hero's overall combat standing.
 _Avoid_: Stat, ability
 
 **Open Conflict**:

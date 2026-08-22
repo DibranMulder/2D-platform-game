@@ -11,6 +11,7 @@ themes, and content can be added without reshaping the runtime.
 | [Security and anti-cheat](0003-security-and-anti-cheat.md) | Initial threat model | Trust model, controls, and staged protections |
 | [Delivery roadmap](0004-delivery-roadmap.md) | Proposed | Thin vertical slices toward production |
 | [Combat mechanics prototype](0005-combat-mechanics-prototype.md) | Exploring | Static arena controls, moves, skills, and evaluation questions |
+| [Account and hero onboarding](0006-account-and-hero-onboarding.md) | Exploring | Account flow, naming rules, and eight playable Lineages |
 
 Durable decisions whose reversal would be expensive are recorded separately in
 [`docs/adr`](../adr/). Project-specific terminology is defined in

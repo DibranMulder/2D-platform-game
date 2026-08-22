@@ -20,6 +20,7 @@ extends Node2D
 @onready var lunge_button: Button = $HUD/Hotbar/Lunge
 @onready var heal_button: Button = $HUD/Hotbar/SecondWind
 @onready var jump_button: Button = $HUD/Hotbar/Jump
+@onready var prototype_badge: Label = $HUD/PrototypeBadge
 
 var _joystick_value := Vector2.ZERO
 var _previous_joystick_y := 0.0
@@ -29,6 +30,12 @@ var _encounter_finished := false
 
 
 func _ready() -> void:
+    if get_tree().has_meta("selected_hero"):
+        var selected_hero := get_tree().get_meta("selected_hero") as Dictionary
+        prototype_badge.text = "%s · %s · COMBAT PROTOTYPE" % [
+            str(selected_hero.get("name", "HERO")).to_upper(),
+            str(selected_hero.get("lineage_name", "Unknown Lineage")).to_upper(),
+        ]
     hero.set_target(monster)
     monster.set_target(hero)
     hero.combat_event.connect(_add_combat_message)
@@ -189,4 +196,3 @@ func _draw() -> void:
     draw_rect(Rect2(0.0, 550.0, 1280.0, 16.0), Color("789760"), true)
     for stone_x: float in [40.0, 240.0, 470.0, 680.0, 1010.0, 1210.0]:
         draw_circle(Vector2(stone_x, 572.0), 15.0, Color("526253"))
-
