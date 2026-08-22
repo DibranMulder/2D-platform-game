@@ -34,21 +34,6 @@ const EQUIPMENT_SLOTS: Array[Dictionary] = [
     {"id": "relic", "name": "Relic"},
 ]
 
-const ITEMS := {
-    "rusty_sword": {"name": "Rusty Sword", "slot": "main_hand", "icon": "SW", "quality": "common", "description": "+2 Attack · A dependable beginning."},
-    "traveler_tunic": {"name": "Traveler Tunic", "slot": "chest", "icon": "TU", "quality": "common", "description": "+1 Defense · Weather-worn cloth armor."},
-    "leather_boots": {"name": "Leather Boots", "slot": "feet", "icon": "BT", "quality": "common", "description": "+1 Agility · Soft steps on old roads."},
-    "bronze_helm": {"name": "Bronze Helm", "slot": "head", "icon": "HM", "quality": "uncommon", "description": "+3 Defense · Scarred but serviceable."},
-    "driftwood_buckler": {"name": "Driftwood Buckler", "slot": "off_hand", "icon": "SH", "quality": "uncommon", "description": "+4 Guard stability · Tidekin craft."},
-    "wind_cape": {"name": "Wind-thread Cape", "slot": "cape", "icon": "CP", "quality": "rare", "description": "+3 Agility · Always stirs in still air."},
-    "rime_ring": {"name": "Rimeglass Ring", "slot": "ring", "icon": "RG", "quality": "rare", "description": "+2 Willpower · Cold to the touch."},
-    "potion": {"name": "Redleaf Potion", "slot": "", "icon": "HP", "quality": "common", "description": "Restores health when consumed."},
-    "frog_pearl": {"name": "Frog Pearl", "slot": "", "icon": "FP", "quality": "uncommon", "description": "A luminous pearl from the Sea."},
-    "crag_ore": {"name": "Crag Ore", "slot": "", "icon": "OR", "quality": "common", "description": "Dense ore gathered in the mountains."},
-    "rations": {"name": "Dried Rations", "slot": "", "icon": "FD", "quality": "common", "description": "Simple food for long journeys."},
-    "sky_feather": {"name": "Sky Feather", "slot": "", "icon": "SF", "quality": "rare", "description": "A weightless feather from the Sky Reaches."},
-}
-
 const TALENTS: Array[Dictionary] = [
     {"id": "keen_edge", "name": "Keen Edge", "branch": "Blade", "tier": 0, "cost": 1, "level": 1, "requires": "", "description": "+5% Sword Attack damage."},
     {"id": "decisive_blow", "name": "Decisive Blow", "branch": "Blade", "tier": 1, "cost": 2, "level": 10, "requires": "keen_edge", "description": "Power Strike staggers longer."},
@@ -68,6 +53,7 @@ var _discipline_xp: Dictionary = {}
 var _purchased_talents: Dictionary = {}
 var _pouch: Array = []
 var _equipment: Dictionary = {}
+var _item_catalog := GameItemCatalog.new()
 
 
 func _init() -> void:
@@ -220,18 +206,54 @@ func equipment() -> Dictionary:
 
 
 func item(item_id: String) -> Dictionary:
-    return (ITEMS.get(item_id, {}) as Dictionary).duplicate(true)
+    return _item_catalog.item(item_id)
 
 
 func equip_from_pouch(pouch_index: int) -> Dictionary:
     if pouch_index < 0 or pouch_index >= _pouch.size() or _pouch[pouch_index] == null:
         return {"ok": false, "message": "That pouch slot is empty."}
     var entry := _pouch[pouch_index] as Dictionary
+    var item_definition := item(str(entry["item_id"]))
+    return equip_from_pouch_to_slot(pouch_index, str(item_definition.get("slot", "")))
+
+
+func can_equip_from_pouch(pouch_index: int, equipment_slot: String) -> Dictionary:
+    if pouch_index < 0 or pouch_index >= _pouch.size() or _pouch[pouch_index] == null:
+        return {"ok": false, "message": "That pouch slot is empty."}
+    var entry := _pouch[pouch_index] as Dictionary
     var item_id := str(entry["item_id"])
     var item_definition := item(item_id)
-    var equipment_slot := str(item_definition.get("slot", ""))
-    if equipment_slot.is_empty():
+    var natural_slot := str(item_definition.get("slot", ""))
+    if natural_slot.is_empty():
         return {"ok": false, "message": "%s cannot be equipped." % item_definition["name"]}
+    if equipment_slot != natural_slot:
+        return {
+            "ok": false,
+            "message": "%s belongs in %s." % [item_definition["name"], _equipment_slot_name(natural_slot)],
+        }
+
+    if equipment_slot == "off_hand":
+        var main_hand_id := str(_equipment.get("main_hand", ""))
+        if not _item_catalog.can_equip_together(main_hand_id, item_id):
+            return {"ok": false, "message": "The equipped Main Hand item does not allow an Off Hand item."}
+    if equipment_slot == "main_hand" and not bool(item_definition.get("offhand_compatible", false)):
+        if not str(_equipment.get("off_hand", "")).is_empty():
+            return {"ok": false, "message": "Unequip the Off Hand item before equipping a two-handed weapon."}
+
+    return {
+        "ok": true,
+        "item_id": item_id,
+        "equipment_slot": equipment_slot,
+        "message": "Drop to equip %s." % item_definition["name"],
+    }
+
+
+func equip_from_pouch_to_slot(pouch_index: int, equipment_slot: String) -> Dictionary:
+    var validation := can_equip_from_pouch(pouch_index, equipment_slot)
+    if not bool(validation["ok"]):
+        return validation
+    var item_id := str(validation["item_id"])
+    var item_definition := item(item_id)
 
     var previous_item_id := str(_equipment[equipment_slot])
     _equipment[equipment_slot] = item_id
@@ -240,6 +262,57 @@ func equip_from_pouch(pouch_index: int) -> Dictionary:
     else:
         _pouch[pouch_index] = {"item_id": previous_item_id, "quantity": 1}
     return {"ok": true, "message": "Equipped %s." % item_definition["name"]}
+
+
+func pouch_used_slots() -> int:
+    var used := 0
+    for entry in _pouch:
+        if entry != null:
+            used += 1
+    return used
+
+
+func derived_stats(equipment_override: Dictionary = {}) -> Dictionary:
+    var equipped := _equipment if equipment_override.is_empty() else equipment_override
+    var item_bonuses := _equipment_stat_totals(equipped)
+    var attack_level := discipline_level("attack")
+    var defense_level := discipline_level("defense")
+    var agility_level := discipline_level("agility")
+    var focus_level := discipline_level("focus")
+    var willpower_level := discipline_level("willpower")
+    var attack_bonus := int(item_bonuses.get("attack", 0))
+    var defense_bonus := int(item_bonuses.get("defense", 0))
+    var agility_bonus := int(item_bonuses.get("agility", 0))
+    return {
+        "damage": 30 + attack_level + attack_bonus,
+        "armor": 22 + defense_level + defense_bonus,
+        "move_speed": 98 + agility_level + agility_bonus,
+        "attack_speed": 1.0 + float(agility_level + agility_bonus) * 0.015,
+        "critical_chance": 3 + attack_level / 2,
+        "guard": int(item_bonuses.get("guard", 0)),
+        "focus": focus_level + int(item_bonuses.get("focus", 0)),
+        "willpower": willpower_level + int(item_bonuses.get("willpower", 0)),
+    }
+
+
+func preview_equip_stats(pouch_index: int) -> Dictionary:
+    if pouch_index < 0 or pouch_index >= _pouch.size() or _pouch[pouch_index] == null:
+        return {}
+    var entry := _pouch[pouch_index] as Dictionary
+    var item_id := str(entry["item_id"])
+    var definition := item(item_id)
+    var slot_id := str(definition.get("slot", ""))
+    if slot_id.is_empty():
+        return {"item": definition, "slot": "", "before": derived_stats(), "after": derived_stats()}
+    var preview_equipment := _equipment.duplicate(true)
+    preview_equipment[slot_id] = item_id
+    return {
+        "item": definition,
+        "slot": slot_id,
+        "before": derived_stats(),
+        "after": derived_stats(preview_equipment),
+        "replaced_item": item(str(_equipment.get(slot_id, ""))),
+    }
 
 
 func unequip(equipment_slot: String) -> Dictionary:
@@ -265,9 +338,28 @@ func _first_free_pouch_index() -> int:
     return -1
 
 
+func _equipment_stat_totals(equipment_state: Dictionary) -> Dictionary:
+    var totals: Dictionary = {}
+    for item_id_value in equipment_state.values():
+        var item_id := str(item_id_value)
+        if item_id.is_empty():
+            continue
+        var definition := item(item_id)
+        var stats := definition.get("stats", {}) as Dictionary
+        for stat_id in stats:
+            totals[stat_id] = int(totals.get(stat_id, 0)) + int(stats[stat_id])
+    return totals
+
+
+func _equipment_slot_name(slot_id: String) -> String:
+    for slot: Dictionary in EQUIPMENT_SLOTS:
+        if slot["id"] == slot_id:
+            return str(slot["name"])
+    return slot_id
+
+
 func _discipline_name(discipline_id: String) -> String:
     for discipline: Dictionary in DISCIPLINES:
         if discipline["id"] == discipline_id:
             return str(discipline["name"])
     return discipline_id
-

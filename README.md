@@ -11,6 +11,8 @@ world, and visual language are defined.
 - A static Godot 4 combat prototype under `client/prototypes/combat_arena/`.
 - In-combat Item Pouch, Equipment, Discipline Level, and Hero-specific Talent
   Tree panels with inspectable in-memory state.
+- A private, searchable Item Chronicle for reviewing item art, metadata, balance,
+  paper-doll compatibility, and hidden-item status.
 - The earlier network client foundation under `client/scenes/`.
 - A Rust world server under `apps/world-server/`.
 - A deterministic, fixed-tick game simulation under `crates/game-domain/`.
@@ -38,6 +40,33 @@ godot --path client
 
 To exercise the earlier multiplayer foundation instead, open
 `client/scenes/main.tscn` in the editor while the server is running.
+
+## Item Chronicle
+
+Open the private catalogue at
+[The Enchanted Archive · Item Chronicle](https://enchanted-archive-items.caesar-groep-1154.chatgpt.site).
+It contains the current equipment, consumables, and crafting materials with
+search and filters. Review status, curator notes, and hidden-item flags are
+stored in its private database.
+
+Godot reads the canonical item definitions from
+[`client/data/items.json`](client/data/items.json). The hosted catalogue uses
+the deployable snapshot at
+[`apps/item-catalog/content/items.json`](apps/item-catalog/content/items.json);
+update that snapshot whenever the canonical records change.
+
+The Human equipment renderer is structured as a layered paper doll: body,
+hair, armor, shoes, headwear, cape, off-hand, and main-hand visuals share one
+animation clock. One-handed weapons may be combined with a shield; two-handed
+weapons reserve both hands.
+
+Run the catalogue locally with:
+
+```sh
+cd apps/item-catalog
+npm install
+npm run dev
+```
 
 The local onboarding state smoke test is:
 

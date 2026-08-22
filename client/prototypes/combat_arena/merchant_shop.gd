@@ -5,53 +5,19 @@ extends Control
 signal shop_closed
 
 const STARTING_GOLD := 300
-const ITEMS: Array[Dictionary] = [
-    {
-        "id": "iron_longsword",
-        "name": "Iron Longsword",
-        "category": "WEAPON",
-        "price": 90,
-        "description": "A balanced blade for close combat.",
-    },
-    {
-        "id": "moonwood_bow",
-        "name": "Moonwood Bow",
-        "category": "WEAPON",
-        "price": 110,
-        "description": "A light bow carved from silver-blue wood.",
-    },
-    {
-        "id": "lantern_staff",
-        "name": "Lantern Staff",
-        "category": "WEAPON",
-        "price": 140,
-        "description": "A focus for magic, crowned with warm light.",
-    },
-    {
-        "id": "ruin_guard",
-        "name": "Ruin Guard Shield",
-        "category": "ARMOR",
-        "price": 75,
-        "description": "A moss-marked shield recovered from the ruins.",
-    },
-    {
-        "id": "redleaf_potion",
-        "name": "Redleaf Potion",
-        "category": "SUPPLY",
-        "price": 25,
-        "description": "A restorative potion. Supplies can be bought repeatedly.",
-    },
-    {
-        "id": "wayfarer_rations",
-        "name": "Wayfarer Rations",
-        "category": "SUPPLY",
-        "price": 15,
-        "description": "Travel food packed for the road between portals.",
-    },
+const STOCK_IDS := [
+    "iron_longsword",
+    "moonwood_bow",
+    "lantern_staff",
+    "ruin_guard",
+    "redleaf_potion",
+    "wayfarer_rations",
 ]
 
 var _gold := STARTING_GOLD
 var _quantities: Dictionary = {}
+var _catalog := GameItemCatalog.new()
+var _items: Array[Dictionary] = []
 var _gold_label: Label
 var _status_label: Label
 var _item_buttons: Dictionary = {}
@@ -62,6 +28,11 @@ func _ready() -> void:
     set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
     mouse_filter = Control.MOUSE_FILTER_STOP
     visible = false
+    for item_id: String in STOCK_IDS:
+        var definition := _catalog.item(item_id)
+        if not definition.is_empty():
+            definition["category"] = _shop_category(definition)
+            _items.append(definition)
     _build_shop()
 
 
@@ -153,7 +124,7 @@ func _build_shop() -> void:
     grid.add_theme_constant_override("v_separation", 12)
     column.add_child(grid)
 
-    for item: Dictionary in ITEMS:
+    for item: Dictionary in _items:
         var button := _button("", _category_color(str(item["category"])))
         button.custom_minimum_size = Vector2(425.0, 118.0)
         button.pressed.connect(_on_item_pressed.bind(str(item["id"])))
@@ -175,7 +146,7 @@ func _refresh() -> void:
     if _gold_label == null:
         return
     _gold_label.text = "GOLD  %s     " % _gold
-    for item: Dictionary in ITEMS:
+    for item: Dictionary in _items:
         var item_id := str(item["id"])
         var owned := quantity(item_id)
         var owned_text := "OWNED ×%s" % owned if owned > 0 else "BUY"
@@ -194,10 +165,19 @@ func _refresh() -> void:
 
 
 func _item(item_id: String) -> Dictionary:
-    for item: Dictionary in ITEMS:
+    for item: Dictionary in _items:
         if item["id"] == item_id:
             return item
     return {}
+
+
+func _shop_category(item: Dictionary) -> String:
+    var category := str(item.get("category", ""))
+    if category == "weapon":
+        return "WEAPON"
+    if category in ["armor", "shield", "cape", "accessory"]:
+        return "ARMOR"
+    return "SUPPLY"
 
 
 func _category_color(category: String) -> Color:
