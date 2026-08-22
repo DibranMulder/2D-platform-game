@@ -14,8 +14,130 @@ than decorate every surface.
 
 - `ui-system-board.png` is the component and token overview.
 - `npc-interaction-mockup.png` shows the system applied to live gameplay.
+- `gear-pouch-drag-drop.png` defines the combined Item Pouch and Gear workflow.
+- `disciplines-talent-tree.png` defines levels, derived stats, and the connected
+  Talent Tree.
 - Production text, icons, borders, and portraits should be separate Godot assets.
   Generated lettering is reference-only and must not be baked into final panels.
+
+## Character menu architecture
+
+The character menu uses one persistent top-level navigation row:
+
+1. **Hero** — identity, allegiance, current build summary, and appearance.
+2. **Gear & Pouch** — inventory and Equipment Slots in one drag-and-drop surface.
+3. **Disciplines & Levels** — all twelve Discipline levels and XP progress.
+4. **Talent Tree** — Hero-specific Talent allocation and prerequisites.
+
+Gear and Pouch remain in one view because moving an item is one direct spatial
+operation. Disciplines and Talents may share a combined wide view on desktop, as
+shown in the concept, but become separate tabs when the viewport cannot preserve
+readable tree geometry.
+
+## Item Pouch and Gear Overview
+
+`gear-pouch-drag-drop.png` is the target desktop composition.
+
+- The pouch is always represented as six columns by four rows: exactly 24 slots.
+- Occupied slots show an illustrated icon, quality corner pip, stack count, and
+  wearable-slot glyph where applicable. Empty slots remain quiet but visible.
+- The Gear Overview places all twelve Equipment Slots around the Hero: Head,
+  Shoulders, Chest, Hands, Main Hand, Off Hand, Legs, Feet, Neck, Ring, Cape,
+  and Relic.
+- Empty Equipment Slots are valid targets, not disabled buttons. Their silhouette
+  icon and text label remain visible for learnability and accessibility.
+- Equipped items leave the pouch. A replacement is an atomic swap: the previous
+  equipped item returns to the source pouch slot after the server accepts the move.
+
+### Drag-and-drop states
+
+1. **Resting:** item is fully opaque; wearable destination glyph is visible.
+2. **Picked up:** source cell becomes a dashed vacancy and the drag preview is
+   80–90% size at roughly 78% opacity. Stack count remains attached to the preview.
+3. **Valid target:** destination uses a 2 px crystal-cyan ring, cyan connector or
+   trajectory, and the text `Drop to equip`.
+4. **Incompatible target:** hovered destination uses an ember-red ring plus a
+   short reason such as `Requires Off Hand` or `Two-Handed weapon equipped`.
+5. **Pending server:** preview snaps to the target, both source and destination
+   show a restrained spinner, and further movement of those two items is blocked.
+6. **Accepted:** destination flashes forest teal for 160 ms and the comparison
+   rail updates.
+7. **Rejected:** item returns to its source over 120 ms and the reason remains
+   visible until dismissed or another item is selected.
+
+Click/tap remains a supported shortcut: selecting an item opens its detail card
+and an explicit `Equip` action. Controller users pick up with the primary action,
+move focus between compatible slots, and release with the same action. Touch uses
+a short hold before dragging so scrolling does not accidentally move items.
+
+### Comparison rail
+
+The right rail compares `Current` and `After equip` without requiring the drop.
+Only changed values receive colored deltas. Improvements use forest teal with an
+up arrow; reductions use ember red with a down arrow. Neutral values remain ivory.
+The comparison is a client preview only; final values render from the accepted
+server-authored equipment state.
+
+## Levels and Disciplines
+
+The progression header keeps Overall Level, Total Level, next-Overall progress,
+and unspent Talent Points together. The twelve Discipline rows are grouped by
+Martial, Mystic, and World, but every row retains the same anatomy:
+
+- discipline icon and name;
+- large level number;
+- current-to-next-level XP bar;
+- details affordance for XP totals, unlocks, and derived effects.
+
+Do not include prototype `Train` buttons in the production view. XP changes arrive
+from gameplay and the screen explains progress rather than manufacturing it.
+
+## Talent Tree geometry
+
+`disciplines-talent-tree.png` is intentionally a tree rather than three card
+columns. The production graph follows these invariants:
+
+- One shared, non-purchasable **Sword Mastery** root anchors the graph.
+- The trunk visibly splits into three labeled limbs: **Blade**, **Guardian**, and
+  **Wayfarer**.
+- Talent nodes sit on visible parent-child connectors. A node with a prerequisite
+  is never positioned as an unrelated card.
+- Connectors render behind node buttons and remain thick enough to trace at the
+  base 1280×720 viewport.
+- The graph can pan and zoom. `Reset Tree` returns to a fitted view containing the
+  root, all currently available nodes, and the focused node.
+- At narrow widths the Talent Tree becomes its own screen; it never collapses into
+  three vertical lists merely to share space with Disciplines.
+
+Node state is encoded redundantly:
+
+| State | Surface | Connector | Additional cue |
+| --- | --- | --- | --- |
+| Unlocked | Forest teal | Teal glow | Check or filled center |
+| Available | Quest gold | Gold glow from parent | Point cost visible |
+| Focused | Existing state plus cyan ring | Unchanged | 2 px cyan outer ring |
+| Locked | Muted stone | Dark brass | Lock glyph and requirement text |
+
+Input focus is independent from progression state: cyan always means current
+keyboard/controller focus, never rarity, ownership, or affordability.
+
+## Derived stat icon vocabulary
+
+Icons accelerate scanning but never replace their localized text labels.
+
+| Stat | Icon metaphor | Display form |
+| --- | --- | --- |
+| Damage | Crossed sword | Integer plus comparison delta |
+| Armor | Shield | Integer plus comparison delta |
+| Movement Speed | Winged boot | Percentage of base speed |
+| Attack Speed | Circular blade or weapon with motion ring | Attacks per second |
+| Critical Chance | Starburst | Percentage |
+| Health | Heart | Integer maximum |
+| Stamina | Leaf | Integer maximum |
+| Mana | Crystal | Integer maximum |
+
+Each icon uses a stable silhouette. Color may reinforce resource identity, but
+the shape, label, number, and tooltip carry the meaning for color-blind players.
 
 ## Typography
 
@@ -177,6 +299,14 @@ Mode: Codex built-in image generation.
    market scene with a small adventurer and Elder Rowan; show the persistent HUD,
    quest tracker, minimap, de-emphasized chat, and a bottom-anchored branching
    conversation panel without obscuring the characters.
+3. **Gear and Pouch prompt:** create one integrated 16:9 character screen with an
+   exact 6×4 Item Pouch, twelve anatomical Equipment Slots around the Hero, a
+   visible Bronze Helm drag preview targeting Head, and an icon-plus-label stat
+   comparison rail.
+4. **Disciplines and Talent Tree prompt:** show the twelve canonical Disciplines,
+   Overall and Total Level, icon-based derived stats, and a genuine connected tree
+   with one Sword Mastery root, three labeled limbs, four talents per limb, visible
+   prerequisites, and distinct unlocked, available, focused, and locked states.
 
 The generated character names, dialogue, quest text, icons, numbers, and map
 details are illustrative rather than final game content.
