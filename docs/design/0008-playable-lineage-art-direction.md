@@ -26,14 +26,25 @@ tone target—not a license to reproduce characters, costumes, names, symbols,
 creatures, or architecture from *Age of Wonders*, *Narnia*, *The Lord of the
 Rings*, *MapleStory*, or any other existing property.
 
-The selected rendering target is **cinematic storybook anime**, represented by
+The selected rendering target is **child-friendly cinematic storybook anime**,
+represented by
 [cinematic-storybook-anime-v1.png](../../art-source/style-references/cinematic-storybook-anime-v1.png).
-Use graceful proportions around four to five heads tall, refined anime facial
-design, fine ink-like contours, controlled cel shading, and rich
-watercolor-and-gouache texture. Characters, equipment, creatures, and scenery
-must look as if they came from one art team. Preserve gameplay readability by
-keeping the active plane and character contours crisper and higher-contrast than
-the softly painted middle and distant layers.
+Treat the image itself—not the style name—as the authority. Use compact
+proportions around three-and-a-half to four heads tall, large heads, simple
+rounded faces, readable hands and feet, chunky clothing shapes, broad color
+blocks, and restrained costume ornament. The anime influence should remain
+light: avoid tall fashion-model bodies, sharp detailed anime faces, elaborate
+JRPG armor, and heroic party-poster staging. Use clean dark contours, soft
+cel-painted shading, and smooth hand-painted 2D game-art surfaces rather than
+realistic or highly rendered materials.
+
+Characters should feel like small adventurers inside a wondrous world. Give
+lush fairy-tale environments more visual space than the cast, using oversized
+nature, platform-like terrain, warm light, and softly layered atmospheric depth.
+Characters, equipment, creatures, and scenery must still look as if they came
+from one art team. Preserve gameplay readability by keeping the active plane
+and character contours crisper and higher-contrast than the softly painted
+middle and distant layers.
 
 - Every Lineage must read from silhouette at normal gameplay scale.
 - Body shape, clothing shape, material language, and movement should all echo
@@ -96,6 +107,8 @@ understanding of tides—not generic fish magic.
 webbed hands and feet, compact torsos, and optional fin or throat-fan variation.
 Use low elastic anticipation, powerful leaps, soft landings, and swimming-like
 weapon arcs. Avoid turning them into comic frog mascots or one uniform body type.
+Keep the facial language round and open, with large circular eyes and a curious,
+optimistic expression that remains distinct from the humanoid Lineages.
 
 **Materials and palette:** Shell, polished coral, pearl, woven kelp, sea glass,
 waterproof hide, and verdigris bronze. Lead with deep teal, sea green, foam
@@ -116,7 +129,9 @@ default option.
 **Silhouette and movement:** Clear upright proportions with strong variation in
 height, age, and build. Use layered cloaks, practical belts, readable heraldic
 shapes, and balanced equipment. Movement is trained and economical rather than
-supernatural.
+supernatural. Lead Human faces with a brave, warm read: broader childlike face
+shapes, strong simple brows, focused eyes, determined closed mouths, and slightly
+raised chins rather than a generic cheerful anime expression.
 
 **Materials and palette:** Linen, wool, oak, hammered brass, weathered steel,
 leather, and glazed pottery. Lead with royal blue, warm ivory, field green, and
@@ -137,7 +152,16 @@ ecologically integrated rather than like humans placed onto horse bodies.
 the roster's clearest horizontal silhouette. Explore horse-body diversity,
 manes, tail dress, body paint, and harness systems that do not imitate human
 saddles. Animation should emphasize momentum, controlled rearing, sweeping
-turns, and confident traversal under a dense canopy.
+turns, and confident traversal under a dense canopy. Long, thick hair extending
+well below the shoulders is a defining feature across Grove Centaur designs.
+Their default facial read is serious and composed, using calm narrowed eyes,
+straight lowered brows, and an unsmiling guardian expression. Use the broad
+upper-body cues in the user-provided
+[Centaur reference](../../art-source/concepts/lineage-silhouettes/ref/centaur.png):
+warm deep-brown skin, angular cheekbones, subtly pointed ears, slightly broader
+shoulders, long loose wavy hair, and restrained asymmetric leather-and-bronze
+protection. Preserve the integrated equine anatomy and original woodland culture
+rather than copying the exact character, armor, weapon, or pose.
 
 **Materials and palette:** Living wood, bark lamellae, woven reeds, leaf fiber,
 soft leather, bronze, amber, and carved seed pods. Lead with moss, fern, bark
@@ -158,12 +182,22 @@ sound, and weather rather than generic angelic holiness.
 split mantles, and translucent wind vanes or gliding membranes. Full feathered
 wings are not assumed; the first concept pass should compare winged, gliding,
 and purely air-touched anatomies. Movement uses long hang time, poised landings,
-and fabric that responds constantly to invisible currents.
+and fabric that responds constantly to invisible currents. Give Aeralith the
+sharpest facial geometry in the Light roster: narrower faces, small pointed
+chins, angled brows, keen almond-shaped eyes, and subtle pointed noses. Preserve
+the shared compact child-friendly proportions; do not drift into mature elves or
+elegant JRPG faces. Use the broad movement and garment cues in the user-provided
+[air-warrior reference](../../art-source/concepts/lineage-silhouettes/ref/airbender.png):
+long wind-pulled ponytails, poised open-hand forms, layered martial garments,
+roomy trousers, wrapped forearms, and fabric moving in one clear wind direction.
+Do not copy the exact character, costume, markings, symbols, or pose.
 
 **Materials and palette:** Layered silk, lacquered light wood, brass, pale stone,
 crystal, and taut membrane. Lead with cloud white, azure, blue-grey, and soft
-lavender; accent with sunrise gold. Use spirals, streamlines, kites, wind harps,
-and open arches. Avoid default angels, bird people, or slender elves with wings.
+lavender; accent with sunrise gold. Ember red and stronger sunrise gold may form
+an alternate martial-air palette when balanced by pale blue and blue-grey. Use
+spirals, streamlines, kites, wind harps, and open arches. Avoid default angels,
+bird people, or slender elves with wings.
 
 **Terrain cues:** Floating mesas, cloud forests, rope bridges, sail lifts,
 observatories, storm shelters, wind-carved spires, and hanging bells. Platforms
@@ -200,7 +234,12 @@ air, light, and fuel—not random scrap for comedy.
 **Silhouette and movement:** Compact, forward-leaning bodies, large sensory
 features, layered tool belts, protective lenses, and backpacks that clearly show
 function. Movement is quick, low, alert, and route-efficient. Faces should convey
-calculation and community rather than constant mischief.
+calculation and community rather than constant mischief. Use the broad facial
+cues in the user-provided
+[Goblin reference](../../art-source/concepts/lineage-silhouettes/ref/goblin.png):
+very large ears, uneven wide eyes, long angular noses, pronounced cheekbones,
+protruding lips, and deliberate asymmetry. Keep the result strange, memorable,
+and clever rather than grotesque horror, and do not copy the exact face.
 
 **Materials and palette:** Sooted iron, copper, leather, fungal fiber, glass,
 ceramic pipe, crystal, and carefully reused surface goods. Lead with soot black,
@@ -222,8 +261,13 @@ organization within that culture, not as the biological Lineage itself.
 **Silhouette and movement:** Lean, upright figures protected by layered,
 asymmetrical wraps, articulated scale pieces, sand veils, and compact travel
 gear. Their movement is measured, coordinated, and economical in the heat, with
-short bursts of speed. Do not reproduce Haradrim silhouettes or reduce the
-culture to turbans, curved swords, and exoticized menace.
+short bursts of speed. Use the broad costume language in the user-provided
+[Haradrim reference](../../art-source/concepts/lineage-silhouettes/ref/haradrim.png):
+weathered dark-red robes, deep under-layers, practical lamellar shoulder pieces,
+wrapped limbs, head cloth, and a lower-face veil. Translate those cues into an
+original child-friendly culture rather than copying the costume, armor pattern,
+symbols, or pose. Do not reduce the culture to turbans, curved swords, or
+exoticized menace.
 
 **Materials and palette:** Sun-bleached linen, dark cooling cloth, blackened
 bronze, glazed ceramic, leather, salt crystal, and colored glass. Lead with sand,
@@ -245,14 +289,19 @@ comes from communal endurance and precise preparation, not simply ice magic.
 protected extremities, compact packs, and visible systems for rope, shelter, and
 heat. Explore varied human-like and more fantastical anatomy before canonizing
 skin color or facial traits. Movement is traction-conscious and deliberate,
-followed by sudden committed bursts.
+followed by sudden committed bursts. Lead with a distinctly nonhuman, compact
+frost-adapted anatomy informed by the broad traits in the user-provided
+[Frostling reference](../../art-source/concepts/lineage-silhouettes/ref/frostling.png):
+slate or charcoal skin, large reflective eyes, broad noses, wide mouths, pale
+wiry hair, and oversized fur-lined hoods. Keep the result hardy, curious, and
+original rather than copying the exact character.
 
 **Materials and palette:** Layered fur, felt, bone, dark iron, sealable leather,
 ice glass, and luminous mineral pigment. Lead with midnight navy, glacial blue,
 moon white, and black rock; accent with aurora green or magenta and hearth amber.
 Use hexagonal fracture, spear points, braided cord, constellations, and enclosed
-circles of warmth. Avoid copying *Age of Wonders* Frostlings or relying only on
-generic Viking imagery.
+circles of warmth. Do not copy specific *Age of Wonders* Frostling costumes,
+faces, symbols, or poses, and avoid relying on generic Viking imagery.
 
 **Terrain cues:** Ice shelves, frozen forests, black volcanic ridges, thermal
 springs, aurora halls, snow-buried ruins, and mobile windbreak settlements.
