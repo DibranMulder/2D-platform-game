@@ -26,6 +26,15 @@ tone target—not a license to reproduce characters, costumes, names, symbols,
 creatures, or architecture from *Age of Wonders*, *Narnia*, *The Lord of the
 Rings*, *MapleStory*, or any other existing property.
 
+The selected rendering target is **cinematic storybook anime**, represented by
+[cinematic-storybook-anime-v1.png](../../art-source/style-references/cinematic-storybook-anime-v1.png).
+Use graceful proportions around four to five heads tall, refined anime facial
+design, fine ink-like contours, controlled cel shading, and rich
+watercolor-and-gouache texture. Characters, equipment, creatures, and scenery
+must look as if they came from one art team. Preserve gameplay readability by
+keeping the active plane and character contours crisper and higher-contrast than
+the softly painted middle and distant layers.
+
 - Every Lineage must read from silhouette at normal gameplay scale.
 - Body shape, clothing shape, material language, and movement should all echo
   the Homeland without making every citizen a soldier.
@@ -36,6 +45,31 @@ Rings*, *MapleStory*, or any other existing property.
   roles while preserving a recognizable visual grammar.
 - Environment concepts must include traversable platforms, vertical routes,
   foreground cover, distant landmarks, and a safe settlement silhouette.
+
+### Carried gameplay equipment
+
+- Every playable-Lineage character exploration must visibly carry or ready at
+  least one player-equippable weapon, combat staff, focus, or shield. Civilian
+  professions may still be communicated through clothing and secondary gear,
+  but baskets, surveying tools, lanterns, farming tools, and similar props must
+  not replace the character's gameplay equipment.
+- Equipment must use the shared item and weapon vocabulary rather than becoming
+  biologically or culturally locked to a Lineage. A Lineage may influence its
+  materials and ornament, not who is allowed to equip it.
+- Record the item ID or provisional weapon-family ID beside every selected
+  concept. Do not canonize an invented weapon or staff from an image alone.
+- Approved Weapon Families are Sword, Axe, Spear, Polearm, Crossbow, Bow, Wand,
+  Staff, Dagger, and Blunt. Use the Grip and Shield compatibility rules in the
+  equipment design: any One-Handed Weapon may accompany a Shield; Two-Handed
+  Weapons occupy both hands. Do not imply dual wielding.
+- Across each ten-character Lineage sheet, show a deliberate mix of melee,
+  ranged, and mystic equipment; One-Handed Weapon and Shield pairings; and
+  Two-Handed Weapons. Weapon choice must not make a Lineage look restricted to
+  one Combat Class.
+- The currently implemented prototype examples are the `rusty_sword`
+  One-Handed Sword and `driftwood_buckler` Shield. Other approved families
+  remain gameplay vocabulary rather than named items until their definitions
+  and combat behavior are added.
 
 ## Roster at a glance
 
@@ -230,7 +264,8 @@ sources of heat.
 For each Lineage, provide:
 
 1. Ten small black silhouette explorations, including different builds and
-   non-combat professions.
+   non-combat professions; every figure must also carry visible gameplay
+   equipment under the shared equipment rule.
 2. One front/side character sheet with palette and material callouts.
 3. Run, jump, basic attack, and Guard key poses at intended gameplay scale.
 4. One settlement-and-terrain keyframe designed for a 2D side-scrolling route.
@@ -254,5 +289,10 @@ Sunscour people-name have been reviewed.
 
 ## Change log
 
+- 2026-08-22: Added the approved Weapon Families and the One-Handed Weapon,
+  Two-Handed Weapon, and Shield compatibility rules.
+- 2026-08-22: Selected the cinematic storybook-anime rendering target and
+  required every playable-Lineage concept to carry cataloged or explicitly
+  provisional gameplay equipment.
 - 2026-08-22: Initial designer handoff created for all eight playable Lineages,
   with silhouette, material, palette, movement, and Homeland direction.

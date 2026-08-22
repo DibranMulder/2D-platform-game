@@ -95,6 +95,22 @@ _Avoid_: Bank, equipment, backpack item
 A named location on a Hero's equipment overview that can hold one compatible item.
 _Avoid_: Item Pouch slot, inventory category
 
+**Combat Equipment**:
+A player-equippable Weapon or Shield carried visibly by a Hero and used by combat actions.
+_Avoid_: Prop, tool, costume accessory
+
+**Weapon Family**:
+The shared handling and progression category of a Weapon: Sword, Axe, Spear, Polearm, Crossbow, Bow, Wand, Staff, Dagger, or Blunt.
+_Avoid_: Combat Class, individual item, weapon skin
+
+**Grip**:
+The number of hands a Weapon requires: One-Handed or Two-Handed. A One-Handed Weapon leaves the other hand available for a Shield; a Two-Handed Weapon does not.
+_Avoid_: Weapon Family, Equipment Slot
+
+**Shield**:
+Off-hand Combat Equipment that may be paired with any One-Handed Weapon but not with a Two-Handed Weapon.
+_Avoid_: Weapon Family, Guard
+
 **Open Conflict**:
 Rule-governed conflict between Characters in eligible locations, including reputation, clan, siege, and consequence rules.
 _Avoid_: PvP mode, duel

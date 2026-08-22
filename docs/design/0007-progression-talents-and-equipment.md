@@ -99,6 +99,36 @@ are designed.
 The server must eventually own all item moves and validate them atomically;
 client UI only requests a move and renders the result.
 
+## Weapon and Shield vocabulary
+
+Weapon Family and Grip are separate properties. Family determines the shared
+handling, animation, and future progression vocabulary; Grip determines whether
+the other hand remains available. This avoids treating one- and two-handed
+versions of the same weapon as unrelated concepts.
+
+| Weapon Family | Supported Grip | Working examples |
+| --- | --- | --- |
+| Sword | One-Handed, Two-Handed | Arming sword, greatsword |
+| Axe | One-Handed, Two-Handed | Hand axe, greataxe |
+| Spear | One-Handed, Two-Handed | Shield spear, long spear |
+| Polearm | Two-Handed | Glaive, halberd |
+| Crossbow | Two-Handed | Crossbow |
+| Bow | Two-Handed | Shortbow, longbow |
+| Wand | One-Handed | Wand |
+| Staff | Two-Handed | Combat or magical staff |
+| Dagger | One-Handed | Dagger |
+| Blunt | One-Handed, Two-Handed | Mace, club, hammer, maul |
+
+A Shield is off-hand Combat Equipment rather than a Weapon Family. Any
+One-Handed Weapon may be equipped with a Shield; it may also be used with an
+empty off hand. Equipping a Two-Handed Weapon reserves both hands and excludes a
+Shield. Dual wielding two One-Handed Weapons is not part of the current decision
+and must not be inferred from Shield compatibility.
+
+The prototype's `rusty_sword` is a One-Handed Sword and its
+`driftwood_buckler` is a Shield. Other families are approved gameplay vocabulary
+but still need named item definitions and combat behavior before implementation.
+
 ## Prototype boundary
 
 The current implementation keeps a separate in-memory profile for each selected
