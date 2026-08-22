@@ -13,6 +13,7 @@ themes, and content can be added without reshaping the runtime.
 | [Combat mechanics prototype](0005-combat-mechanics-prototype.md) | Exploring | Static arena controls, moves, skills, and evaluation questions |
 | [Account and hero onboarding](0006-account-and-hero-onboarding.md) | Exploring | Account flow, naming rules, and eight playable Lineages |
 | [Progression, Talents, and equipment](0007-progression-talents-and-equipment.md) | Exploring | Generic Discipline levels, Hero-specific Talent Trees, Item Pouch, and equipment |
+| [Playable Lineage art direction](0008-playable-lineage-art-direction.md) | Exploring | Designer handoff for silhouettes, materials, palettes, movement, and Homelands |
 
 Durable decisions whose reversal would be expensive are recorded separately in
 [`docs/adr`](../adr/). Project-specific terminology is defined in

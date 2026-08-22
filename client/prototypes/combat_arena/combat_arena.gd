@@ -23,6 +23,7 @@ const CharacterPanelsScript := preload("res://prototypes/combat_arena/character_
 @onready var heal_button: Button = $HUD/Hotbar/SecondWind
 @onready var jump_button: Button = $HUD/Hotbar/Jump
 @onready var prototype_badge: Label = $HUD/PrototypeBadge
+@onready var logout_button: Button = $HUD/LogoutButton
 
 var _joystick_value := Vector2.ZERO
 var _previous_joystick_y := 0.0
@@ -71,6 +72,7 @@ func _ready() -> void:
     guard_button.button_down.connect(_on_guard_button_down)
     guard_button.button_up.connect(_on_guard_button_up)
     restart_button.pressed.connect(_restart_encounter)
+    logout_button.pressed.connect(_logout)
 
     _add_combat_message("A horned monster blocks the road.")
     _add_combat_message("Close the distance, read its wind-up, and Guard or strike.")
@@ -147,6 +149,14 @@ func _on_monster_defeated() -> void:
 
 func _restart_encounter() -> void:
     get_tree().reload_current_scene()
+
+
+func _logout() -> void:
+    if get_tree().has_meta("selected_hero"):
+        get_tree().remove_meta("selected_hero")
+    if get_tree().has_meta("prototype_hero_profiles"):
+        get_tree().remove_meta("prototype_hero_profiles")
+    get_tree().change_scene_to_file("res://prototypes/onboarding/onboarding.tscn")
 
 
 func _add_combat_message(message: String) -> void:

@@ -70,6 +70,15 @@ theme_override_font_sizes/font_size = 14
 text = "← → / A D MOVE   SPACE / ↑ JUMP   1–6 ACTIONS   HOLD 2 / SHIFT GUARD   B POUCH   C GEAR   L LEVELS   K TALENTS"
 autowrap_mode = 2
 
+[node name="LogoutButton" type="Button" parent="HUD"]
+offset_left = 1110.0
+offset_top = 8.0
+offset_right = 1260.0
+offset_bottom = 42.0
+focus_mode = 0
+theme_override_font_sizes/font_size = 14
+text = "LOG OUT"
+
 [node name="HeroHealth" type="ProgressBar" parent="HUD"]
 offset_left = 20.0
 offset_top = 93.0

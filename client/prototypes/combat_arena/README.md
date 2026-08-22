@@ -17,6 +17,9 @@ the action bar:
 - `L`: generic Discipline levels and simulated XP
 - `K`: Hero-specific Talent Tree and point allocation
 
+The **Log Out** button in the upper-right ends the local prototype Session,
+clears transient Hero state, and returns to the login screen.
+
 This scene is intentionally offline, in-memory, and disposable. Relevant state
 is always visible in the HUD: health, stamina, current action, cooldowns,
 monster intent, and a short combat log. Record the verdict in
