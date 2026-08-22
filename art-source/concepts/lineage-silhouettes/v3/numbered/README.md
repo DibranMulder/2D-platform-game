@@ -10,9 +10,9 @@ These are the authoritative candidate pools selected on 2026-08-22. Multiple
 IDs for one variant are intentional; none is treated as secondary until a later
 turnaround review selects a production design.
 
-| Lineage | Available variants | Male selected IDs | Female selected IDs | Unresolved IDs |
+| Lineage | Available variants | Male selected IDs | Female selected IDs | Neutral selected IDs |
 | --- | --- | --- | --- | --- |
-| Tidekin | Undecided | N/A | N/A | 05, 08, 09 |
+| Tidekin | Gender-neutral review | N/A | N/A | 05, 08, 09 |
 | Humans | Male and female | 03 | 04 | — |
 | Grove Centaurs | Male and female | 01, 04 | 05 | — |
 | Aeralith | Female only | N/A | 02, 09 | — |
@@ -37,8 +37,9 @@ one coherent design.
 - Avoid making the male variant the unmarked default.
 - Use face, body distribution, hair or crest, posture, and garment fit together to communicate variation.
 - Nonhuman Lineages do not need to reproduce Human sexual dimorphism; their differences should arise from their own anatomy.
-- Tidekin remain unresolved and receive no gender-specific turnaround until that
-  decision is made.
+- Tidekin use a gender-neutral presentation for the current review. Do not infer
+  binary variants unless a later lore and anatomy decision explicitly introduces
+  them.
 
 If none of the selected options survives the turnaround review, mark that
 Lineage Variant `new`; it will receive a targeted silhouette pass before sprite
