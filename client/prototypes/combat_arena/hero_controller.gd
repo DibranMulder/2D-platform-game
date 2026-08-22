@@ -5,6 +5,8 @@ signal combat_event(message: String)
 signal defeated
 signal weapon_changed(weapon_id: String)
 
+@onready var human_sprite: AnimatedSprite2D = $HumanSprite
+
 const MAX_HEALTH := 100
 const MAX_STAMINA := 100.0
 const MAX_MANA := 100.0
@@ -85,6 +87,7 @@ func configure_hero(hero_data: Dictionary) -> void:
     var requested_lineage := str(hero_data.get("lineage_id", "human"))
     lineage_id = requested_lineage if LINEAGE_IDS.has(requested_lineage) else "human"
     level = clampi(int(hero_data.get("level", level)), 1, 99)
+    _update_human_sprite()
     queue_redraw()
 
 
@@ -141,6 +144,7 @@ func set_weapon(next_weapon_id: String) -> void:
     set_secondary(false)
     weapon_id = next_weapon_id
     current_action = "Ready"
+    _update_human_sprite()
     combat_event.emit("Equipped %s." % weapon_name())
     weapon_changed.emit(weapon_id)
     queue_redraw()
@@ -367,7 +371,43 @@ func _physics_process(delta: float) -> void:
     _jump_queued = false
     move_and_slide()
     position.x = clampf(position.x, 44.0, 1236.0)
+    _update_human_sprite()
     queue_redraw()
+
+
+func _uses_human_sprite() -> bool:
+    return lineage_id == "human" and weapon_id == "sword" and is_instance_valid(human_sprite)
+
+
+func _update_human_sprite() -> void:
+    if not is_instance_valid(human_sprite):
+        return
+
+    var uses_sprite := _uses_human_sprite()
+    human_sprite.visible = uses_sprite
+    if not uses_sprite:
+        return
+
+    human_sprite.flip_h = facing < 0
+
+    var next_animation := &"idle"
+    if not is_alive:
+        next_animation = &"defeated"
+    elif _hurt_flash > 0.0:
+        next_animation = &"hurt"
+    elif is_blocking:
+        next_animation = &"block"
+    elif _attack_flash > 0.0:
+        next_animation = &"attack"
+    elif human_sprite.animation == &"attack" and human_sprite.is_playing():
+        return
+    elif not is_on_floor():
+        next_animation = &"jump" if velocity.y < 0.0 else &"fall"
+    elif absf(velocity.x) > 20.0:
+        next_animation = &"run"
+
+    if human_sprite.animation != next_animation or not human_sprite.is_playing():
+        human_sprite.play(next_animation)
 
 
 func _perform_strike(
@@ -556,25 +596,26 @@ func _draw() -> void:
     var tint := Color("ffffff") if _hurt_flash <= 0.0 else Color("ff6b6b")
     var direction := float(facing)
 
-    match lineage_id:
-        "tidekin":
-            _draw_tidekin(tint)
-        "grove_centaur":
-            _draw_grove_centaur(tint)
-        "aeralith":
-            _draw_aeralith(tint)
-        "crag_troll":
-            _draw_crag_troll(tint)
-        "deep_goblin":
-            _draw_deep_goblin(tint)
-        "sunscour":
-            _draw_sunscour(tint)
-        "rimeborn":
-            _draw_rimeborn(tint)
-        _:
-            _draw_human(tint)
+    if not _uses_human_sprite():
+        match lineage_id:
+            "tidekin":
+                _draw_tidekin(tint)
+            "grove_centaur":
+                _draw_grove_centaur(tint)
+            "aeralith":
+                _draw_aeralith(tint)
+            "crag_troll":
+                _draw_crag_troll(tint)
+            "deep_goblin":
+                _draw_deep_goblin(tint)
+            "sunscour":
+                _draw_sunscour(tint)
+            "rimeborn":
+                _draw_rimeborn(tint)
+            _:
+                _draw_human(tint)
 
-    _draw_equipped_weapon(direction)
+        _draw_equipped_weapon(direction)
     _draw_projectiles()
     if _magic_flash > 0.0:
         var flash_ratio := _magic_flash / 0.45
