@@ -1,0 +1,7 @@
+/target/
+/dist/
+/.godot/
+/client/.godot/
+*.log
+.DS_Store
+

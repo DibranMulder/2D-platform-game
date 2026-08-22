@@ -1,0 +1,56 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/main.gd" id="1_main"]
+
+[node name="Main" type="Node2D"]
+script = ExtResource("1_main")
+
+[node name="Hud" type="CanvasLayer" parent="."]
+
+[node name="StatusPanel" type="PanelContainer" parent="Hud"]
+offset_left = 16.0
+offset_top = 16.0
+offset_right = 424.0
+offset_bottom = 76.0
+
+[node name="Status" type="Label" parent="Hud/StatusPanel"]
+text = "Connecting to local World Instance…"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="LeftButton" type="Button" parent="Hud"]
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 24.0
+offset_top = -112.0
+offset_right = 112.0
+offset_bottom = -24.0
+grow_vertical = 0
+text = "LEFT"
+
+[node name="RightButton" type="Button" parent="Hud"]
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 128.0
+offset_top = -112.0
+offset_right = 216.0
+offset_bottom = -24.0
+grow_vertical = 0
+text = "RIGHT"
+
+[node name="JumpButton" type="Button" parent="Hud"]
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -128.0
+offset_top = -128.0
+offset_right = -24.0
+offset_bottom = -24.0
+grow_horizontal = 0
+grow_vertical = 0
+text = "JUMP"
+

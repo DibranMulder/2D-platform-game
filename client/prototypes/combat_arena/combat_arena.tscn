@@ -1,0 +1,232 @@
+[gd_scene load_steps=8 format=3]
+
+[ext_resource type="Script" path="res://prototypes/combat_arena/combat_arena.gd" id="1_arena"]
+[ext_resource type="Script" path="res://prototypes/combat_arena/hero_controller.gd" id="2_hero"]
+[ext_resource type="Script" path="res://prototypes/combat_arena/monster_controller.gd" id="3_monster"]
+[ext_resource type="Script" path="res://prototypes/combat_arena/virtual_joystick.gd" id="4_joystick"]
+
+[sub_resource type="CapsuleShape2D" id="CapsuleHero"]
+radius = 19.0
+height = 74.0
+
+[sub_resource type="CapsuleShape2D" id="CapsuleMonster"]
+radius = 29.0
+height = 92.0
+
+[sub_resource type="RectangleShape2D" id="PlatformShape"]
+size = Vector2(1280, 170)
+
+[node name="CombatArenaPrototype" type="Node2D"]
+script = ExtResource("1_arena")
+
+[node name="Platform" type="StaticBody2D" parent="."]
+position = Vector2(640, 635)
+collision_layer = 1
+collision_mask = 0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Platform"]
+shape = SubResource("PlatformShape")
+
+[node name="Hero" type="CharacterBody2D" parent="."]
+position = Vector2(285, 549)
+collision_layer = 2
+collision_mask = 1
+floor_snap_length = 8.0
+script = ExtResource("2_hero")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Hero"]
+position = Vector2(0, -37)
+shape = SubResource("CapsuleHero")
+
+[node name="Monster" type="CharacterBody2D" parent="."]
+position = Vector2(925, 549)
+collision_layer = 4
+collision_mask = 1
+floor_snap_length = 8.0
+script = ExtResource("3_monster")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Monster"]
+position = Vector2(0, -46)
+shape = SubResource("CapsuleMonster")
+
+[node name="HUD" type="CanvasLayer" parent="."]
+
+[node name="PrototypeBadge" type="Label" parent="HUD"]
+offset_left = 20.0
+offset_top = 12.0
+offset_right = 345.0
+offset_bottom = 38.0
+theme_override_colors/font_color = Color(0.98, 0.78, 0.32, 1)
+theme_override_font_sizes/font_size = 15
+text = "MECHANICS PROTOTYPE · THROWAWAY"
+
+[node name="Instructions" type="Label" parent="HUD"]
+offset_left = 20.0
+offset_top = 41.0
+offset_right = 820.0
+offset_bottom = 85.0
+theme_override_colors/font_color = Color(0.82, 0.88, 0.94, 1)
+theme_override_font_sizes/font_size = 14
+text = "← → / A D  MOVE     SPACE / ↑  JUMP     1–6  ACTION BAR     HOLD 2 / SHIFT  GUARD"
+autowrap_mode = 2
+
+[node name="HeroHealth" type="ProgressBar" parent="HUD"]
+offset_left = 20.0
+offset_top = 93.0
+offset_right = 390.0
+offset_bottom = 119.0
+value = 100.0
+show_percentage = false
+
+[node name="HeroHealthText" type="Label" parent="HUD/HeroHealth"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "HERO  100 / 100"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Stamina" type="ProgressBar" parent="HUD"]
+offset_left = 20.0
+offset_top = 125.0
+offset_right = 390.0
+offset_bottom = 149.0
+value = 100.0
+show_percentage = false
+
+[node name="StaminaText" type="Label" parent="HUD/Stamina"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "STAMINA  100 / 100"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="MonsterHealth" type="ProgressBar" parent="HUD"]
+offset_left = 840.0
+offset_top = 48.0
+offset_right = 1260.0
+offset_bottom = 78.0
+max_value = 120.0
+value = 120.0
+show_percentage = false
+
+[node name="MonsterHealthText" type="Label" parent="HUD/MonsterHealth"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "HORNED MARAUDER  120 / 120"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="CombatLogPanel" type="PanelContainer" parent="HUD"]
+offset_left = 840.0
+offset_top = 88.0
+offset_right = 1260.0
+offset_bottom = 229.0
+
+[node name="CombatLog" type="Label" parent="HUD/CombatLogPanel"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.85, 0.89, 0.94, 1)
+theme_override_font_sizes/font_size = 13
+text = "Combat log"
+autowrap_mode = 2
+
+[node name="StatePanel" type="PanelContainer" parent="HUD"]
+offset_left = 350.0
+offset_top = 500.0
+offset_right = 930.0
+offset_bottom = 538.0
+
+[node name="StateText" type="Label" parent="HUD/StatePanel"]
+layout_mode = 2
+text = "Hero: Ready   |   Monster: Watching"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="VirtualJoystick" type="Control" parent="HUD"]
+layout_mode = 3
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 22.0
+offset_top = -184.0
+offset_right = 194.0
+offset_bottom = -12.0
+grow_vertical = 0
+script = ExtResource("4_joystick")
+
+[node name="Hotbar" type="HBoxContainer" parent="HUD"]
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -918.0
+offset_top = -166.0
+offset_right = -18.0
+offset_bottom = -54.0
+grow_horizontal = 0
+grow_vertical = 0
+theme_override_constants/separation = 7
+
+[node name="Attack" type="Button" parent="HUD/Hotbar"]
+custom_minimum_size = Vector2(120, 108)
+layout_mode = 2
+focus_mode = 0
+text = "1\nATTACK\nREADY"
+
+[node name="Guard" type="Button" parent="HUD/Hotbar"]
+custom_minimum_size = Vector2(120, 108)
+layout_mode = 2
+focus_mode = 0
+text = "2\nGUARD\nhold"
+
+[node name="PowerStrike" type="Button" parent="HUD/Hotbar"]
+custom_minimum_size = Vector2(120, 108)
+layout_mode = 2
+focus_mode = 0
+text = "3\nPOWER\nREADY"
+
+[node name="Whirlwind" type="Button" parent="HUD/Hotbar"]
+custom_minimum_size = Vector2(120, 108)
+layout_mode = 2
+focus_mode = 0
+text = "4\nWHIRL\nREADY"
+
+[node name="Lunge" type="Button" parent="HUD/Hotbar"]
+custom_minimum_size = Vector2(120, 108)
+layout_mode = 2
+focus_mode = 0
+text = "5\nLUNGE\nREADY"
+
+[node name="SecondWind" type="Button" parent="HUD/Hotbar"]
+custom_minimum_size = Vector2(120, 108)
+layout_mode = 2
+focus_mode = 0
+text = "6\nHEAL\nREADY"
+
+[node name="Jump" type="Button" parent="HUD/Hotbar"]
+custom_minimum_size = Vector2(120, 108)
+layout_mode = 2
+focus_mode = 0
+text = "SPACE\nJUMP\nREADY"
+
+[node name="RestartButton" type="Button" parent="HUD"]
+visible = false
+offset_left = 415.0
+offset_top = 290.0
+offset_right = 865.0
+offset_bottom = 365.0
+focus_mode = 0
+theme_override_font_sizes/font_size = 18
+text = "VICTORY — TAP OR PRESS R TO FIGHT AGAIN"
