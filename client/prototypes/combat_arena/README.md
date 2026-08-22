@@ -16,6 +16,10 @@ the action bar:
 - `C`: Equipment overview
 - `L`: generic Discipline levels and simulated XP
 - `K`: Hero-specific Talent Tree and point allocation
+- `I`: battle controls and encounter hints
+
+Battle guidance is collected in the Hints section instead of occupying the
+arena HUD or appearing as instructional combat-log messages.
 
 The **Log Out** button in the upper-right ends the local prototype Session,
 clears transient Hero state, and returns to the login screen.

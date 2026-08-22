@@ -132,6 +132,11 @@ func _show_login() -> void:
     var error_label := _status_label()
     form.add_child(error_label)
 
+    password_edit.text_submitted.connect(
+        func(_submitted_text: String) -> void:
+            _submit_login(email_edit.text, password_edit.text, error_label)
+    )
+
     var login_button := _button("LOG IN", Color("456e9c"))
     login_button.pressed.connect(
         func() -> void: _submit_login(email_edit.text, password_edit.text, error_label)

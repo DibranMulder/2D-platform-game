@@ -1,4 +1,4 @@
-[gd_scene load_steps=8 format=3]
+[gd_scene load_steps=12 format=3]
 
 [ext_resource type="Script" path="res://prototypes/combat_arena/combat_arena.gd" id="1_arena"]
 [ext_resource type="Script" path="res://prototypes/combat_arena/hero_controller.gd" id="2_hero"]
@@ -15,6 +15,34 @@ height = 92.0
 
 [sub_resource type="RectangleShape2D" id="PlatformShape"]
 size = Vector2(1280, 170)
+
+[sub_resource type="StyleBoxFlat" id="HeroHealthFill"]
+bg_color = Color(0.75, 0.12, 0.14, 1)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+
+[sub_resource type="StyleBoxFlat" id="ManaFill"]
+bg_color = Color(0.12, 0.38, 0.86, 1)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+
+[sub_resource type="StyleBoxFlat" id="StaminaFill"]
+bg_color = Color(0.18, 0.62, 0.35, 1)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+
+[sub_resource type="StyleBoxFlat" id="GeneralExpFill"]
+bg_color = Color(0.9, 0.69, 0.12, 1)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
 
 [node name="CombatArenaPrototype" type="Node2D"]
 script = ExtResource("1_arena")
@@ -60,16 +88,6 @@ theme_override_colors/font_color = Color(0.98, 0.78, 0.32, 1)
 theme_override_font_sizes/font_size = 15
 text = "MECHANICS PROTOTYPE · THROWAWAY"
 
-[node name="Instructions" type="Label" parent="HUD"]
-offset_left = 20.0
-offset_top = 41.0
-offset_right = 820.0
-offset_bottom = 85.0
-theme_override_colors/font_color = Color(0.82, 0.88, 0.94, 1)
-theme_override_font_sizes/font_size = 14
-text = "← → / A D MOVE   SPACE / ↑ JUMP   1–6 ACTIONS   HOLD 2 / SHIFT GUARD   B POUCH   C GEAR   L LEVELS   K TALENTS"
-autowrap_mode = 2
-
 [node name="LogoutButton" type="Button" parent="HUD"]
 offset_left = 1110.0
 offset_top = 8.0
@@ -81,9 +99,10 @@ text = "LOG OUT"
 
 [node name="HeroHealth" type="ProgressBar" parent="HUD"]
 offset_left = 20.0
-offset_top = 93.0
+offset_top = 144.0
 offset_right = 390.0
-offset_bottom = 119.0
+offset_bottom = 168.0
+theme_override_styles/fill = SubResource("HeroHealthFill")
 value = 100.0
 show_percentage = false
 
@@ -100,9 +119,10 @@ vertical_alignment = 1
 
 [node name="Stamina" type="ProgressBar" parent="HUD"]
 offset_left = 20.0
-offset_top = 125.0
+offset_top = 204.0
 offset_right = 390.0
-offset_bottom = 149.0
+offset_bottom = 228.0
+theme_override_styles/fill = SubResource("StaminaFill")
 value = 100.0
 show_percentage = false
 
@@ -114,6 +134,48 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 text = "STAMINA  100 / 100"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Mana" type="ProgressBar" parent="HUD"]
+offset_left = 20.0
+offset_top = 174.0
+offset_right = 390.0
+offset_bottom = 198.0
+theme_override_styles/fill = SubResource("ManaFill")
+value = 100.0
+show_percentage = false
+
+[node name="ManaText" type="Label" parent="HUD/Mana"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "MANA  100 / 100"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="GeneralExp" type="ProgressBar" parent="HUD"]
+offset_left = 20.0
+offset_top = 234.0
+offset_right = 390.0
+offset_bottom = 258.0
+max_value = 1000.0
+step = 1.0
+theme_override_styles/fill = SubResource("GeneralExpFill")
+value = 350.0
+show_percentage = false
+
+[node name="GeneralExpText" type="Label" parent="HUD/GeneralExp"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "GENERAL EXP  350 / 1000"
 horizontal_alignment = 1
 vertical_alignment = 1
 
@@ -163,6 +225,7 @@ horizontal_alignment = 1
 vertical_alignment = 1
 
 [node name="VirtualJoystick" type="Control" parent="HUD"]
+visible = false
 layout_mode = 3
 anchors_preset = 2
 anchor_top = 1.0
@@ -175,57 +238,50 @@ grow_vertical = 0
 script = ExtResource("4_joystick")
 
 [node name="Hotbar" type="HBoxContainer" parent="HUD"]
-anchors_preset = 3
-anchor_left = 1.0
-anchor_top = 1.0
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = -918.0
-offset_top = -166.0
-offset_right = -18.0
-offset_bottom = -54.0
-grow_horizontal = 0
-grow_vertical = 0
+offset_left = 20.0
+offset_top = 48.0
+offset_right = 734.0
+offset_bottom = 130.0
 theme_override_constants/separation = 7
 
 [node name="Attack" type="Button" parent="HUD/Hotbar"]
-custom_minimum_size = Vector2(120, 108)
+custom_minimum_size = Vector2(96, 82)
 layout_mode = 2
 focus_mode = 0
 text = "1\nATTACK\nREADY"
 
 [node name="Guard" type="Button" parent="HUD/Hotbar"]
-custom_minimum_size = Vector2(120, 108)
+custom_minimum_size = Vector2(96, 82)
 layout_mode = 2
 focus_mode = 0
 text = "2\nGUARD\nhold"
 
 [node name="PowerStrike" type="Button" parent="HUD/Hotbar"]
-custom_minimum_size = Vector2(120, 108)
+custom_minimum_size = Vector2(96, 82)
 layout_mode = 2
 focus_mode = 0
 text = "3\nPOWER\nREADY"
 
 [node name="Whirlwind" type="Button" parent="HUD/Hotbar"]
-custom_minimum_size = Vector2(120, 108)
+custom_minimum_size = Vector2(96, 82)
 layout_mode = 2
 focus_mode = 0
 text = "4\nWHIRL\nREADY"
 
 [node name="Lunge" type="Button" parent="HUD/Hotbar"]
-custom_minimum_size = Vector2(120, 108)
+custom_minimum_size = Vector2(96, 82)
 layout_mode = 2
 focus_mode = 0
 text = "5\nLUNGE\nREADY"
 
 [node name="SecondWind" type="Button" parent="HUD/Hotbar"]
-custom_minimum_size = Vector2(120, 108)
+custom_minimum_size = Vector2(96, 82)
 layout_mode = 2
 focus_mode = 0
 text = "6\nHEAL\nREADY"
 
 [node name="Jump" type="Button" parent="HUD/Hotbar"]
-custom_minimum_size = Vector2(120, 108)
+custom_minimum_size = Vector2(96, 82)
 layout_mode = 2
 focus_mode = 0
 text = "SPACE\nJUMP\nREADY"

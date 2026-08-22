@@ -8,8 +8,12 @@ const CharacterPanelsScript := preload("res://prototypes/combat_arena/character_
 @onready var joystick: PrototypeVirtualJoystick = $HUD/VirtualJoystick
 @onready var hero_health: ProgressBar = $HUD/HeroHealth
 @onready var hero_health_text: Label = $HUD/HeroHealth/HeroHealthText
+@onready var mana_bar: ProgressBar = $HUD/Mana
+@onready var mana_text: Label = $HUD/Mana/ManaText
 @onready var stamina_bar: ProgressBar = $HUD/Stamina
 @onready var stamina_text: Label = $HUD/Stamina/StaminaText
+@onready var general_exp_bar: ProgressBar = $HUD/GeneralExp
+@onready var general_exp_text: Label = $HUD/GeneralExp/GeneralExpText
 @onready var monster_health: ProgressBar = $HUD/MonsterHealth
 @onready var monster_health_text: Label = $HUD/MonsterHealth/MonsterHealthText
 @onready var state_text: Label = $HUD/StatePanel/StateText
@@ -77,7 +81,6 @@ func _ready() -> void:
     logout_button.pressed.connect(_logout)
 
     _add_combat_message("A horned monster blocks the road.")
-    _add_combat_message("Close the distance, read its wind-up, and Guard or strike.")
     queue_redraw()
 
 
@@ -94,6 +97,11 @@ func _process(_delta: float) -> void:
     var keyboard_guard := Input.is_key_pressed(KEY_2) or Input.is_key_pressed(KEY_SHIFT)
     hero.set_guard(_touch_guard_held or keyboard_guard)
     _update_hud()
+
+
+func _input(event: InputEvent) -> void:
+    if event is InputEventScreenTouch and (event as InputEventScreenTouch).pressed:
+        joystick.visible = true
 
 
 func _unhandled_key_input(event: InputEvent) -> void:
@@ -140,7 +148,7 @@ func _on_hero_defeated() -> void:
     _encounter_finished = true
     restart_button.text = "DEFEATED — TAP OR PRESS R TO RETRY"
     restart_button.visible = true
-    _add_combat_message("The Hero falls. Try guarding during the red wind-up.")
+    _add_combat_message("The Hero falls.")
 
 
 func _on_monster_defeated() -> void:
@@ -171,8 +179,15 @@ func _add_combat_message(message: String) -> void:
 func _update_hud() -> void:
     hero_health.value = hero.health
     hero_health_text.text = "HERO  %s / %s" % [hero.health, PrototypeHero.MAX_HEALTH]
+    mana_bar.value = hero.mana
+    mana_text.text = "MANA  %s / %s" % [roundi(hero.mana), int(PrototypeHero.MAX_MANA)]
     stamina_bar.value = hero.stamina
     stamina_text.text = "STAMINA  %s / %s" % [roundi(hero.stamina), int(PrototypeHero.MAX_STAMINA)]
+    general_exp_bar.value = hero.general_exp
+    general_exp_text.text = "GENERAL EXP  %s / %s" % [
+        hero.general_exp,
+        PrototypeHero.GENERAL_EXP_GOAL,
+    ]
     monster_health.value = monster.health
     monster_health_text.text = "HORNED MARAUDER  %s / %s" % [
         monster.health,

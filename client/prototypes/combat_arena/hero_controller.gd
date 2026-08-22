@@ -6,6 +6,8 @@ signal defeated
 
 const MAX_HEALTH := 100
 const MAX_STAMINA := 100.0
+const MAX_MANA := 100.0
+const GENERAL_EXP_GOAL := 1000
 const MOVE_SPEED := 270.0
 const GROUND_ACCELERATION := 1800.0
 const AIR_ACCELERATION := 850.0
@@ -24,6 +26,8 @@ const LINEAGE_IDS: Array[String] = [
 
 var health := MAX_HEALTH
 var stamina := MAX_STAMINA
+var mana := MAX_MANA
+var general_exp := 350
 var current_action := "Ready"
 var facing := 1
 var is_blocking := false

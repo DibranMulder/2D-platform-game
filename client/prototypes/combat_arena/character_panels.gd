@@ -69,6 +69,8 @@ func _unhandled_key_input(event: InputEvent) -> void:
             _toggle_panel("disciplines")
         KEY_K:
             _toggle_panel("talents")
+        KEY_I:
+            _toggle_panel("hints")
         KEY_ESCAPE:
             if _backdrop.visible:
                 close_panel()
@@ -84,8 +86,8 @@ func _toggle_panel(panel_id: String) -> void:
 func _build_quick_buttons() -> void:
     var quick_bar := HBoxContainer.new()
     quick_bar.set_anchors_preset(Control.PRESET_TOP_RIGHT)
-    quick_bar.position = Vector2(-490.0, 238.0)
-    quick_bar.size = Vector2(470.0, 42.0)
+    quick_bar.position = Vector2(-615.0, 238.0)
+    quick_bar.size = Vector2(595.0, 42.0)
     quick_bar.add_theme_constant_override("separation", 7)
     quick_bar.mouse_filter = Control.MOUSE_FILTER_PASS
     add_child(quick_bar)
@@ -95,6 +97,7 @@ func _build_quick_buttons() -> void:
         {"id": "equipment", "text": "C · GEAR"},
         {"id": "disciplines", "text": "L · LEVELS"},
         {"id": "talents", "text": "K · TALENTS"},
+        {"id": "hints", "text": "I · HINTS"},
     ]:
         var button := _button(str(definition["text"]), Color("354459"))
         button.custom_minimum_size = Vector2(110.0, 42.0)
@@ -151,6 +154,7 @@ func _build_window() -> void:
         {"id": "equipment", "text": "EQUIPMENT [C]"},
         {"id": "disciplines", "text": "DISCIPLINES [L]"},
         {"id": "talents", "text": "TALENT TREE [K]"},
+        {"id": "hints", "text": "HINTS [I]"},
     ]:
         var tab := _button(str(definition["text"]), Color("34455f"))
         tab.size_flags_horizontal = Control.SIZE_EXPAND_FILL
@@ -175,6 +179,8 @@ func _rebuild_panel() -> void:
             _build_disciplines_panel()
         "talents":
             _build_talents_panel()
+        "hints":
+            _build_hints_panel()
         _:
             _build_pouch_panel()
 
@@ -188,6 +194,77 @@ func _refresh_header() -> void:
         _profile.total_level(),
         _profile.unspent_talent_points(),
     ]
+
+
+func _build_hints_panel() -> void:
+    _window_content.add_child(_section_title(
+        "BATTLE HINTS",
+        "Press I again to return to the fight, or use Esc to close any open section.",
+    ))
+
+    var columns := HBoxContainer.new()
+    columns.size_flags_vertical = Control.SIZE_EXPAND_FILL
+    columns.add_theme_constant_override("separation", 28)
+    _window_content.add_child(columns)
+
+    var controls := VBoxContainer.new()
+    controls.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+    controls.add_theme_constant_override("separation", 14)
+    columns.add_child(controls)
+    controls.add_child(_hint_block(
+        "MOVEMENT",
+        "Move with Left / Right or A / D. On touch, drag the movement knob.\n"
+        + "The movement knob appears after your first touch. Jump with Space or Up; "
+        + "on touch, tap Jump or flick the movement knob upward.",
+    ))
+    controls.add_child(_hint_block(
+        "COMBAT ACTIONS",
+        "1  Sword Attack\n"
+        + "2 or Shift  Hold Guard\n"
+        + "3  Power Strike\n"
+        + "4  Whirlwind\n"
+        + "5  Lunge\n"
+        + "6  Second Wind",
+    ))
+    controls.add_child(_hint_block(
+        "HERO SECTIONS",
+        "B  Item Pouch     C  Equipment     L  Discipline Levels\n"
+        + "K  Talent Tree     I  Battle Hints",
+    ))
+
+    var tactics := VBoxContainer.new()
+    tactics.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+    tactics.add_theme_constant_override("separation", 14)
+    columns.add_child(tactics)
+    tactics.add_child(_hint_block(
+        "READ THE ENCOUNTER",
+        "Close the distance, watch the Monster state, and react to its red wind-up. "
+        + "Guard only reduces frontal damage, so face the attacker.",
+    ))
+    tactics.add_child(_hint_block(
+        "MANAGE YOUR RESOURCES",
+        "Guard consumes stamina when it blocks a hit. Release Guard to recover stamina. "
+        + "Second Wind restores health but has a long cooldown.",
+    ))
+    tactics.add_child(_hint_block(
+        "RECOVERY",
+        "After victory or defeat, press R or use the on-screen restart button to fight again.",
+    ))
+
+
+func _hint_block(title: String, body: String) -> PanelContainer:
+    var panel := PanelContainer.new()
+    panel.size_flags_vertical = Control.SIZE_EXPAND_FILL
+    panel.add_theme_stylebox_override("panel", _style(Color("152238"), Color("3c526d"), 1))
+    var content := VBoxContainer.new()
+    content.add_theme_constant_override("separation", 8)
+    panel.add_child(content)
+    content.add_child(_label(title, 18, Color("efd590")))
+    var description := _label(body, 15, Color("c4d2e0"))
+    description.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+    description.size_flags_vertical = Control.SIZE_EXPAND_FILL
+    content.add_child(description)
+    return panel
 
 
 func _build_pouch_panel() -> void:
