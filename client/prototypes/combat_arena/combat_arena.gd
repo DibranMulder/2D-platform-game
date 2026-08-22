@@ -38,6 +38,12 @@ const MAP_MARKET := "moonlit_market"
 @onready var lunge_button: Button = $HUD/Hotbar/Lunge
 @onready var heal_button: Button = $HUD/Hotbar/SecondWind
 @onready var jump_button: Button = $HUD/Hotbar/Jump
+@onready var weapon_name_label: Label = $HUD/WeaponBar/WeaponName
+@onready var sword_button: Button = $HUD/WeaponBar/Sword
+@onready var axe_button: Button = $HUD/WeaponBar/AxeShield
+@onready var bow_button: Button = $HUD/WeaponBar/Bow
+@onready var staff_button: Button = $HUD/WeaponBar/Staff
+@onready var wand_button: Button = $HUD/WeaponBar/Wand
 @onready var prototype_badge: Label = $HUD/PrototypeBadge
 @onready var logout_button: Button = $HUD/LogoutButton
 
@@ -92,14 +98,19 @@ func _ready() -> void:
     monster.defeated.connect(_on_monster_defeated)
     joystick.vector_changed.connect(_on_joystick_changed)
 
-    attack_button.pressed.connect(func() -> void: hero.try_action("attack"))
-    power_button.pressed.connect(func() -> void: hero.try_action("power_strike"))
-    whirlwind_button.pressed.connect(func() -> void: hero.try_action("whirlwind"))
-    lunge_button.pressed.connect(func() -> void: hero.try_action("lunge"))
-    heal_button.pressed.connect(func() -> void: hero.try_action("second_wind"))
+    attack_button.pressed.connect(func() -> void: hero.try_combat_slot(1))
+    power_button.pressed.connect(func() -> void: hero.try_combat_slot(3))
+    whirlwind_button.pressed.connect(func() -> void: hero.try_combat_slot(4))
+    lunge_button.pressed.connect(func() -> void: hero.try_combat_slot(5))
+    heal_button.pressed.connect(func() -> void: hero.try_combat_slot(6))
     jump_button.pressed.connect(hero.queue_jump)
     guard_button.button_down.connect(_on_guard_button_down)
     guard_button.button_up.connect(_on_guard_button_up)
+    sword_button.pressed.connect(hero.set_weapon.bind("sword"))
+    axe_button.pressed.connect(hero.set_weapon.bind("axe_shield"))
+    bow_button.pressed.connect(hero.set_weapon.bind("bow"))
+    staff_button.pressed.connect(hero.set_weapon.bind("staff"))
+    wand_button.pressed.connect(hero.set_weapon.bind("wand"))
     restart_button.pressed.connect(_restart_encounter)
     logout_button.pressed.connect(_logout)
     trade_button.pressed.connect(_open_shop)
@@ -156,16 +167,18 @@ func _unhandled_key_input(event: InputEvent) -> void:
                 _shop.close_shop()
         KEY_SPACE, KEY_UP:
             hero.queue_jump()
+        KEY_TAB:
+            hero.cycle_weapon()
         KEY_1:
-            hero.try_action("attack")
+            hero.try_combat_slot(1)
         KEY_3:
-            hero.try_action("power_strike")
+            hero.try_combat_slot(3)
         KEY_4:
-            hero.try_action("whirlwind")
+            hero.try_combat_slot(4)
         KEY_5:
-            hero.try_action("lunge")
+            hero.try_combat_slot(5)
         KEY_6:
-            hero.try_action("second_wind")
+            hero.try_combat_slot(6)
         KEY_R:
             if _encounter_finished:
                 _restart_encounter()
@@ -307,22 +320,39 @@ func _update_hud() -> void:
         else "MOONLIT MARKET   |   PEACEFUL TRADING OUTPOST"
     )
 
-    _update_action_button(attack_button, "1", "ATTACK", "attack")
-    guard_button.text = "2\nGUARD\n%s" % ("HELD" if hero.is_blocking else "hold")
-    _update_action_button(power_button, "3", "POWER", "power_strike")
-    _update_action_button(whirlwind_button, "4", "WHIRL", "whirlwind")
-    _update_action_button(lunge_button, "5", "LUNGE", "lunge")
-    _update_action_button(heal_button, "6", "HEAL", "second_wind")
+    _update_action_button(attack_button, 1)
+    var secondary_active := hero.is_blocking or hero.current_action == "Aiming"
+    guard_button.disabled = not hero.is_alive
+    guard_button.text = "2\n%s\n%s" % [
+        hero.action_label_for_slot(2),
+        "HELD" if secondary_active else "hold",
+    ]
+    _update_action_button(power_button, 3)
+    _update_action_button(whirlwind_button, 4)
+    _update_action_button(lunge_button, 5)
+    _update_action_button(heal_button, 6)
+    weapon_name_label.text = "TAB · %s" % hero.weapon_name()
+    _update_weapon_button(sword_button, "sword", "SWORD")
+    _update_weapon_button(axe_button, "axe_shield", "AXE + SHIELD")
+    _update_weapon_button(bow_button, "bow", "BOW")
+    _update_weapon_button(staff_button, "staff", "STAFF")
+    _update_weapon_button(wand_button, "wand", "WAND")
 
 
-func _update_action_button(button: Button, key: String, title: String, action: String) -> void:
-    var remaining := hero.cooldown(action)
+func _update_action_button(button: Button, slot: int) -> void:
+    var remaining := hero.cooldown_for_slot(slot)
     button.disabled = remaining > 0.0 or not hero.is_alive
     button.text = "%s\n%s\n%s" % [
-        key,
-        title,
+        slot,
+        hero.action_label_for_slot(slot),
         "%.1f" % remaining if remaining > 0.0 else "READY",
     ]
+
+
+func _update_weapon_button(button: Button, button_weapon_id: String, title: String) -> void:
+    var selected := hero.weapon_id == button_weapon_id
+    button.disabled = selected
+    button.text = "%s%s" % ["> " if selected else "", title]
 
 
 func _draw() -> void:

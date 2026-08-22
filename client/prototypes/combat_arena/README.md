@@ -21,6 +21,19 @@ the action bar:
 Battle guidance is collected in the Hints section instead of occupying the
 arena HUD or appearing as instructional combat-log messages.
 
+Use `Tab` or the weapon buttons below the action bar to switch between the five
+combat loadouts. Slots `1`, `3`, `4`, `5`, and `6` change with the selected
+weapon; hold `2` or `Shift` for its stance:
+
+- **Sword:** quick melee, Parry, Power Strike, Whirlwind, and Lunge.
+- **Axe + Shield:** slower heavy damage, strong frontal Guard, Shield Bash, and Charge.
+- **Bow:** ranged arrows; hold Aim to empower the next Quick Shot.
+- **Staff:** Arcane Bolt, Fireball, Frost Nova, Blink, Mend, and an Arcane Ward.
+- **Wand:** rapid Magic Missiles, Twin Sparks, Hex Bolt, Phase Step, Mend, and an Arcane Ward.
+
+Bow techniques consume Stamina. Staff and Wand spells consume Mana. All five
+loadouts are immediately available in this throwaway arena for comparison.
+
 Walk into the glowing portal at the edge of the Sunlit Forest to travel to
 Mira's Moonlit Market. Approach Mira and press `E`, or tap **Trade**, to open
 the local-only shop. Purchases use prototype gold and remain in memory until

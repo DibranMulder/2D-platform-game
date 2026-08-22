@@ -411,6 +411,79 @@ theme_override_styles/hover = SubResource("ActionHover")
 theme_override_styles/pressed = SubResource("ActionPressed")
 text = "E · TRADE"
 
+[node name="WeaponBar" type="HBoxContainer" parent="HUD"]
+offset_left = 20.0
+offset_top = 138.0
+offset_right = 724.0
+offset_bottom = 176.0
+theme_override_constants/separation = 6
+
+[node name="WeaponName" type="Label" parent="HUD/WeaponBar"]
+custom_minimum_size = Vector2(132, 38)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.98, 0.8, 0.38, 1)
+theme_override_colors/font_shadow_color = Color(0.02, 0.04, 0.05, 0.95)
+theme_override_font_sizes/font_size = 14
+theme_override_constants/shadow_offset_x = 2
+theme_override_constants/shadow_offset_y = 2
+text = "TAB · SWORD"
+vertical_alignment = 1
+
+[node name="Sword" type="Button" parent="HUD/WeaponBar"]
+custom_minimum_size = Vector2(92, 38)
+layout_mode = 2
+focus_mode = 0
+theme_override_colors/font_color = Color(0.96, 0.9, 0.7, 1)
+theme_override_font_sizes/font_size = 12
+theme_override_styles/normal = SubResource("ActionNormal")
+theme_override_styles/hover = SubResource("ActionHover")
+theme_override_styles/pressed = SubResource("ActionPressed")
+text = "> SWORD"
+
+[node name="AxeShield" type="Button" parent="HUD/WeaponBar"]
+custom_minimum_size = Vector2(128, 38)
+layout_mode = 2
+focus_mode = 0
+theme_override_colors/font_color = Color(0.96, 0.9, 0.7, 1)
+theme_override_font_sizes/font_size = 12
+theme_override_styles/normal = SubResource("ActionNormal")
+theme_override_styles/hover = SubResource("ActionHover")
+theme_override_styles/pressed = SubResource("ActionPressed")
+text = "AXE + SHIELD"
+
+[node name="Bow" type="Button" parent="HUD/WeaponBar"]
+custom_minimum_size = Vector2(78, 38)
+layout_mode = 2
+focus_mode = 0
+theme_override_colors/font_color = Color(0.96, 0.9, 0.7, 1)
+theme_override_font_sizes/font_size = 12
+theme_override_styles/normal = SubResource("ActionNormal")
+theme_override_styles/hover = SubResource("ActionHover")
+theme_override_styles/pressed = SubResource("ActionPressed")
+text = "BOW"
+
+[node name="Staff" type="Button" parent="HUD/WeaponBar"]
+custom_minimum_size = Vector2(82, 38)
+layout_mode = 2
+focus_mode = 0
+theme_override_colors/font_color = Color(0.96, 0.9, 0.7, 1)
+theme_override_font_sizes/font_size = 12
+theme_override_styles/normal = SubResource("ActionNormal")
+theme_override_styles/hover = SubResource("ActionHover")
+theme_override_styles/pressed = SubResource("ActionPressed")
+text = "STAFF"
+
+[node name="Wand" type="Button" parent="HUD/WeaponBar"]
+custom_minimum_size = Vector2(82, 38)
+layout_mode = 2
+focus_mode = 0
+theme_override_colors/font_color = Color(0.96, 0.9, 0.7, 1)
+theme_override_font_sizes/font_size = 12
+theme_override_styles/normal = SubResource("ActionNormal")
+theme_override_styles/hover = SubResource("ActionHover")
+theme_override_styles/pressed = SubResource("ActionPressed")
+text = "WAND"
+
 [node name="Hotbar" type="HBoxContainer" parent="HUD"]
 offset_left = 20.0
 offset_top = 48.0

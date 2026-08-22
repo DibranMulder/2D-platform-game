@@ -219,12 +219,17 @@ func _build_hints_panel() -> void:
     ))
     controls.add_child(_hint_block(
         "COMBAT ACTIONS",
-        "1  Sword Attack\n"
-        + "2 or Shift  Hold Guard\n"
-        + "3  Power Strike\n"
-        + "4  Whirlwind\n"
-        + "5  Lunge\n"
-        + "6  Second Wind",
+        "Tab  Cycle Weapon Loadout\n"
+        + "1  Primary Attack\n"
+        + "2 or Shift  Hold Stance\n"
+        + "3–5  Weapon Abilities\n"
+        + "6  Recovery Spell or Skill",
+    ))
+    controls.add_child(_hint_block(
+        "WEAPON LOADOUTS",
+        "Sword: balanced melee and Parry.  Axe + Shield: heavy cleaves, Guard, Bash, and Charge.\n"
+        + "Bow: hold Aim to empower shots.  Staff: strong elemental spells.  Wand: fast, efficient magic.\n"
+        + "Staff and Wand use Mana for attacks and hold an Arcane Ward with 2 or Shift.",
     ))
     controls.add_child(_hint_block(
         "HERO SECTIONS",
@@ -248,8 +253,8 @@ func _build_hints_panel() -> void:
     ))
     tactics.add_child(_hint_block(
         "MANAGE YOUR RESOURCES",
-        "Guard consumes stamina when it blocks a hit. Release Guard to recover stamina. "
-        + "Second Wind restores health but has a long cooldown.",
+        "Shield Guard and Parry consume Stamina when they block. Aim drains Stamina while held. "
+        + "Spells and Arcane Ward consume Mana; both resources recover after release.",
     ))
     tactics.add_child(_hint_block(
         "RECOVERY",

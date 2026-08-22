@@ -3,6 +3,7 @@ extends CharacterBody2D
 
 signal combat_event(message: String)
 signal defeated
+signal weapon_changed(weapon_id: String)
 
 const MAX_HEALTH := 100
 const MAX_STAMINA := 100.0
@@ -13,6 +14,14 @@ const GROUND_ACCELERATION := 1800.0
 const AIR_ACCELERATION := 850.0
 const GRAVITY := 1850.0
 const JUMP_VELOCITY := -670.0
+const WEAPON_ORDER: Array[String] = ["sword", "axe_shield", "bow", "staff", "wand"]
+const WEAPON_NAMES := {
+    "sword": "SWORD",
+    "axe_shield": "AXE + SHIELD",
+    "bow": "BOW",
+    "staff": "STAFF",
+    "wand": "WAND",
+}
 const LINEAGE_IDS: Array[String] = [
     "human",
     "tidekin",
@@ -34,11 +43,17 @@ var facing := 1
 var is_blocking := false
 var is_alive := true
 var lineage_id := "human"
+var weapon_id := "sword"
 var _move_axis := 0.0
 var _jump_queued := false
 var _action_lock := 0.0
 var _attack_flash := 0.0
 var _hurt_flash := 0.0
+var _is_aiming := false
+var _projectiles: Array[Dictionary] = []
+var _magic_flash := 0.0
+var _magic_color := Color("72d8ff")
+var _magic_radius := 0.0
 var _target: Node2D
 var _cooldowns := {
     "attack": 0.0,
@@ -46,6 +61,23 @@ var _cooldowns := {
     "whirlwind": 0.0,
     "lunge": 0.0,
     "second_wind": 0.0,
+    "axe_chop": 0.0,
+    "sundering_cleave": 0.0,
+    "shield_bash": 0.0,
+    "shield_charge": 0.0,
+    "quick_shot": 0.0,
+    "piercing_shot": 0.0,
+    "volley": 0.0,
+    "backstep": 0.0,
+    "arcane_bolt": 0.0,
+    "fireball": 0.0,
+    "frost_nova": 0.0,
+    "blink": 0.0,
+    "magic_missile": 0.0,
+    "twin_sparks": 0.0,
+    "hex_bolt": 0.0,
+    "phase_step": 0.0,
+    "mend": 0.0,
 }
 
 
@@ -69,31 +101,158 @@ func queue_jump() -> void:
 
 
 func set_guard(guarding: bool) -> void:
+    set_secondary(guarding)
+
+
+func set_secondary(held: bool) -> void:
     if not is_alive:
         return
-    is_blocking = guarding and stamina > 0.0
+    _is_aiming = weapon_id == "bow" and held and stamina > 0.0
+    var uses_stamina_guard := weapon_id == "sword" or weapon_id == "axe_shield"
+    var uses_magic_ward := weapon_id == "staff" or weapon_id == "wand"
+    is_blocking = held and (
+        (uses_stamina_guard and stamina > 0.0)
+        or (uses_magic_ward and mana > 0.0)
+    )
     if is_blocking:
-        current_action = "Guarding"
-    elif current_action == "Guarding":
+        current_action = "Arcane Ward" if uses_magic_ward else "Shield Guard" if weapon_id == "axe_shield" else "Parrying"
+    elif _is_aiming:
+        current_action = "Aiming"
+    elif current_action in ["Guarding", "Shield Guard", "Parrying", "Arcane Ward", "Aiming"]:
         current_action = "Ready"
     queue_redraw()
 
 
 func try_action(action: String) -> void:
-    if not is_alive or _action_lock > 0.0 or float(_cooldowns.get(action, 0.0)) > 0.0:
+    var legacy_slots := {
+        "attack": 1,
+        "power_strike": 3,
+        "whirlwind": 4,
+        "lunge": 5,
+        "second_wind": 6,
+    }
+    if legacy_slots.has(action):
+        try_combat_slot(int(legacy_slots[action]))
+
+
+func set_weapon(next_weapon_id: String) -> void:
+    if not WEAPON_ORDER.has(next_weapon_id) or weapon_id == next_weapon_id:
+        return
+    set_secondary(false)
+    weapon_id = next_weapon_id
+    current_action = "Ready"
+    combat_event.emit("Equipped %s." % weapon_name())
+    weapon_changed.emit(weapon_id)
+    queue_redraw()
+
+
+func cycle_weapon(direction: int = 1) -> void:
+    var index := WEAPON_ORDER.find(weapon_id)
+    var next_index := posmod(index + direction, WEAPON_ORDER.size())
+    set_weapon(WEAPON_ORDER[next_index])
+
+
+func weapon_name() -> String:
+    return str(WEAPON_NAMES.get(weapon_id, "SWORD"))
+
+
+func action_id_for_slot(slot: int) -> String:
+    var actions := _weapon_actions()
+    if slot < 1 or slot > actions.size():
+        return ""
+    return str((actions[slot - 1] as Dictionary)["id"])
+
+
+func action_label_for_slot(slot: int) -> String:
+    var actions := _weapon_actions()
+    if slot < 1 or slot > actions.size():
+        return ""
+    return str((actions[slot - 1] as Dictionary)["label"])
+
+
+func try_combat_slot(slot: int) -> void:
+    if slot == 2:
+        return
+    var action := action_id_for_slot(slot)
+    if action.is_empty() or not is_alive or _action_lock > 0.0 or float(_cooldowns.get(action, 0.0)) > 0.0:
         return
 
     match action:
         "attack":
-            _perform_strike("Sword Attack", 14, 86.0, 0.45, 0.18, false)
+            _perform_strike("attack", "Sword Attack", 14, 86.0, 0.45, 0.18, false)
         "power_strike":
-            _perform_strike("Power Strike", 32, 100.0, 3.0, 0.55, false)
+            _perform_strike("power_strike", "Power Strike", 32, 100.0, 3.0, 0.55, false)
         "whirlwind":
-            _perform_strike("Whirlwind", 22, 112.0, 5.0, 0.65, true)
+            _perform_strike("whirlwind", "Whirlwind", 22, 112.0, 5.0, 0.65, true)
         "lunge":
             facing = _target_direction_or_facing()
             velocity.x = float(facing) * 760.0
-            _perform_strike("Lunge", 18, 128.0, 4.0, 0.32, false)
+            _perform_strike("lunge", "Lunge", 18, 128.0, 4.0, 0.32, false)
+        "axe_chop":
+            _perform_strike("axe_chop", "Axe Chop", 23, 94.0, 0.72, 0.34, false)
+        "sundering_cleave":
+            _perform_strike("sundering_cleave", "Sundering Cleave", 40, 116.0, 4.2, 0.68, false)
+        "shield_bash":
+            if _perform_strike("shield_bash", "Shield Bash", 13, 82.0, 3.2, 0.28, false):
+                _stagger_target(0.9)
+        "shield_charge":
+            facing = _target_direction_or_facing()
+            velocity.x = float(facing) * 610.0
+            if _perform_strike("shield_charge", "Shield Charge", 19, 132.0, 4.8, 0.38, false):
+                _stagger_target(0.55)
+        "quick_shot":
+            _fire_projectile("quick_shot", "Quick Shot", 13 + (6 if _is_aiming else 0), 620.0, 0.48, 0.16, 0.0, Color("e6c879"), "arrow")
+        "piercing_shot":
+            if _spend_stamina(18.0, "Piercing Shot"):
+                _fire_projectile("piercing_shot", "Piercing Shot", 31, 760.0, 3.4, 0.38, 0.0, Color("fff09a"), "arrow")
+        "volley":
+            if _spend_stamina(24.0, "Volley"):
+                _start_action("volley", "Volley", 5.2, 0.45)
+                for height_offset: float in [-15.0, 0.0, 15.0]:
+                    _spawn_projectile("Volley Arrow", 10, 580.0, Color("e6c879"), "arrow", height_offset)
+                combat_event.emit("Volley sends three arrows forward.")
+        "backstep":
+            _start_action("backstep", "Backstep", 3.0, 0.24)
+            facing = _target_direction_or_facing()
+            velocity.x = float(-facing) * 590.0
+            combat_event.emit("Backstep creates firing distance.")
+        "arcane_bolt":
+            _fire_projectile("arcane_bolt", "Arcane Bolt", 17, 560.0, 0.62, 0.2, 7.0, Color("70cfff"), "orb")
+        "fireball":
+            _fire_projectile("fireball", "Fireball", 38, 620.0, 3.8, 0.48, 25.0, Color("ff8a45"), "fireball")
+        "frost_nova":
+            if _spend_mana(30.0, "Frost Nova"):
+                _magic_color = Color("7ee8ff")
+                _magic_radius = 155.0
+                _magic_flash = 0.4
+                if _perform_strike("frost_nova", "Frost Nova", 24, 155.0, 5.5, 0.5, true):
+                    _stagger_target(1.2)
+        "blink":
+            if _spend_mana(18.0, "Blink"):
+                _start_action("blink", "Blink", 3.5, 0.2)
+                position.x = clampf(position.x + float(facing) * 215.0, 44.0, 1236.0)
+                _magic_color = Color("8ee7ff")
+                _magic_radius = 52.0
+                _magic_flash = 0.3
+                combat_event.emit("Blink folds the space ahead.")
+        "magic_missile":
+            _fire_projectile("magic_missile", "Magic Missile", 11, 500.0, 0.3, 0.1, 4.0, Color("c98cff"), "spark")
+        "twin_sparks":
+            if _spend_mana(14.0, "Twin Sparks"):
+                _start_action("twin_sparks", "Twin Sparks", 2.6, 0.28)
+                _spawn_projectile("Twin Spark", 10, 520.0, Color("e4a2ff"), "spark", -8.0)
+                _spawn_projectile("Twin Spark", 10, 520.0, Color("b784ff"), "spark", 8.0)
+                combat_event.emit("Twin Sparks seek the target.")
+        "hex_bolt":
+            _fire_projectile("hex_bolt", "Hex Bolt", 29, 590.0, 4.4, 0.34, 22.0, Color("e06cff"), "orb")
+        "phase_step":
+            if _spend_mana(12.0, "Phase Step"):
+                _start_action("phase_step", "Phase Step", 2.8, 0.16)
+                position.x = clampf(position.x + float(facing) * 145.0, 44.0, 1236.0)
+                _magic_color = Color("d38bff")
+                _magic_radius = 42.0
+                _magic_flash = 0.25
+                combat_event.emit("Phase Step slips through the veil.")
         "second_wind":
             if health >= MAX_HEALTH:
                 combat_event.emit("Second Wind is ready, but health is already full.")
@@ -104,6 +263,18 @@ func try_action(action: String) -> void:
             current_action = "Second Wind"
             combat_event.emit("Second Wind restores 30 health.")
             queue_redraw()
+        "mend":
+            if health >= MAX_HEALTH:
+                combat_event.emit("Mend is ready, but health is already full.")
+                return
+            if _spend_mana(32.0, "Mend"):
+                health = mini(MAX_HEALTH, health + 26)
+                _start_action("mend", "Mend", 9.0, 0.42)
+                _magic_color = Color("8dffb0")
+                _magic_radius = 48.0
+                _magic_flash = 0.45
+                combat_event.emit("Mend restores 26 health.")
+                queue_redraw()
 
 
 func receive_damage(amount: int, attacker_side: int) -> void:
@@ -112,10 +283,26 @@ func receive_damage(amount: int, attacker_side: int) -> void:
 
     var final_damage := amount
     var frontal_attack := attacker_side == facing
-    if is_blocking and frontal_attack and stamina >= 18.0:
-        stamina -= 18.0
-        final_damage = maxi(1, ceili(float(amount) * 0.3))
-        combat_event.emit("Guard absorbs %s damage; %s gets through." % [amount - final_damage, final_damage])
+    var magical_ward := weapon_id == "staff" or weapon_id == "wand"
+    if is_blocking and (frontal_attack or magical_ward):
+        if magical_ward and mana >= 16.0:
+            mana -= 16.0
+            final_damage = maxi(1, ceili(float(amount) * 0.35))
+            combat_event.emit("Arcane Ward absorbs %s damage; %s gets through." % [amount - final_damage, final_damage])
+        elif not magical_ward:
+            var guard_cost := 11.0 if weapon_id == "axe_shield" else 20.0
+            if stamina >= guard_cost:
+                stamina -= guard_cost
+                var damage_ratio := 0.18 if weapon_id == "axe_shield" else 0.45
+                final_damage = maxi(1, ceili(float(amount) * damage_ratio))
+                var guard_name := "Shield Guard" if weapon_id == "axe_shield" else "Parry"
+                combat_event.emit("%s absorbs %s damage; %s gets through." % [guard_name, amount - final_damage, final_damage])
+            else:
+                is_blocking = false
+                combat_event.emit("The guard breaks; Monster hits for %s damage." % final_damage)
+        else:
+            is_blocking = false
+            combat_event.emit("The ward collapses; Monster hits for %s damage." % final_damage)
     else:
         combat_event.emit("Monster hits for %s damage." % final_damage)
 
@@ -134,12 +321,18 @@ func cooldown(action: String) -> float:
     return float(_cooldowns.get(action, 0.0))
 
 
+func cooldown_for_slot(slot: int) -> float:
+    return cooldown(action_id_for_slot(slot))
+
+
 func _physics_process(delta: float) -> void:
     for action: String in _cooldowns:
         _cooldowns[action] = maxf(0.0, float(_cooldowns[action]) - delta)
     _action_lock = maxf(0.0, _action_lock - delta)
     _attack_flash = maxf(0.0, _attack_flash - delta)
     _hurt_flash = maxf(0.0, _hurt_flash - delta)
+    _magic_flash = maxf(0.0, _magic_flash - delta)
+    _update_projectiles(delta)
 
     if not is_on_floor():
         velocity.y += GRAVITY * delta
@@ -147,7 +340,7 @@ func _physics_process(delta: float) -> void:
     if is_alive:
         if absf(_move_axis) > 0.1:
             facing = 1 if _move_axis > 0.0 else -1
-        var speed_scale := 0.38 if is_blocking else 1.0
+        var speed_scale := 0.38 if is_blocking else 0.58 if _is_aiming else 1.0
         var desired_velocity := _move_axis * MOVE_SPEED * speed_scale
         var acceleration := GROUND_ACCELERATION if is_on_floor() else AIR_ACCELERATION
         velocity.x = move_toward(velocity.x, desired_velocity, acceleration * delta)
@@ -157,10 +350,17 @@ func _physics_process(delta: float) -> void:
             current_action = "Jump"
             combat_event.emit("Hero jumps.")
 
-        if not is_blocking:
+        if _is_aiming:
+            stamina = maxf(0.0, stamina - 8.0 * delta)
+            if stamina <= 0.0:
+                _is_aiming = false
+        elif not is_blocking:
             stamina = minf(MAX_STAMINA, stamina + 22.0 * delta)
             if _action_lock <= 0.0 and current_action != "Jump":
                 current_action = "Ready"
+        if not is_blocking:
+            var mana_regen := 10.0 if weapon_id == "staff" else 7.0
+            mana = minf(MAX_MANA, mana + mana_regen * delta)
     else:
         velocity.x = move_toward(velocity.x, 0.0, GROUND_ACCELERATION * delta)
 
@@ -171,16 +371,18 @@ func _physics_process(delta: float) -> void:
 
 
 func _perform_strike(
+    action_key: String,
     display_name: String,
     damage: int,
     reach: float,
     cooldown_seconds: float,
     recovery_seconds: float,
     omnidirectional: bool,
-) -> void:
+) -> bool:
     is_blocking = false
+    _is_aiming = false
     current_action = display_name
-    _cooldowns[_action_key(display_name)] = cooldown_seconds
+    _cooldowns[action_key] = cooldown_seconds
     _action_lock = recovery_seconds
     _attack_flash = recovery_seconds
 
@@ -198,20 +400,148 @@ func _perform_strike(
         else "%s misses." % display_name
     )
     queue_redraw()
+    return hit
 
 
-func _action_key(display_name: String) -> String:
-    match display_name:
-        "Sword Attack":
-            return "attack"
-        "Power Strike":
-            return "power_strike"
-        "Whirlwind":
-            return "whirlwind"
-        "Lunge":
-            return "lunge"
+func _weapon_actions() -> Array[Dictionary]:
+    match weapon_id:
+        "axe_shield":
+            return [
+                {"id": "axe_chop", "label": "CHOP"},
+                {"id": "shield_guard", "label": "GUARD"},
+                {"id": "sundering_cleave", "label": "SUNDER"},
+                {"id": "shield_bash", "label": "BASH"},
+                {"id": "shield_charge", "label": "CHARGE"},
+                {"id": "second_wind", "label": "HEAL"},
+            ]
+        "bow":
+            return [
+                {"id": "quick_shot", "label": "SHOT"},
+                {"id": "aim", "label": "AIM"},
+                {"id": "piercing_shot", "label": "PIERCE"},
+                {"id": "volley", "label": "VOLLEY"},
+                {"id": "backstep", "label": "BACKSTEP"},
+                {"id": "second_wind", "label": "HEAL"},
+            ]
+        "staff":
+            return [
+                {"id": "arcane_bolt", "label": "BOLT"},
+                {"id": "arcane_ward", "label": "WARD"},
+                {"id": "fireball", "label": "FIREBALL"},
+                {"id": "frost_nova", "label": "FROST"},
+                {"id": "blink", "label": "BLINK"},
+                {"id": "mend", "label": "MEND"},
+            ]
+        "wand":
+            return [
+                {"id": "magic_missile", "label": "MISSILE"},
+                {"id": "arcane_ward", "label": "WARD"},
+                {"id": "twin_sparks", "label": "TWIN"},
+                {"id": "hex_bolt", "label": "HEX"},
+                {"id": "phase_step", "label": "PHASE"},
+                {"id": "mend", "label": "MEND"},
+            ]
         _:
-            return display_name.to_snake_case()
+            return [
+                {"id": "attack", "label": "ATTACK"},
+                {"id": "guard", "label": "PARRY"},
+                {"id": "power_strike", "label": "POWER"},
+                {"id": "whirlwind", "label": "WHIRL"},
+                {"id": "lunge", "label": "LUNGE"},
+                {"id": "second_wind", "label": "HEAL"},
+            ]
+
+
+func _start_action(action_key: String, display_name: String, cooldown_seconds: float, recovery_seconds: float) -> void:
+    is_blocking = false
+    _is_aiming = false
+    current_action = display_name
+    _cooldowns[action_key] = cooldown_seconds
+    _action_lock = recovery_seconds
+
+
+func _spend_stamina(cost: float, display_name: String) -> bool:
+    if stamina < cost:
+        combat_event.emit("%s needs %s stamina." % [display_name, roundi(cost)])
+        return false
+    stamina -= cost
+    return true
+
+
+func _spend_mana(cost: float, display_name: String) -> bool:
+    if mana < cost:
+        combat_event.emit("%s needs %s mana." % [display_name, roundi(cost)])
+        return false
+    mana -= cost
+    return true
+
+
+func _fire_projectile(
+    action_key: String,
+    display_name: String,
+    damage: int,
+    projectile_range: float,
+    cooldown_seconds: float,
+    recovery_seconds: float,
+    mana_cost: float,
+    color: Color,
+    projectile_kind: String,
+) -> void:
+    if mana_cost > 0.0 and not _spend_mana(mana_cost, display_name):
+        return
+    _start_action(action_key, display_name, cooldown_seconds, recovery_seconds)
+    facing = _target_direction_or_facing()
+    _spawn_projectile(display_name, damage, projectile_range, color, projectile_kind)
+    combat_event.emit("%s is released." % display_name)
+
+
+func _spawn_projectile(
+    display_name: String,
+    damage: int,
+    projectile_range: float,
+    color: Color,
+    projectile_kind: String,
+    height_offset: float = 0.0,
+) -> void:
+    _projectiles.append({
+        "position": global_position + Vector2(float(facing) * 42.0, -43.0 + height_offset),
+        "direction": facing,
+        "remaining": projectile_range,
+        "damage": damage,
+        "color": color,
+        "kind": projectile_kind,
+        "name": display_name,
+    })
+    queue_redraw()
+
+
+func _update_projectiles(delta: float) -> void:
+    var projectile_speed := 920.0
+    for index in range(_projectiles.size() - 1, -1, -1):
+        var projectile := _projectiles[index]
+        var distance := projectile_speed * delta
+        var direction := int(projectile["direction"])
+        projectile["position"] = (projectile["position"] as Vector2) + Vector2(float(direction) * distance, 0.0)
+        projectile["remaining"] = float(projectile["remaining"]) - distance
+        var hit := false
+        if is_instance_valid(_target) and _target.has_method("receive_damage"):
+            var target_offset := _target.global_position - (projectile["position"] as Vector2)
+            var crossed_target := absf(target_offset.x) <= 34.0 and absf(target_offset.y) <= 96.0
+            if crossed_target:
+                _target.receive_damage(int(projectile["damage"]), float((projectile["position"] as Vector2).x))
+                combat_event.emit("%s deals %s damage." % [projectile["name"], projectile["damage"]])
+                hit = true
+        if hit or float(projectile["remaining"]) <= 0.0:
+            if not hit:
+                combat_event.emit("%s misses." % projectile["name"])
+            _projectiles.remove_at(index)
+        else:
+            _projectiles[index] = projectile
+
+
+func _stagger_target(seconds: float) -> void:
+    if is_instance_valid(_target) and _target.has_method("apply_stagger"):
+        _target.apply_stagger(seconds)
 
 
 func _target_direction_or_facing() -> int:
@@ -244,7 +574,11 @@ func _draw() -> void:
         _:
             _draw_human(tint)
 
-    _draw_sword_and_guard(direction)
+    _draw_equipped_weapon(direction)
+    _draw_projectiles()
+    if _magic_flash > 0.0:
+        var flash_ratio := _magic_flash / 0.45
+        draw_arc(Vector2(0.0, -38.0), _magic_radius * (1.15 - flash_ratio * 0.15), 0.0, TAU, 40, Color(_magic_color, clampf(flash_ratio, 0.0, 1.0)), 6.0)
 
 
 func _draw_human(tint: Color) -> void:
@@ -471,7 +805,21 @@ func _weapon_origin() -> Vector2:
             return Vector2(31.0, -31.0)
 
 
-func _draw_sword_and_guard(direction: float) -> void:
+func _draw_equipped_weapon(direction: float) -> void:
+    match weapon_id:
+        "axe_shield":
+            _draw_axe_and_shield(direction)
+        "bow":
+            _draw_bow(direction)
+        "staff":
+            _draw_staff(direction)
+        "wand":
+            _draw_wand(direction)
+        _:
+            _draw_sword(direction)
+
+
+func _draw_sword(direction: float) -> void:
     var hand := _weapon_origin()
     hand.x *= direction
 
@@ -492,3 +840,91 @@ func _draw_sword_and_guard(direction: float) -> void:
 
     if is_blocking:
         draw_arc(hand, 31.0, -1.2, 1.2, 18, Color("80d7ff"), 7.0)
+
+
+func _draw_axe_and_shield(direction: float) -> void:
+    var hand := _weapon_origin()
+    hand.x *= direction
+    var axe_reach := 66.0 if _attack_flash > 0.0 else 49.0
+    var haft_tip := Vector2(direction * axe_reach, hand.y - 21.0)
+    draw_line(hand, haft_tip, Color("7a4e2f"), 7.0)
+    draw_polygon(
+        PackedVector2Array([
+            haft_tip + Vector2(-direction * 3.0, -15.0),
+            haft_tip + Vector2(direction * 19.0, -8.0),
+            haft_tip + Vector2(direction * 17.0, 10.0),
+            haft_tip + Vector2(-direction * 3.0, 7.0),
+        ]),
+        PackedColorArray([Color("c4d0d4")]),
+    )
+    var shield_center := Vector2(-direction * 23.0, -34.0)
+    if is_blocking:
+        shield_center = Vector2(direction * 32.0, -37.0)
+    draw_circle(shield_center, 24.0, Color("426b75"))
+    draw_arc(shield_center, 24.0, 0.0, TAU, 24, Color("e2bd62"), 5.0)
+    draw_circle(shield_center, 7.0, Color("d9a441"))
+
+
+func _draw_bow(direction: float) -> void:
+    var hand := _weapon_origin()
+    hand.x *= direction
+    var bow_center := hand + Vector2(direction * 19.0, -8.0)
+    var bend := 13.0 if _is_aiming else 5.0
+    var top := bow_center + Vector2(direction * bend, -34.0)
+    var bottom := bow_center + Vector2(direction * bend, 34.0)
+    draw_arc(bow_center, 35.0, -PI * 0.5, PI * 0.5, 18, Color("bd874c"), 5.0)
+    draw_line(top, bow_center + Vector2(-direction * (14.0 if _is_aiming else 0.0), 0.0), Color("eef0d5"), 2.0)
+    draw_line(bottom, bow_center + Vector2(-direction * (14.0 if _is_aiming else 0.0), 0.0), Color("eef0d5"), 2.0)
+    if _is_aiming:
+        draw_line(bow_center + Vector2(-direction * 14.0, 0.0), bow_center + Vector2(direction * 48.0, 0.0), Color("e6c879"), 3.0)
+
+
+func _draw_staff(direction: float) -> void:
+    var hand := _weapon_origin()
+    hand.x *= direction
+    var top := Vector2(direction * 51.0, -91.0)
+    var bottom := Vector2(direction * 24.0, 1.0)
+    draw_line(bottom, top, Color("765035"), 7.0)
+    draw_circle(top, 12.0, Color("5bbbe1"))
+    draw_arc(top, 18.0, 0.0, TAU, 24, Color("b7efff"), 4.0)
+    if is_blocking:
+        draw_arc(Vector2(0.0, -40.0), 52.0, 0.0, TAU, 32, Color("75dfff"), 6.0)
+
+
+func _draw_wand(direction: float) -> void:
+    var hand := _weapon_origin()
+    hand.x *= direction
+    var tip := hand + Vector2(direction * 38.0, -19.0)
+    draw_line(hand, tip, Color("9063aa"), 6.0)
+    draw_circle(tip, 7.0, Color("dd8cff"))
+    draw_line(tip + Vector2(-8.0, 0.0), tip + Vector2(8.0, 0.0), Color("f6d5ff"), 2.0)
+    draw_line(tip + Vector2(0.0, -8.0), tip + Vector2(0.0, 8.0), Color("f6d5ff"), 2.0)
+    if is_blocking:
+        draw_arc(Vector2(0.0, -39.0), 47.0, 0.0, TAU, 32, Color("d08cff"), 5.0)
+
+
+func _draw_projectiles() -> void:
+    for projectile: Dictionary in _projectiles:
+        var local_position := to_local(projectile["position"] as Vector2)
+        var direction := float(projectile["direction"])
+        var color := projectile["color"] as Color
+        match str(projectile["kind"]):
+            "arrow":
+                draw_line(local_position - Vector2(direction * 17.0, 0.0), local_position + Vector2(direction * 17.0, 0.0), color, 3.0)
+                draw_polygon(
+                    PackedVector2Array([
+                        local_position + Vector2(direction * 21.0, 0.0),
+                        local_position + Vector2(direction * 12.0, -5.0),
+                        local_position + Vector2(direction * 12.0, 5.0),
+                    ]),
+                    PackedColorArray([color]),
+                )
+            "fireball":
+                draw_circle(local_position, 14.0, Color(color, 0.35))
+                draw_circle(local_position, 8.0, color)
+            "spark":
+                draw_line(local_position - Vector2(10.0, 0.0), local_position + Vector2(10.0, 0.0), color, 5.0)
+                draw_line(local_position - Vector2(0.0, 8.0), local_position + Vector2(0.0, 8.0), color.lightened(0.3), 3.0)
+            _:
+                draw_circle(local_position, 9.0, Color(color, 0.35))
+                draw_circle(local_position, 5.0, color)

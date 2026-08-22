@@ -18,6 +18,7 @@ var _attack_cooldown := 0.8
 var _telegraph_remaining := 0.0
 var _hurt_flash := 0.0
 var _knockback_remaining := 0.0
+var _forced_stagger_remaining := 0.0
 
 
 func set_target(target: Node2D) -> void:
@@ -40,18 +41,28 @@ func receive_damage(amount: int, source_x: float) -> void:
     queue_redraw()
 
 
+func apply_stagger(seconds: float) -> void:
+    if not is_alive:
+        return
+    _forced_stagger_remaining = maxf(_forced_stagger_remaining, seconds)
+    _telegraph_remaining = 0.0
+    current_intent = "Staggered"
+
+
 func _physics_process(delta: float) -> void:
     _attack_cooldown = maxf(0.0, _attack_cooldown - delta)
     _hurt_flash = maxf(0.0, _hurt_flash - delta)
     _knockback_remaining = maxf(0.0, _knockback_remaining - delta)
+    _forced_stagger_remaining = maxf(0.0, _forced_stagger_remaining - delta)
 
     if not is_on_floor():
         velocity.y += GRAVITY * delta
 
     if not is_alive or not is_instance_valid(_target):
         velocity.x = move_toward(velocity.x, 0.0, 600.0 * delta)
-    elif _knockback_remaining > 0.0:
-        pass
+    elif _knockback_remaining > 0.0 or _forced_stagger_remaining > 0.0:
+        velocity.x = move_toward(velocity.x, 0.0, 900.0 * delta)
+        current_intent = "Staggered"
     elif _telegraph_remaining > 0.0:
         velocity.x = 0.0
         _telegraph_remaining -= delta
