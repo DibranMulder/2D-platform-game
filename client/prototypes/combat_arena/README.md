@@ -21,6 +21,11 @@ the action bar:
 Battle guidance is collected in the Hints section instead of occupying the
 arena HUD or appearing as instructional combat-log messages.
 
+Walk into the glowing portal at the edge of the Sunlit Forest to travel to
+Mira's Moonlit Market. Approach Mira and press `E`, or tap **Trade**, to open
+the local-only shop. Purchases use prototype gold and remain in memory until
+the game closes; weapons are unique while supplies may be bought repeatedly.
+
 The **Log Out** button in the upper-right ends the local prototype Session,
 clears transient Hero state, and returns to the login screen.
 

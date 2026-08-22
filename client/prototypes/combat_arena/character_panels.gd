@@ -229,7 +229,12 @@ func _build_hints_panel() -> void:
     controls.add_child(_hint_block(
         "HERO SECTIONS",
         "B  Item Pouch     C  Equipment     L  Discipline Levels\n"
-        + "K  Talent Tree     I  Battle Hints",
+        + "K  Talent Tree     I  Battle Hints     E  Merchant Trade",
+    ))
+    controls.add_child(_hint_block(
+        "PORTALS & MERCHANTS",
+        "Walk into a glowing portal to travel between maps. In the Moonlit Market, "
+        + "approach Mira and press E or tap Trade to buy weapons, armor, and supplies.",
     ))
 
     var tactics := VBoxContainer.new()

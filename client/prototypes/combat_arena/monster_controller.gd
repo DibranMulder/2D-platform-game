@@ -96,6 +96,16 @@ func _draw() -> void:
     var body := Color("7f3f71") * tint
     var direction := float(facing)
 
+    var health_width := 84.0
+    var health_ratio := clampf(float(health) / float(MAX_HEALTH), 0.0, 1.0)
+    draw_rect(Rect2(-health_width * 0.5, -119.0, health_width, 9.0), Color(0.08, 0.04, 0.06, 0.9), true)
+    draw_rect(
+        Rect2(-health_width * 0.5 + 1.0, -118.0, (health_width - 2.0) * health_ratio, 7.0),
+        Color("c52232"),
+        true,
+    )
+    draw_rect(Rect2(-health_width * 0.5, -119.0, health_width, 9.0), Color("f0c66d"), false, 1.0)
+
     draw_circle(Vector2(0.0, -49.0), 30.0, body)
     draw_polygon(
         PackedVector2Array([
@@ -121,4 +131,3 @@ func _draw() -> void:
 
     if _telegraph_remaining > 0.0:
         draw_arc(Vector2.ZERO, 52.0, 0.0, TAU, 32, Color("ff655f"), 6.0)
-

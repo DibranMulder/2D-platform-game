@@ -2,10 +2,24 @@
 extends Node2D
 
 const CharacterPanelsScript := preload("res://prototypes/combat_arena/character_panels.gd")
+const MerchantShopScript := preload("res://prototypes/combat_arena/merchant_shop.gd")
+const MoonlitMarketTexture := preload("res://assets/backgrounds/storybook-moonlit-market-v1.png")
+const MAP_FOREST := "sunlit_forest"
+const MAP_MARKET := "moonlit_market"
 
 @onready var hero: PrototypeHero = $Hero
 @onready var monster: PrototypeMonster = $Monster
+@onready var storybook_background: TextureRect = $StorybookBackground
+@onready var jump_platform: StaticBody2D = $JumpPlatform
+@onready var jump_platform_collision: CollisionShape2D = $JumpPlatform/CollisionShape2D
+@onready var portal_area: Area2D = $PortalArea
+@onready var portal_label: Label = $PortalLabel
+@onready var merchant_area: Area2D = $MerchantArea
+@onready var merchant_name: Label = $MerchantName
 @onready var joystick: PrototypeVirtualJoystick = $HUD/VirtualJoystick
+@onready var map_label: Label = $HUD/MapLabel
+@onready var trade_button: Button = $HUD/TradeButton
+@onready var hero_identity: Label = $HUD/HeroIdentity
 @onready var hero_health: ProgressBar = $HUD/HeroHealth
 @onready var hero_health_text: Label = $HUD/HeroHealth/HeroHealthText
 @onready var mana_bar: ProgressBar = $HUD/Mana
@@ -14,8 +28,6 @@ const CharacterPanelsScript := preload("res://prototypes/combat_arena/character_
 @onready var stamina_text: Label = $HUD/Stamina/StaminaText
 @onready var general_exp_bar: ProgressBar = $HUD/GeneralExp
 @onready var general_exp_text: Label = $HUD/GeneralExp/GeneralExpText
-@onready var monster_health: ProgressBar = $HUD/MonsterHealth
-@onready var monster_health_text: Label = $HUD/MonsterHealth/MonsterHealthText
 @onready var state_text: Label = $HUD/StatePanel/StateText
 @onready var combat_log: Label = $HUD/CombatLogPanel/CombatLog
 @onready var restart_button: Button = $HUD/RestartButton
@@ -35,6 +47,10 @@ var _touch_guard_held := false
 var _combat_messages: Array[String] = []
 var _encounter_finished := false
 var _character_panels: PrototypeCharacterPanels
+var _shop: PrototypeMerchantShop
+var _current_map := MAP_FOREST
+var _near_merchant := false
+var _portal_locked := false
 
 
 func _ready() -> void:
@@ -52,9 +68,16 @@ func _ready() -> void:
         ]
 
     hero.configure_hero(selected_hero)
+    hero_identity.text = "%s  ·  LEVEL %s" % [
+        str(selected_hero.get("name", "Prototype Hero")).to_upper(),
+        hero.level,
+    ]
     _character_panels = CharacterPanelsScript.new() as PrototypeCharacterPanels
     $HUD.add_child(_character_panels)
     _character_panels.configure_hero(selected_hero)
+    _shop = MerchantShopScript.new() as PrototypeMerchantShop
+    $HUD.add_child(_shop)
+    _shop.shop_closed.connect(_on_shop_closed)
     for argument: String in OS.get_cmdline_user_args():
         if argument.begins_with("--preview-panel="):
             _character_panels.call_deferred(
@@ -79,12 +102,23 @@ func _ready() -> void:
     guard_button.button_up.connect(_on_guard_button_up)
     restart_button.pressed.connect(_restart_encounter)
     logout_button.pressed.connect(_logout)
+    trade_button.pressed.connect(_open_shop)
+    portal_area.body_entered.connect(_on_portal_body_entered)
+    merchant_area.body_entered.connect(_on_merchant_body_entered)
+    merchant_area.body_exited.connect(_on_merchant_body_exited)
 
     _add_combat_message("A horned monster blocks the road.")
+    _configure_map(MAP_FOREST)
     queue_redraw()
 
 
 func _process(_delta: float) -> void:
+    if _shop.visible:
+        hero.set_move_axis(0.0)
+        hero.set_guard(false)
+        _update_hud()
+        return
+
     var keyboard_axis := 0.0
     if Input.is_key_pressed(KEY_LEFT) or Input.is_key_pressed(KEY_A):
         keyboard_axis -= 1.0
@@ -112,6 +146,14 @@ func _unhandled_key_input(event: InputEvent) -> void:
         return
 
     match key_event.keycode:
+        KEY_E:
+            if _shop.visible:
+                _shop.close_shop()
+            elif _near_merchant:
+                _open_shop()
+        KEY_ESCAPE:
+            if _shop.visible:
+                _shop.close_shop()
         KEY_SPACE, KEY_UP:
             hero.queue_jump()
         KEY_1:
@@ -142,6 +184,77 @@ func _on_guard_button_down() -> void:
 
 func _on_guard_button_up() -> void:
     _touch_guard_held = false
+
+
+func _on_portal_body_entered(body: Node2D) -> void:
+    if body != hero or _portal_locked:
+        return
+    _portal_locked = true
+    if _current_map == MAP_FOREST:
+        _configure_map(MAP_MARKET)
+        hero.position = Vector2(155.0, 549.0)
+        _add_combat_message("The portal opens onto Mira's Moonlit Market.")
+    else:
+        _configure_map(MAP_FOREST)
+        hero.position = Vector2(1110.0, 549.0)
+        _add_combat_message("The portal returns you to the Sunlit Forest.")
+    get_tree().create_timer(0.65).timeout.connect(func() -> void: _portal_locked = false)
+
+
+func _on_merchant_body_entered(body: Node2D) -> void:
+    if body != hero or _current_map != MAP_MARKET:
+        return
+    _near_merchant = true
+    trade_button.visible = true
+
+
+func _on_merchant_body_exited(body: Node2D) -> void:
+    if body != hero:
+        return
+    _near_merchant = false
+    trade_button.visible = false
+    if _shop.visible:
+        _shop.close_shop()
+
+
+func _open_shop() -> void:
+    if not _near_merchant or _current_map != MAP_MARKET:
+        return
+    _character_panels.close_panel()
+    trade_button.visible = false
+    _shop.open_shop()
+
+
+func _on_shop_closed() -> void:
+    trade_button.visible = _near_merchant and _current_map == MAP_MARKET
+
+
+func _configure_map(map_id: String) -> void:
+    _current_map = map_id
+    var in_forest := map_id == MAP_FOREST
+    storybook_background.texture = (
+        load("res://assets/backgrounds/storybook-forest-battleground-v1.png") as Texture2D
+        if in_forest
+        else MoonlitMarketTexture
+    )
+    map_label.text = "SUNLIT FOREST" if in_forest else "MOONLIT MARKET"
+    portal_area.position = Vector2(1205.0, 500.0) if in_forest else Vector2(70.0, 500.0)
+    portal_label.text = "TO MOONLIT MARKET" if in_forest else "TO SUNLIT FOREST"
+    portal_label.position = Vector2(
+        clampf(portal_area.position.x - 85.0, 0.0, 1110.0),
+        portal_area.position.y - 92.0,
+    )
+    merchant_name.visible = not in_forest
+    merchant_area.set_deferred("monitoring", not in_forest)
+    jump_platform.visible = in_forest
+    jump_platform_collision.set_deferred("disabled", not in_forest)
+    monster.visible = in_forest
+    monster.process_mode = Node.PROCESS_MODE_INHERIT if in_forest else Node.PROCESS_MODE_DISABLED
+    _near_merchant = false
+    trade_button.visible = false
+    if _shop != null and _shop.visible:
+        _shop.close_shop()
+    queue_redraw()
 
 
 func _on_hero_defeated() -> void:
@@ -188,12 +301,11 @@ func _update_hud() -> void:
         hero.general_exp,
         PrototypeHero.GENERAL_EXP_GOAL,
     ]
-    monster_health.value = monster.health
-    monster_health_text.text = "HORNED MARAUDER  %s / %s" % [
-        monster.health,
-        PrototypeMonster.MAX_HEALTH,
-    ]
-    state_text.text = "Hero: %s   |   Monster: %s" % [hero.current_action, monster.current_intent]
+    state_text.text = (
+        "Hero: %s   |   Monster: %s" % [hero.current_action, monster.current_intent]
+        if _current_map == MAP_FOREST
+        else "MOONLIT MARKET   |   PEACEFUL TRADING OUTPOST"
+    )
 
     _update_action_button(attack_button, "1", "ATTACK", "attack")
     guard_button.text = "2\nGUARD\n%s" % ("HELD" if hero.is_blocking else "hold")
@@ -214,30 +326,66 @@ func _update_action_button(button: Button, key: String, title: String, action: S
 
 
 func _draw() -> void:
-    draw_rect(Rect2(0.0, 0.0, 1280.0, 720.0), Color("111b2d"), true)
-    draw_circle(Vector2(1088.0, 122.0), 75.0, Color("d9e7ff"))
-    draw_circle(Vector2(1088.0, 122.0), 62.0, Color("c8d9f7"))
+    var in_forest := _current_map == MAP_FOREST
+    var ground_tint := Color(0.035, 0.11, 0.075, 0.58) if in_forest else Color(0.035, 0.05, 0.13, 0.5)
+    var ground_edge := Color("a9c564") if in_forest else Color("7d85bf")
+    draw_rect(Rect2(0.0, 550.0, 1280.0, 170.0), ground_tint, true)
+    draw_rect(Rect2(0.0, 550.0, 1280.0, 9.0), ground_edge, true)
+    draw_line(Vector2(0.0, 559.0), Vector2(1280.0, 559.0), Color("334358"), 4.0)
 
+    if in_forest:
+        draw_polygon(
+            PackedVector2Array([
+                Vector2(485.0, 439.0),
+                Vector2(695.0, 439.0),
+                Vector2(682.0, 478.0),
+                Vector2(502.0, 478.0),
+            ]),
+            PackedColorArray([Color("344a35")]),
+        )
+        draw_rect(Rect2(485.0, 439.0, 210.0, 8.0), Color("a7c360"), true)
+        draw_line(Vector2(500.0, 449.0), Vector2(680.0, 449.0), Color("70864d"), 3.0)
+        for crack_x: float in [525.0, 576.0, 632.0, 668.0]:
+            draw_line(Vector2(crack_x, 451.0), Vector2(crack_x - 5.0, 469.0), Color("1f352b"), 2.0)
+
+    _draw_portal(portal_area.position)
+    if not in_forest:
+        _draw_merchant(merchant_area.position + Vector2(0.0, 49.0))
+
+
+func _draw_portal(center: Vector2) -> void:
+    var outer := PackedVector2Array()
+    var inner := PackedVector2Array()
+    for index in 33:
+        var angle := TAU * float(index) / 32.0
+        outer.append(center + Vector2(cos(angle) * 35.0, sin(angle) * 61.0))
+        inner.append(center + Vector2(cos(angle) * 25.0, sin(angle) * 50.0))
+    draw_colored_polygon(inner, Color(0.2, 0.8, 0.95, 0.22))
+    draw_polyline(outer, Color("86e5ff"), 7.0, true)
+    draw_polyline(inner, Color("b991ff"), 4.0, true)
+    draw_circle(center, 9.0, Color(0.9, 0.96, 1.0, 0.72))
+
+
+func _draw_merchant(position: Vector2) -> void:
+    draw_circle(position + Vector2(0.0, -1.0), 31.0, Color(0.02, 0.04, 0.08, 0.45))
     draw_polygon(
         PackedVector2Array([
-            Vector2(0.0, 420.0),
-            Vector2(170.0, 250.0),
-            Vector2(335.0, 420.0),
-            Vector2(530.0, 205.0),
-            Vector2(760.0, 420.0),
-            Vector2(945.0, 270.0),
-            Vector2(1280.0, 430.0),
+            position + Vector2(-28.0, -63.0),
+            position + Vector2(28.0, -63.0),
+            position + Vector2(22.0, -5.0),
+            position + Vector2(-22.0, -5.0),
         ]),
-        PackedColorArray([Color("1d3043")]),
+        PackedColorArray([Color("5e4779")]),
     )
-
-    for tree_x: float in [90.0, 190.0, 750.0, 1160.0]:
-        draw_rect(Rect2(tree_x - 9.0, 350.0, 18.0, 210.0), Color("27382f"), true)
-        draw_circle(Vector2(tree_x, 325.0), 52.0, Color("244335"))
-        draw_circle(Vector2(tree_x - 29.0, 354.0), 42.0, Color("203d31"))
-        draw_circle(Vector2(tree_x + 31.0, 355.0), 45.0, Color("29493a"))
-
-    draw_rect(Rect2(0.0, 550.0, 1280.0, 170.0), Color("253b2c"), true)
-    draw_rect(Rect2(0.0, 550.0, 1280.0, 16.0), Color("789760"), true)
-    for stone_x: float in [40.0, 240.0, 470.0, 680.0, 1010.0, 1210.0]:
-        draw_circle(Vector2(stone_x, 572.0), 15.0, Color("526253"))
+    draw_circle(position + Vector2(0.0, -82.0), 17.0, Color("d7ae88"))
+    draw_polygon(
+        PackedVector2Array([
+            position + Vector2(-31.0, -91.0),
+            position + Vector2(2.0, -116.0),
+            position + Vector2(30.0, -90.0),
+        ]),
+        PackedColorArray([Color("334c70")]),
+    )
+    draw_line(position + Vector2(-16.0, -51.0), position + Vector2(-35.0, -28.0), Color("d7ae88"), 7.0)
+    draw_line(position + Vector2(16.0, -51.0), position + Vector2(35.0, -32.0), Color("d7ae88"), 7.0)
+    draw_circle(position + Vector2(6.0, -84.0), 2.5, Color("22233b"))

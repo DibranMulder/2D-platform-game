@@ -28,6 +28,7 @@ var health := MAX_HEALTH
 var stamina := MAX_STAMINA
 var mana := MAX_MANA
 var general_exp := 350
+var level := 7
 var current_action := "Ready"
 var facing := 1
 var is_blocking := false
@@ -51,6 +52,7 @@ var _cooldowns := {
 func configure_hero(hero_data: Dictionary) -> void:
     var requested_lineage := str(hero_data.get("lineage_id", "human"))
     lineage_id = requested_lineage if LINEAGE_IDS.has(requested_lineage) else "human"
+    level = clampi(int(hero_data.get("level", level)), 1, 99)
     queue_redraw()
 
 
