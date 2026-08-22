@@ -20,6 +20,15 @@ the action bar:
 The **Log Out** button in the upper-right ends the local prototype Session,
 clears transient Hero state, and returns to the login screen.
 
+The selected Hero's Lineage now controls the procedural battle silhouette. The
+eight-Lineage GPU visual regression test requires a real renderer rather than
+headless mode:
+
+```sh
+godot --path client --script \
+  res://prototypes/combat_arena/lineage_visual_smoke.gd
+```
+
 This scene is intentionally offline, in-memory, and disposable. Relevant state
 is always visible in the HUD: health, stamina, current action, cooldowns,
 monster intent, and a short combat log. Record the verdict in

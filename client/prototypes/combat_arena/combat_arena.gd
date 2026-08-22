@@ -36,6 +36,7 @@ var _character_panels: PrototypeCharacterPanels
 func _ready() -> void:
     var selected_hero: Dictionary = {
         "name": "Prototype Hero",
+        "lineage_id": "human",
         "lineage_name": "Human",
         "allegiance": "light",
     }
@@ -46,6 +47,7 @@ func _ready() -> void:
             str(selected_hero.get("lineage_name", "Unknown Lineage")).to_upper(),
         ]
 
+    hero.configure_hero(selected_hero)
     _character_panels = CharacterPanelsScript.new() as PrototypeCharacterPanels
     $HUD.add_child(_character_panels)
     _character_panels.configure_hero(selected_hero)

@@ -77,6 +77,7 @@ commitments.
 | Godot 4.7.1 project import and script parse | Passed without errors | 2026-08-22 |
 | macOS GPU render using Metal on Apple M1 | Five-frame visual capture passed | 2026-08-22 |
 | Fixed-time encounter simulation | 1,200 frames / 20 game-seconds passed without runtime errors | 2026-08-22 |
+| Eight Lineage battle silhouettes | Pairwise-distinct rendered Hero regions verified through Metal | 2026-08-22 |
 | Existing Rust workspace regression | Six tests passed | 2026-08-22 |
 | Physical iPad/iPhone/Android touch feel | Not yet tested on device | — |
 
@@ -84,3 +85,5 @@ commitments.
 
 - 2026-08-22: First static Hero-versus-Monster arena specified, implemented,
   rendered on Metal, and smoke-tested.
+- 2026-08-22: Connected selected Lineage data to eight distinct procedural
+  battle silhouettes without changing the shared combat collider or rules.
