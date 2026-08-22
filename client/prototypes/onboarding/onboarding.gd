@@ -21,7 +21,7 @@ func _ready() -> void:
     _state = OnboardingStateScript.new() as PrototypeOnboardingState
     _build_shell()
     if OS.get_cmdline_user_args().has("--preview-create-hero"):
-        _state.login("demo@realm.test", "prototype123")
+        _state.login("demo@realm.test", "123")
         _show_create_hero()
     else:
         _show_login()
@@ -126,7 +126,7 @@ func _show_login() -> void:
     email_edit.text = "demo@realm.test"
     form.add_child(email_edit)
     var password_edit := _line_edit("Password", true)
-    password_edit.placeholder_text = "prototype123"
+    password_edit.placeholder_text = "123"
     form.add_child(password_edit)
 
     var error_label := _status_label()
@@ -142,7 +142,7 @@ func _show_login() -> void:
     create_button.pressed.connect(_show_create_account)
     form.add_child(create_button)
 
-    var demo_hint := _label("Demo password: prototype123", 13, Color("8298ae"))
+    var demo_hint := _label("Demo password: 123", 13, Color("8298ae"))
     demo_hint.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
     form.add_child(demo_hint)
 

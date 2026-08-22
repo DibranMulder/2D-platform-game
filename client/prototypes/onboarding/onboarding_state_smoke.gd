@@ -9,7 +9,7 @@ func _initialize() -> void:
 
     _check(state.lineages_for("light").size() == 4, "expected four Light Lineages", failures)
     _check(state.lineages_for("dark").size() == 4, "expected four Dark Lineages", failures)
-    _check(state.login("demo@realm.test", "prototype123")["ok"], "demo login failed", failures)
+    _check(state.login("demo@realm.test", "123")["ok"], "demo login failed", failures)
     state.logout()
 
     var created := state.create_account("keeper@example.test", "long-password", "long-password")
@@ -35,4 +35,3 @@ func _initialize() -> void:
 func _check(condition: bool, failure: String, failures: Array[String]) -> void:
     if not condition:
         failures.append(failure)
-

@@ -14,10 +14,9 @@ For the alternate login path, use the seeded local-only account:
 
 ```text
 Email: demo@realm.test
-Password: prototype123
+Password: 123
 ```
 
 This is deliberately not a real authentication implementation. Its question is
 whether the vocabulary and onboarding flow are understandable before secure
 backend identity work begins.
-

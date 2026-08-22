@@ -70,7 +70,7 @@ var _reserved_name_keys: Dictionary = {}
 func _init() -> void:
     _accounts["demo@realm.test"] = {
         "email": "demo@realm.test",
-        "password": "prototype123",
+        "password": "123",
         "heroes": [],
     }
 

@@ -1,6 +1,8 @@
 # PROTOTYPE — throwaway mechanics scene. Do not promote unchanged.
 extends Node2D
 
+const CharacterPanelsScript := preload("res://prototypes/combat_arena/character_panels.gd")
+
 @onready var hero: PrototypeHero = $Hero
 @onready var monster: PrototypeMonster = $Monster
 @onready var joystick: PrototypeVirtualJoystick = $HUD/VirtualJoystick
@@ -27,15 +29,31 @@ var _previous_joystick_y := 0.0
 var _touch_guard_held := false
 var _combat_messages: Array[String] = []
 var _encounter_finished := false
+var _character_panels: PrototypeCharacterPanels
 
 
 func _ready() -> void:
+    var selected_hero: Dictionary = {
+        "name": "Prototype Hero",
+        "lineage_name": "Human",
+        "allegiance": "light",
+    }
     if get_tree().has_meta("selected_hero"):
-        var selected_hero := get_tree().get_meta("selected_hero") as Dictionary
+        selected_hero = get_tree().get_meta("selected_hero") as Dictionary
         prototype_badge.text = "%s · %s · COMBAT PROTOTYPE" % [
             str(selected_hero.get("name", "HERO")).to_upper(),
             str(selected_hero.get("lineage_name", "Unknown Lineage")).to_upper(),
         ]
+
+    _character_panels = CharacterPanelsScript.new() as PrototypeCharacterPanels
+    $HUD.add_child(_character_panels)
+    _character_panels.configure_hero(selected_hero)
+    for argument: String in OS.get_cmdline_user_args():
+        if argument.begins_with("--preview-panel="):
+            _character_panels.call_deferred(
+                "open_panel",
+                argument.trim_prefix("--preview-panel="),
+            )
     hero.set_target(monster)
     monster.set_target(hero)
     hero.combat_event.connect(_add_combat_message)

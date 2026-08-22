@@ -67,7 +67,7 @@ offset_right = 820.0
 offset_bottom = 85.0
 theme_override_colors/font_color = Color(0.82, 0.88, 0.94, 1)
 theme_override_font_sizes/font_size = 14
-text = "← → / A D  MOVE     SPACE / ↑  JUMP     1–6  ACTION BAR     HOLD 2 / SHIFT  GUARD"
+text = "← → / A D MOVE   SPACE / ↑ JUMP   1–6 ACTIONS   HOLD 2 / SHIFT GUARD   B POUCH   C GEAR   L LEVELS   K TALENTS"
 autowrap_mode = 2
 
 [node name="HeroHealth" type="ProgressBar" parent="HUD"]

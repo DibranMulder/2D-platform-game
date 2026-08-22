@@ -9,6 +9,8 @@ world, and visual language are defined.
 - A local account and Hero onboarding prototype with eight Lineages under
   `client/prototypes/onboarding/`.
 - A static Godot 4 combat prototype under `client/prototypes/combat_arena/`.
+- In-combat Item Pouch, Equipment, Discipline Level, and Hero-specific Talent
+  Tree panels with inspectable in-memory state.
 - The earlier network client foundation under `client/scenes/`.
 - A Rust world server under `apps/world-server/`.
 - A deterministic, fixed-tick game simulation under `crates/game-domain/`.

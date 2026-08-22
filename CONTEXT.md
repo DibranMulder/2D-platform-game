@@ -27,7 +27,7 @@ _Avoid_: Race, class, species
 
 **Combat Class**:
 A Hero's learned combat profession or role, chosen separately from Lineage.
-_Avoid_: Lineage, Progression Skill
+_Avoid_: Lineage, Discipline
 
 **Allegiance**:
 One of the world's two provisional cosmic-political groupings, Light or Dark, to which each Lineage currently belongs.
@@ -63,9 +63,37 @@ _Avoid_: Game state, frame
 One fixed-duration advancement of authoritative world rules.
 _Avoid_: Frame, update
 
-**Progression Skill**:
-A trainable discipline that gains experience through relevant play and has its own level, independent of a Hero's overall combat standing.
-_Avoid_: Stat, ability
+**Discipline**:
+A trainable field shared by every Hero, such as Attack, Strength, or Crafting, with its own XP and level from 1 to 99.
+_Avoid_: Progression Skill, Stat, Talent, skill-tree node
+
+**Total Level**:
+The sum of all a Hero's Discipline levels, expressing breadth and accumulated progression without weighting one Discipline over another.
+_Avoid_: Overall Level, combat level
+
+**Overall Level**:
+A Hero's general level derived from the combined levels of every Discipline and used to award Talent Points and gate Talent tiers.
+_Avoid_: Total Level, Account level
+
+**Talent**:
+A Hero-specific passive or active capability unlocked with Talent Points in a Talent Tree.
+_Avoid_: Discipline, level, Combat Skill
+
+**Talent Tree**:
+A prerequisite graph of Talents through which one Hero specializes independently of other Heroes on the same Account.
+_Avoid_: Discipline list, ability bar
+
+**Talent Point**:
+A Hero-owned allocation resource earned through Overall Levels and spent to unlock Talents.
+_Avoid_: Discipline XP, currency
+
+**Item Pouch**:
+A Hero's limited carried-item inventory, excluding items currently worn in Equipment Slots.
+_Avoid_: Bank, equipment, backpack item
+
+**Equipment Slot**:
+A named location on a Hero's equipment overview that can hold one compatible item.
+_Avoid_: Item Pouch slot, inventory category
 
 **Open Conflict**:
 Rule-governed conflict between Characters in eligible locations, including reputation, clan, siege, and consequence rules.
