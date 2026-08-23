@@ -426,19 +426,6 @@ theme_override_font_sizes/font_size = 13
 text = "Combat log"
 autowrap_mode = 2
 
-[node name="StatePanel" type="PanelContainer" parent="HUD"]
-offset_left = 420.0
-offset_top = 676.0
-offset_right = 1000.0
-offset_bottom = 714.0
-theme_override_styles/panel = SubResource("HudPanel")
-
-[node name="StateText" type="Label" parent="HUD/StatePanel"]
-layout_mode = 2
-text = "Hero: Ready   |   Monster: Watching"
-horizontal_alignment = 1
-vertical_alignment = 1
-
 [node name="VirtualJoystick" type="Control" parent="HUD"]
 visible = false
 layout_mode = 3

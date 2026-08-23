@@ -45,7 +45,6 @@ const HOLLOW_PLATFORMS := [
 @onready var stamina_text: Label = $HUD/Stamina/StaminaText
 @onready var general_exp_bar: ProgressBar = $HUD/GeneralExp
 @onready var general_exp_text: Label = $HUD/GeneralExp/GeneralExpText
-@onready var state_text: Label = $HUD/StatePanel/StateText
 @onready var combat_log: Label = $HUD/CombatLogPanel/CombatLog
 @onready var restart_button: Button = $HUD/RestartButton
 @onready var attack_button: Button = $HUD/Hotbar/Attack
@@ -402,14 +401,6 @@ func _respawn_biter(biter: PrototypeButtoncapBiter) -> void:
     _add_combat_message("A Buttoncap Biter springs back up.")
 
 
-func _living_biter_count() -> int:
-    var count := 0
-    for biter: PrototypeButtoncapBiter in hollow_biters.get_children():
-        if biter.is_alive:
-            count += 1
-    return count
-
-
 func _restart_encounter() -> void:
     get_tree().reload_current_scene()
 
@@ -441,15 +432,6 @@ func _update_hud() -> void:
         hero.general_exp,
         PrototypeHero.GENERAL_EXP_GOAL,
     ]
-    if _current_map == MAP_FOREST:
-        state_text.text = "Hero: %s   |   Monster: %s" % [hero.current_action, monster.current_intent]
-    elif _current_map == MAP_HOLLOW:
-        state_text.text = "Hero: %s   |   Buttoncap Biters: %s remaining" % [
-            hero.current_action,
-            _living_biter_count(),
-        ]
-    else:
-        state_text.text = "MOONLIT MARKET   |   PEACEFUL TRADING OUTPOST"
 
     _update_action_button(attack_button, 1)
     var secondary_active := hero.is_blocking or hero.current_action == "Aiming"

@@ -166,10 +166,16 @@ func _build_quick_buttons() -> void:
     quick_bar.position = Vector2(-680.0, 238.0)
     quick_bar.size = Vector2(660.0, 40.0)
     quick_bar.add_theme_constant_override("separation", 6)
+    quick_bar.alignment = BoxContainer.ALIGNMENT_END
     quick_bar.mouse_filter = Control.MOUSE_FILTER_PASS
     add_child(quick_bar)
 
+    # Only the Hints quick button stays in the default view; the other panels
+    # (overview, gear, disciplines, talents, world map) remain reachable through
+    # their keyboard shortcuts and the tab row inside the panel window.
     for definition: Dictionary in TAB_DEFINITIONS:
+        if str(definition["id"]) != "hints":
+            continue
         var button := _button("%s · %s" % [definition["key"], definition["text"]], NIGHT_BLUE)
         button.custom_minimum_size = Vector2(104.0, 40.0)
         button.add_theme_font_size_override("font_size", 12)
