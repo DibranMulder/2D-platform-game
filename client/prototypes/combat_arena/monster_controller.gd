@@ -19,10 +19,30 @@ var _telegraph_remaining := 0.0
 var _hurt_flash := 0.0
 var _knockback_remaining := 0.0
 var _forced_stagger_remaining := 0.0
+var _spawn_position := Vector2.ZERO
+
+
+func _ready() -> void:
+    _spawn_position = position
 
 
 func set_target(target: Node2D) -> void:
     _target = target
+
+
+# Restore a fresh, living monster at its spawn point — used for respawns.
+func respawn() -> void:
+    health = MAX_HEALTH
+    is_alive = true
+    current_intent = "Watching"
+    _attack_cooldown = 0.8
+    _telegraph_remaining = 0.0
+    _hurt_flash = 0.0
+    _knockback_remaining = 0.0
+    _forced_stagger_remaining = 0.0
+    velocity = Vector2.ZERO
+    position = _spawn_position
+    queue_redraw()
 
 
 func receive_damage(amount: int, source_x: float) -> void:

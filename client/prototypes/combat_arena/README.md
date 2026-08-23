@@ -40,6 +40,35 @@ Mira's Moonlit Market. Approach Mira and press `E`, or tap **Trade**, to open
 the local-only shop. Purchases use prototype gold and remain in memory until
 the game closes; weapons are unique while supplies may be bought repeatedly.
 
+## Buttoncap Hollow (third map)
+
+The arena hosts three maps that swap **in place** inside the one scene, so the
+full HUD — resource bars, hotbar and weapon slots, character-panel buttons,
+combat log, and Log Out — stays present in every map. A glowing portal at the
+**left** edge of the Sunlit Forest ("TO BUTTONCAP HOLLOW") swaps to Buttoncap
+Hollow, a platforming map built around the Buttoncap Biter enemy. Travel is a
+loop: the forest's right portal still leads to the Moonlit Market, and the
+hollow's portal returns to the forest.
+
+The hollow has four staggered one-way platforms — each ledge is reachable from
+the one below with a single jump — and three Buttoncap Biters that bounce along
+their own patrol spans on the spring leg (`idle` / `hop` / `hurt` / `defeated`
+from `assets/characters/buttoncap_biter/v1/`). Each biter shows a health bar
+above it, takes the Hero's attacks (the Hero auto-targets the nearest living
+biter), and deals light contact damage on a short cooldown. The state panel
+tracks how many biters remain.
+
+Enemies respawn continuously: there is no victory screen. A defeated Buttoncap
+Biter — like the Sunlit Forest's horned monster — reappears at its spawn point a
+few seconds later, so a map always has something to fight. Enemy health is still
+persistent while you travel between maps; it only resets on respawn (or when the
+Hero dies and the encounter is restarted with `R`).
+
+Movement, jumping, and climbing are the same shared `PrototypeHero` controls as
+the forest. Walk left into the portal to return to the Sunlit Forest. The
+platforms (`HollowPlatforms`) and enemies (`HollowBiters`) are toggled per map
+by `_configure_map`, exactly like the forest ladder and the market merchant.
+
 The World Map includes three prototype layouts. Use the bottom arrows or the
 keyboard Left/Right arrows while the map is open to compare them. It supports
 click/tap selection, drag panning, wheel/button zoom, Stronghold access status,

@@ -1,4 +1,4 @@
-[gd_scene load_steps=24 format=3]
+[gd_scene load_steps=30 format=3]
 
 [ext_resource type="Script" path="res://prototypes/combat_arena/combat_arena.gd" id="1_arena"]
 [ext_resource type="Script" path="res://prototypes/combat_arena/hero_controller.gd" id="2_hero"]
@@ -8,6 +8,8 @@
 [ext_resource type="SpriteFrames" path="res://assets/characters/human_m03/v1/human_m03_sprite_frames.tres" id="6_human_frames"]
 [ext_resource type="Script" path="res://prototypes/combat_arena/climbable.gd" id="7_climbable"]
 [ext_resource type="Script" path="res://scripts/chronicle_button.gd" id="8_chronicle_button"]
+[ext_resource type="Script" path="res://prototypes/combat_arena/buttoncap_biter.gd" id="9_biter"]
+[ext_resource type="SpriteFrames" path="res://assets/characters/buttoncap_biter/v1/buttoncap_biter_sprite_frames.tres" id="10_biter_frames"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleHero"]
 radius = 19.0
@@ -31,6 +33,19 @@ size = Vector2(70, 130)
 
 [sub_resource type="RectangleShape2D" id="MerchantShape"]
 size = Vector2(180, 150)
+
+[sub_resource type="CapsuleShape2D" id="CapsuleBiter"]
+radius = 26.0
+height = 70.0
+
+[sub_resource type="RectangleShape2D" id="HollowPlatform240"]
+size = Vector2(240, 22)
+
+[sub_resource type="RectangleShape2D" id="HollowPlatform220"]
+size = Vector2(220, 22)
+
+[sub_resource type="RectangleShape2D" id="HollowPlatform180"]
+size = Vector2(180, 22)
 
 [sub_resource type="StyleBoxFlat" id="HeroHealthFill"]
 bg_color = Color(0.75, 0.12, 0.14, 1)
@@ -181,6 +196,14 @@ monitoring = false
 [node name="CollisionShape2D" type="CollisionShape2D" parent="MerchantArea"]
 shape = SubResource("MerchantShape")
 
+[node name="HollowPortalArea" type="Area2D" parent="."]
+position = Vector2(75, 500)
+collision_layer = 0
+collision_mask = 2
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="HollowPortalArea"]
+shape = SubResource("PortalShape")
+
 [node name="Hero" type="CharacterBody2D" parent="."]
 position = Vector2(285, 549)
 collision_layer = 2
@@ -238,6 +261,20 @@ theme_override_font_sizes/font_size = 14
 theme_override_constants/shadow_offset_x = 2
 theme_override_constants/shadow_offset_y = 2
 text = "TO MOONLIT MARKET"
+horizontal_alignment = 1
+
+[node name="HollowPortalLabel" type="Label" parent="."]
+z_index = 5
+offset_left = -10.0
+offset_top = 408.0
+offset_right = 200.0
+offset_bottom = 432.0
+theme_override_colors/font_color = Color(0.86, 0.79, 0.98, 1)
+theme_override_colors/font_shadow_color = Color(0.05, 0.02, 0.13, 0.95)
+theme_override_font_sizes/font_size = 14
+theme_override_constants/shadow_offset_x = 2
+theme_override_constants/shadow_offset_y = 2
+text = "TO BUTTONCAP HOLLOW"
 horizontal_alignment = 1
 
 [node name="HUD" type="CanvasLayer" parent="."]
@@ -628,3 +665,128 @@ theme_override_styles/pressed = SubResource("ActionPressed")
 text = "VICTORY — TAP OR PRESS R TO FIGHT AGAIN"
 script = ExtResource("8_chronicle_button")
 variant = 0
+
+[node name="HollowPlatforms" type="Node2D" parent="."]
+visible = false
+
+[node name="Platform1" type="StaticBody2D" parent="HollowPlatforms"]
+position = Vector2(300, 470)
+collision_layer = 1
+collision_mask = 0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="HollowPlatforms/Platform1"]
+shape = SubResource("HollowPlatform240")
+disabled = true
+one_way_collision = true
+one_way_collision_margin = 8.0
+
+[node name="Platform2" type="StaticBody2D" parent="HollowPlatforms"]
+position = Vector2(640, 388)
+collision_layer = 1
+collision_mask = 0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="HollowPlatforms/Platform2"]
+shape = SubResource("HollowPlatform220")
+disabled = true
+one_way_collision = true
+one_way_collision_margin = 8.0
+
+[node name="Platform3" type="StaticBody2D" parent="HollowPlatforms"]
+position = Vector2(980, 300)
+collision_layer = 1
+collision_mask = 0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="HollowPlatforms/Platform3"]
+shape = SubResource("HollowPlatform240")
+disabled = true
+one_way_collision = true
+one_way_collision_margin = 8.0
+
+[node name="Platform4" type="StaticBody2D" parent="HollowPlatforms"]
+position = Vector2(500, 240)
+collision_layer = 1
+collision_mask = 0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="HollowPlatforms/Platform4"]
+shape = SubResource("HollowPlatform180")
+disabled = true
+one_way_collision = true
+one_way_collision_margin = 8.0
+
+[node name="HollowBiters" type="Node2D" parent="."]
+visible = false
+
+[node name="BiterGround" type="CharacterBody2D" parent="HollowBiters" groups=["buttoncap_biters"]]
+process_mode = 4
+position = Vector2(760, 549)
+collision_layer = 4
+collision_mask = 1
+floor_snap_length = 8.0
+script = ExtResource("9_biter")
+patrol_min_x = 560.0
+patrol_max_x = 1180.0
+hop_interval = 1.0
+starts_facing = -1
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="HollowBiters/BiterGround"]
+position = Vector2(0, -35)
+shape = SubResource("CapsuleBiter")
+disabled = true
+
+[node name="Sprite" type="AnimatedSprite2D" parent="HollowBiters/BiterGround"]
+texture_filter = 2
+position = Vector2(0, -63)
+scale = Vector2(0.3, 0.3)
+sprite_frames = ExtResource("10_biter_frames")
+animation = &"idle"
+autoplay = "idle"
+
+[node name="BiterHigh" type="CharacterBody2D" parent="HollowBiters" groups=["buttoncap_biters"]]
+process_mode = 4
+position = Vector2(980, 288)
+collision_layer = 4
+collision_mask = 1
+floor_snap_length = 8.0
+script = ExtResource("9_biter")
+patrol_min_x = 875.0
+patrol_max_x = 1085.0
+hop_interval = 1.15
+starts_facing = -1
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="HollowBiters/BiterHigh"]
+position = Vector2(0, -35)
+shape = SubResource("CapsuleBiter")
+disabled = true
+
+[node name="Sprite" type="AnimatedSprite2D" parent="HollowBiters/BiterHigh"]
+texture_filter = 2
+position = Vector2(0, -63)
+scale = Vector2(0.3, 0.3)
+sprite_frames = ExtResource("10_biter_frames")
+animation = &"idle"
+autoplay = "idle"
+
+[node name="BiterMid" type="CharacterBody2D" parent="HollowBiters" groups=["buttoncap_biters"]]
+process_mode = 4
+position = Vector2(600, 376)
+collision_layer = 4
+collision_mask = 1
+floor_snap_length = 8.0
+script = ExtResource("9_biter")
+patrol_min_x = 545.0
+patrol_max_x = 735.0
+hop_interval = 0.95
+starts_facing = 1
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="HollowBiters/BiterMid"]
+position = Vector2(0, -35)
+shape = SubResource("CapsuleBiter")
+disabled = true
+
+[node name="Sprite" type="AnimatedSprite2D" parent="HollowBiters/BiterMid"]
+texture_filter = 2
+position = Vector2(0, -63)
+scale = Vector2(0.3, 0.3)
+sprite_frames = ExtResource("10_biter_frames")
+animation = &"idle"
+autoplay = "idle"
