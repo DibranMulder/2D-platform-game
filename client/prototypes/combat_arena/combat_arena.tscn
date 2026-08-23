@@ -10,6 +10,7 @@
 [ext_resource type="Script" path="res://scripts/chronicle_button.gd" id="8_chronicle_button"]
 [ext_resource type="Script" path="res://prototypes/combat_arena/buttoncap_biter.gd" id="9_biter"]
 [ext_resource type="SpriteFrames" path="res://assets/characters/buttoncap_biter/v1/buttoncap_biter_sprite_frames.tres" id="10_biter_frames"]
+[ext_resource type="Script" path="res://prototypes/combat_arena/chronicle_hud_strip.gd" id="11_hud_strip"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleHero"]
 radius = 19.0
@@ -314,103 +315,13 @@ script = ExtResource("8_chronicle_button")
 variant = 3
 touch_safe = false
 
-[node name="HeroIdentity" type="Label" parent="HUD"]
+[node name="HudStrip" type="Control" parent="HUD"]
 offset_left = 20.0
-offset_top = 590.0
-offset_right = 390.0
-offset_bottom = 616.0
-theme_override_colors/font_color = Color(0.94, 0.82, 0.51, 1)
-theme_override_colors/font_shadow_color = Color(0.02, 0.05, 0.04, 0.95)
-theme_override_font_sizes/font_size = 18
-theme_override_constants/shadow_offset_x = 2
-theme_override_constants/shadow_offset_y = 2
-text = "PROTOTYPE HERO  ·  LEVEL 7"
-
-[node name="HeroHealth" type="ProgressBar" parent="HUD"]
-offset_left = 20.0
-offset_top = 620.0
-offset_right = 390.0
-offset_bottom = 642.0
-theme_override_styles/fill = SubResource("HeroHealthFill")
-theme_override_styles/background = SubResource("ResourceBackground")
-value = 100.0
-show_percentage = false
-
-[node name="HeroHealthText" type="Label" parent="HUD/HeroHealth"]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-text = "HERO  100 / 100"
-horizontal_alignment = 1
-vertical_alignment = 1
-
-[node name="Stamina" type="ProgressBar" parent="HUD"]
-offset_left = 20.0
-offset_top = 674.0
-offset_right = 390.0
-offset_bottom = 696.0
-theme_override_styles/fill = SubResource("StaminaFill")
-theme_override_styles/background = SubResource("ResourceBackground")
-value = 100.0
-show_percentage = false
-
-[node name="StaminaText" type="Label" parent="HUD/Stamina"]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-text = "STAMINA  100 / 100"
-horizontal_alignment = 1
-vertical_alignment = 1
-
-[node name="Mana" type="ProgressBar" parent="HUD"]
-offset_left = 20.0
-offset_top = 647.0
-offset_right = 390.0
-offset_bottom = 669.0
-theme_override_styles/fill = SubResource("ManaFill")
-theme_override_styles/background = SubResource("ResourceBackground")
-value = 100.0
-show_percentage = false
-
-[node name="ManaText" type="Label" parent="HUD/Mana"]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-text = "MANA  100 / 100"
-horizontal_alignment = 1
-vertical_alignment = 1
-
-[node name="GeneralExp" type="ProgressBar" parent="HUD"]
-offset_left = 20.0
-offset_top = 701.0
-offset_right = 390.0
-offset_bottom = 719.0
-max_value = 1000.0
-step = 1.0
-theme_override_styles/fill = SubResource("GeneralExpFill")
-theme_override_styles/background = SubResource("ResourceBackground")
-value = 350.0
-show_percentage = false
-
-[node name="GeneralExpText" type="Label" parent="HUD/GeneralExp"]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-text = "GENERAL EXP  350 / 1000"
-horizontal_alignment = 1
-vertical_alignment = 1
+offset_top = 596.0
+offset_right = 560.0
+offset_bottom = 716.0
+mouse_filter = 2
+script = ExtResource("11_hud_strip")
 
 [node name="CombatLogPanel" type="PanelContainer" parent="HUD"]
 offset_left = 840.0

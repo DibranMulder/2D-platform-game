@@ -36,15 +36,7 @@ const HOLLOW_PLATFORMS := [
 @onready var joystick: PrototypeVirtualJoystick = $HUD/VirtualJoystick
 @onready var map_label: Label = $HUD/MapLabel
 @onready var trade_button: Button = $HUD/TradeButton
-@onready var hero_identity: Label = $HUD/HeroIdentity
-@onready var hero_health: ProgressBar = $HUD/HeroHealth
-@onready var hero_health_text: Label = $HUD/HeroHealth/HeroHealthText
-@onready var mana_bar: ProgressBar = $HUD/Mana
-@onready var mana_text: Label = $HUD/Mana/ManaText
-@onready var stamina_bar: ProgressBar = $HUD/Stamina
-@onready var stamina_text: Label = $HUD/Stamina/StaminaText
-@onready var general_exp_bar: ProgressBar = $HUD/GeneralExp
-@onready var general_exp_text: Label = $HUD/GeneralExp/GeneralExpText
+@onready var hud_strip: PrototypeChronicleHudStrip = $HUD/HudStrip
 @onready var combat_log: Label = $HUD/CombatLogPanel/CombatLog
 @onready var restart_button: Button = $HUD/RestartButton
 @onready var attack_button: Button = $HUD/Hotbar/Attack
@@ -90,10 +82,7 @@ func _ready() -> void:
         ]
 
     hero.configure_hero(selected_hero)
-    hero_identity.text = "%s  ·  LEVEL %s" % [
-        str(selected_hero.get("name", "Prototype Hero")).to_upper(),
-        hero.level,
-    ]
+    hud_strip.configure(str(selected_hero.get("name", "Prototype Hero")), hero.level)
     _character_panels = CharacterPanelsScript.new() as PrototypeChronicleCharacterPanels
     $HUD.add_child(_character_panels)
     _character_panels.configure_hero(selected_hero, hero)
@@ -421,17 +410,14 @@ func _add_combat_message(message: String) -> void:
 
 
 func _update_hud() -> void:
-    hero_health.value = hero.health
-    hero_health_text.text = "HERO  %s / %s" % [hero.health, PrototypeHero.MAX_HEALTH]
-    mana_bar.value = hero.mana
-    mana_text.text = "MANA  %s / %s" % [roundi(hero.mana), int(PrototypeHero.MAX_MANA)]
-    stamina_bar.value = hero.stamina
-    stamina_text.text = "STAMINA  %s / %s" % [roundi(hero.stamina), int(PrototypeHero.MAX_STAMINA)]
-    general_exp_bar.value = hero.general_exp
-    general_exp_text.text = "GENERAL EXP  %s / %s" % [
+    hud_strip.set_values(
+        hero.health,
+        PrototypeHero.MAX_HEALTH,
+        hero.mana,
+        PrototypeHero.MAX_MANA,
         hero.general_exp,
         PrototypeHero.GENERAL_EXP_GOAL,
-    ]
+    )
 
     _update_action_button(attack_button, 1)
     var secondary_active := hero.is_blocking or hero.current_action == "Aiming"
