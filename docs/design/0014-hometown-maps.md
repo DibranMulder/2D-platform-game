@@ -176,11 +176,13 @@ All proper names are ⊕ new unless a doc named them.
   Crowncrab; Tidal Gate Eel lurks past the gate.
 - **Palette/materials:** deep teal, sea green, foam cream, indigo, coral-orange
   accents; shell, polished coral, pearl, woven kelp, sea glass, verdigris bronze.
-- **Maps (15):** *Village* — Tidewharf Landing (spawn) · Coral Market · Kelp
-  Apothecary · Divers' Yard · Foamrest Inn · Tidal Gate Approach; *Stronghold* —
+- **Maps — 17 (Village 7 · Stronghold 6 · Story 4), a tide-worked town:**
+  *Village* — Tidewharf Landing (spawn) · Coral Market · Kelp Apothecary ·
+  Divers' Yard · Foamrest Inn · the Tidal Lagoon (a shared hub that opens and
+  closes with the tide) · Tidal Gate Causeway (Guardian gate); *Stronghold* —
   Gatehall of Shells · Reefguard Barracks · Cistern Works · Pearl Hall · **the
-  Tide Chamber** · Deepvault; *Story* — Shrine Causeway · Flooded Nave · the
-  Pearl Sanctum.
+  Tide Chamber** · Deepvault; *Story* — Shrine Causeway · Flooded Nave · Coral
+  Reliquary · the Pearl Sanctum.
 
 ### 3. Grove Centaurs — Elder Forests (Light)
 - **Outer Village — Rootway Commons.** Broad living paths and canopy roads into
@@ -196,11 +198,12 @@ All proper names are ⊕ new unless a doc named them.
   Briarhorn Boar and Hollowroot Mimic off the paths.
 - **Palette/materials:** moss, fern, bark brown, warm cream, amber & spring-green
   accents; living wood, bark lamellae, woven reeds, bronze, amber, seed pods.
-- **Maps (15):** *Village* — Rootway Green (spawn) · Barkstall Market ·
-  Herbalist's Hollow · Runners' Track · Mossrest Lodge · Grovegate Path;
-  *Stronghold* — Root Arch Gate · Pathguard Warren · Sap Works · Elderroot Hall ·
-  **the Council Grove** · Seedvault; *Story* — Trunk Base · Canopy Climb · the
-  Luminous Clearing.
+- **Maps — 16 (Village 6 · Stronghold 5 · Story 5), a small hub under a tall
+  climb:** *Village* — Rootway Green (spawn) · Barkstall Market · Herbalist's
+  Hollow · Runners' Track · Mossrest Lodge · Grovegate Path (living-root Guardian
+  gate); *Stronghold* — Pathguard Warren · Sap Works · Elderroot Hall · **the
+  Council Grove** · Seedvault; *Story (the tallest Story Site)* — Trunk Base ·
+  Canopy Climb · the Hanging Gardens · the Antler Bridge · the Luminous Clearing.
 
 ### 4. Aeralith — Sky Reaches (Light)
 - **Outer Village — Lowdock.** Lower sky docks and controlled lifts; rope bridges
@@ -216,11 +219,12 @@ All proper names are ⊕ new unless a doc named them.
 - **Palette/materials:** cloud white, azure, blue-grey, soft lavender, sunrise-gold
   accents; layered silk, lacquered light wood, brass, pale stone, crystal,
   taut membrane. Motifs: spirals, kites, wind harps, open arches.
-- **Maps (15):** *Village* — Lowdock Landing (spawn) · Skymarket · Windbell
-  Apothecary · Glidewrights' Yard · Cloudrest Inn · Liftgate Approach;
-  *Stronghold* — Liftgate Hall · Skywatch Barracks · Vane Works · Bell Hall ·
-  **the Windcourt** · Sky Vault; *Story* — Spire Base · Wind-harp Ascent · the
-  Star Gallery.
+- **Maps — 17 (Village 6 · Stronghold 8 · Story 3), a vertical lift-spire (the
+  largest Stronghold):** *Village* — Lowdock Landing (spawn) · Skymarket ·
+  Windbell Apothecary · Glidewrights' Yard · Cloudrest Inn · the Upper Dock
+  (controlled-lift approach); *Stronghold* — Liftgate Hall · Skywatch Barracks ·
+  Vane Works · the Rope-Bridge Span · Bell Hall · **the Windcourt** · the Upper
+  Roost · Sky Vault; *Story* — Spire Base · Wind-harp Ascent · the Star Gallery.
 
 ### 5. Crag Trolls — Broken Mountains (Dark)
 - **Outer Village — Hoistyard.** Quarry terraces, rope-hoist yards, forge markets,
@@ -236,11 +240,12 @@ All proper names are ⊕ new unless a doc named them.
 - **Palette/materials:** granite blue, charcoal, umber, storm grey, rust-orange &
   pale-lichen accents; basalt, slate, raw iron, horn, thick hide, rope,
   lichen-dyed cloth. Motifs: wedges, stacked slabs, fault lines, metal bands.
-- **Maps (15):** *Village* — Hoistyard Terrace (spawn) · Forge Market · Lichen
-  Apothecary · Breakers' Yard · Deeprest Lodge · Stormgate Approach;
-  *Stronghold* — Monolith Gatehouse · Slabguard Barracks · Quarry Works ·
-  Clanhall · **the Forge Seat** · Iron Vault; *Story* — Avalanche Stair Base ·
-  Chute Ascent · the Storm Forge.
+- **Maps — 13 (Village 5 · Stronghold 6 · Story 2), the smallest town — a stout
+  village, a monumental hold, a brutal-short Story Site:** *Village* — Hoistyard
+  Terrace (spawn) · Forge Market · Lichen Apothecary · Deeprest Lodge · Stormgate
+  Approach (monumental Guardian gate); *Stronghold* — Monolith Gatehouse ·
+  Slabguard Barracks · Quarry Works · Clanhall · **the Forge Seat** · Iron Vault;
+  *Story* — the Avalanche Stair · the Storm Forge.
 
 ### 6. Deep Goblins — The Underdeep (Dark)
 - **Outer Village — Lampcap Junction.** Trade tunnels and guarded surface
@@ -258,11 +263,14 @@ All proper names are ⊕ new unless a doc named them.
 - **Palette/materials:** soot black, copper, umber, fungus violet, chartreuse/cyan
   bioluminescence; sooted iron, copper, leather, fungal fiber, glass, ceramic
   pipe, crystal. Motifs: diamonds, tunnel ribs, rivets, rails, mycelial nets.
-- **Maps (15):** *Village* — Lampcap Landing (spawn, surface elevator) · Rivet
-  Market · Sporeworks Apothecary · Tinkerers' Yard · Funglight Rest · Nexus
-  Approach; *Stronghold* — Ventgate Hall · Railguard Barracks · Pump Works ·
-  Assembly Floor · **the Great Gearworks Assembly** · Ore Vault; *Story* —
-  Railhead · Cart Descent · the Crystal Seam.
+- **Maps — 19 (Village 8 · Stronghold 7 · Story 4), the largest town — a
+  sprawling machine-warren threaded on a rail hub:** *Village* — Lampcap Landing
+  (spawn, surface elevator) · the Rail Junction (rail hub linking the district) ·
+  Rivet Market · Sporeworks Apothecary · Tinkerers' Yard · Funglight Rest ·
+  Fungus Farms · Nexus Approach (sealed-vent Guardian gate); *Stronghold* —
+  Ventgate Hall · Railguard Barracks · Pump Works · Assembly Floor · **the Great
+  Gearworks Assembly** · the Reactor Vault · Ore Vault; *Story* — Railhead · the
+  Runaway Rail · the Crystal Seam · the Deep Lode.
 
 ### 7. Sunscour — Ember Desert (Dark)
 - **Outer Village — the Caravanserai.** Caravan village and cistern market before
@@ -281,11 +289,13 @@ All proper names are ⊕ new unless a doc named them.
   accents; sun-bleached linen, dark cooling cloth, blackened bronze, glazed
   ceramic, salt crystal, colored glass. Motifs: split sun, horizon line, mirage
   wave, geometric shade screens, water tallies.
-- **Maps (15):** *Village* — Caravanserai Court (spawn) · Shade Market · Cistern
-  Apothecary · Drill Yard · Waterrest Inn · Bastion Approach; *Stronghold* —
-  Aqueduct Gatehouse · Legion Barracks · Cistern Works · Hall of Tallies · **the
-  Legion Court** · Salt Vault; *Story* — Aqueduct Span · Mirage Causeway · the
-  Solar Furnace.
+- **Maps — 16 (Village 7 · Stronghold 5 · Story 4), a route-and-water spine:**
+  *Village* — Caravanserai Court (spawn) · the Caravan Yard (arriving caravans) ·
+  Shade Market · Cistern Apothecary · Drill Yard · Waterrest Inn · Bastion
+  Approach (Legion-sentinel gate); *Stronghold* — Aqueduct Gatehouse · Legion
+  Barracks · Cistern Works (the protected water) · Hall of Tallies · **the Legion
+  Court**; *Story* — Aqueduct Span · Mirage Causeway · the Solar Furnace · the
+  Sunken Cistern.
 
 ### 8. Rimeborn — The Ice Lands (Dark)
 - **Outer Village — Thawcamp.** A thermal village of mobile windbreak shelters
@@ -305,57 +315,250 @@ All proper names are ⊕ new unless a doc named them.
   aurora-green/magenta & hearth-amber accents; layered fur, felt, bone, dark iron,
   sealable leather, ice glass, luminous mineral pigment. Motifs: hexagonal
   fracture, spear points, braided cord, constellations, circles of warmth.
-- **Maps (15):** *Village* — Thawcamp Circle (spawn, hearth) · Furmarket · Tallow
-  Apothecary · Hunters' Yard · Longrest Lodge · Hearthgate Approach;
-  *Stronghold* — Windbreak Gatehouse · Warmthguard Barracks · Thermal Works ·
-  Aurora Hall · **the Hearth Hall** · Frost Vault; *Story* — Buried Threshold ·
-  Ice-cave Descent · the Aurora Vault.
+- **Maps — 14 (Village 5 · Stronghold 5 · Story 4), a compact mobile camp around
+  one hearth:** *Village* — Thawcamp Circle (spawn, central hearth) · Furmarket ·
+  Tallow Apothecary · Hunters' Lodge (trainers + rest, combined for warmth) ·
+  Hearthgate Approach (windbreak Guardian gate); *Stronghold* — Windbreak
+  Gatehouse · Warmthguard Barracks · Thermal Works (geothermal) · the Aurora
+  Hall · **the Hearth Hall**; *Story* — Buried Threshold · Ice-cave Descent · the
+  Frozen Gallery · the Aurora Vault.
 
-### Summary — all eight towns (15 Zones each: 6 Village · 6 Stronghold · 3 Story)
+### Summary — all eight towns
 
-| Lineage (Alleg.) | Home town | Stronghold → culmination | Story Site |
-| --- | --- | --- | --- |
-| Humans (L) | Wendmere Crossroads | the King's Keep → the King's Room | the Princess's Tower |
-| Tidekin (L) | Tidewharf | the Pearl Citadel → the Tide Chamber | the Sunken Shrine |
-| Grove Centaurs (L) | Rootway Commons | the Heartgrove → the Council Grove | Elder Tree: Trial of Paths |
-| Aeralith (L) | Lowdock | Skyspire Aerie → the Windcourt | the Observatory of Storms |
-| Crag Trolls (D) | Hoistyard | Stormgate Hold → the Forge Seat | the Storm Forge |
-| Deep Goblins (D) | Lampcap Junction | the Deepworks Nexus → the Great Gearworks Assembly | the Crystal Seam |
-| Sunscour (D) | the Caravanserai | the Shade Bastion → the Legion Court | the Solar Furnace |
-| Rimeborn (D) | Thawcamp | the Aurora Hall → the Hearth Hall | the Aurora Vault |
+Zone counts vary by culture; only the **Stronghold** ring is held to the canon
+5–10 range (DESIGN-0010). Village and Story rings flex to fit each people — a
+stout compact troll hold, a sprawling goblin rail-warren, a tall centaur climb.
 
-Total: **120 Zones** across the eight home towns (within the 240–360-Zone
+| Lineage (Alleg.) | Home town | Stronghold → culmination | Story Site | Zones (V·S·T) |
+| --- | --- | --- | --- | --- |
+| Humans (L) | Wendmere Crossroads | the King's Keep → the King's Room | the Princess's Tower | **15** (6·6·3) |
+| Tidekin (L) | Tidewharf | the Pearl Citadel → the Tide Chamber | the Sunken Shrine | **17** (7·6·4) |
+| Grove Centaurs (L) | Rootway Commons | the Heartgrove → the Council Grove | Elder Tree: Trial of Paths | **16** (6·5·5) |
+| Aeralith (L) | Lowdock | Skyspire Aerie → the Windcourt | the Observatory of Storms | **17** (6·8·3) |
+| Crag Trolls (D) | Hoistyard | Stormgate Hold → the Forge Seat | the Storm Forge | **13** (5·6·2) |
+| Deep Goblins (D) | Lampcap Junction | the Deepworks Nexus → the Great Gearworks Assembly | the Crystal Seam | **19** (8·7·4) |
+| Sunscour (D) | the Caravanserai | the Shade Bastion → the Legion Court | the Solar Furnace | **16** (7·5·4) |
+| Rimeborn (D) | Thawcamp | the Aurora Hall → the Hearth Hall | the Aurora Vault | **14** (5·5·4) |
+
+Total: **127 Zones** across the eight home towns (within the 240–360-Zone
 Homeland budget in DESIGN-0010).
 
-## Portal graph (human home town, representative)
+## Home-town portal graphs
+
+All eight follow the three-ring shape — Outer Village (open, ★spawn) → Guardian
+gate → Stronghold (Allegiance-gated, ✦culmination) → Story Site (⚑leaf) — but the
+zone mix differs per culture. Every Zone keeps ≥1 outbound Portal and every leaf a
+return Portal (DESIGN-0010). `★`=spawn/respawn, `✦`=culmination hall, `⚑`=leaf.
+
+### Humans — Wendmere Crossroads (15)
 
 ```mermaid
 flowchart LR
     subgraph Village["Wendmere Crossroads (Outer Village — open)"]
-        SQ[Village Square ★spawn/respawn] --- MR[Market Row]
+        SQ[Village Square ★] --- MR[Market Row]
         SQ --- AL[Apothecary Lane]
         SQ --- TY[Trainers' Yard]
         TY --- INN[Hearth Inn]
         SQ --- APP[Stronghold Approach]
     end
     APP -->|Guardian gate<br/>Light only| GC[Gatehouse Court]
-    subgraph Keep["The King's Keep (Stronghold — Allegiance-gated)"]
+    subgraph Keep["The King's Keep (Stronghold)"]
         GC --- GH[Warden Barracks]
         GC --- SD[Service District]
         GH --- HALL[Great Hall]
-        HALL --- KR[The King's Room ♛]
-        HALL --- TR[Treasury & Archive]
+        HALL --- KR[The King's Room ✦]
+        HALL --- TR[Treasury and Archive]
     end
     HALL -->|quest-gated Portal| TB
     subgraph Tower["The Princess's Tower (Story Site — open)"]
-        TB[Tower Base] --- WS[Winding Stair] --- SOL[The Solar ⚑leaf]
+        TB[Tower Base] --- WS[Winding Stair] --- SOL[The Solar ⚑]
     end
-    SQ -.world map exits.-> WORLD([Open Lands Territory / world])
+    SQ -.world map.-> W([Open Lands])
 ```
 
-Every Zone has ≥1 outbound Portal; leaf Zones (King's Room, the Solar) keep a
-return Portal (DESIGN-0010). Other Lineages follow the same three-ring shape with
-their own Zone names.
+### Tidekin — Tidewharf (17) · tide-worked, a lagoon hub
+
+```mermaid
+flowchart LR
+    subgraph V["Tidewharf (Outer Village — open)"]
+        LAND[Tidewharf Landing ★] --- CM[Coral Market]
+        LAND --- KA[Kelp Apothecary]
+        LAND --- DY[Divers' Yard]
+        DY --- INN[Foamrest Inn]
+        LAND --- LAG[Tidal Lagoon]
+        LAND --- CAUS[Tidal Gate Causeway]
+    end
+    CAUS -->|Guardian gate<br/>Light only| GS[Gatehall of Shells]
+    subgraph S["Pearl Citadel (Stronghold)"]
+        GS --- RB[Reefguard Barracks]
+        GS --- CW[Cistern Works]
+        GS --- PH[Pearl Hall]
+        PH --- TC[the Tide Chamber ✦]
+        PH --- DV[Deepvault]
+    end
+    PH -->|tide-gated Portal| SC
+    subgraph T["the Sunken Shrine (Story Site — open)"]
+        SC[Shrine Causeway] --> FN[Flooded Nave] --> CR[Coral Reliquary] --> PS[the Pearl Sanctum ⚑]
+    end
+    LAND -.world map.-> W([Tidekin Sea])
+```
+
+### Grove Centaurs — Rootway Commons (16) · a small hub, a tall climb
+
+```mermaid
+flowchart LR
+    subgraph V["Rootway Commons (Outer Village — open)"]
+        GRN[Rootway Green ★] --- BM[Barkstall Market]
+        GRN --- HH[Herbalist's Hollow]
+        GRN --- RT[Runners' Track]
+        RT --- ML[Mossrest Lodge]
+        GRN --- GP[Grovegate Path]
+    end
+    GP -->|living-root gate<br/>Light only| PW[Pathguard Warren]
+    subgraph S["the Heartgrove (Stronghold)"]
+        PW --- SW[Sap Works]
+        PW --- EH[Elderroot Hall]
+        EH --- CG[the Council Grove ✦]
+        EH --- SV[Seedvault]
+    end
+    EH -->|climb Portal| TB
+    subgraph T["Elder Tree: Trial of Paths (Story Site — open)"]
+        TB[Trunk Base] --> CC[Canopy Climb] --> HG[Hanging Gardens] --> AB[Antler Bridge] --> LC[the Luminous Clearing ⚑]
+    end
+    GRN -.world map.-> W([Elder Forests])
+```
+
+### Aeralith — Lowdock (17) · a vertical lift-spire (largest Stronghold)
+
+```mermaid
+flowchart LR
+    subgraph V["Lowdock (Outer Village — open)"]
+        LL[Lowdock Landing ★] --- SM[Skymarket]
+        LL --- WA[Windbell Apothecary]
+        LL --- GY[Glidewrights' Yard]
+        GY --- CI[Cloudrest Inn]
+        LL --- UD[the Upper Dock]
+    end
+    UD -->|controlled lift<br/>Light only| LH[Liftgate Hall]
+    subgraph S["Skyspire Aerie (Stronghold)"]
+        LH --- SB[Skywatch Barracks]
+        LH --- VW[Vane Works]
+        LH --- RSp[the Rope-Bridge Span]
+        RSp --- BH[Bell Hall]
+        BH --- WC[the Windcourt ✦]
+        BH --- UR[the Upper Roost]
+        WC --- SKV[Sky Vault]
+    end
+    BH -->|glide Portal| SP
+    subgraph T["Observatory of Storms (Story Site — open)"]
+        SP[Spire Base] --> WH[Wind-harp Ascent] --> SG[the Star Gallery ⚑]
+    end
+    LL -.world map.-> W([Sky Reaches])
+```
+
+### Crag Trolls — Hoistyard (13) · smallest town, monumental hold
+
+```mermaid
+flowchart LR
+    subgraph V["Hoistyard (Outer Village — open)"]
+        HT[Hoistyard Terrace ★] --- FM[Forge Market]
+        HT --- LA[Lichen Apothecary]
+        HT --- DL[Deeprest Lodge]
+        HT --- SA[Stormgate Approach]
+    end
+    SA -->|monumental gate<br/>Dark only| MG[Monolith Gatehouse]
+    subgraph S["Stormgate Hold (Stronghold)"]
+        MG --- SLB[Slabguard Barracks]
+        MG --- QW[Quarry Works]
+        MG --- CH[Clanhall]
+        CH --- FS[the Forge Seat ✦]
+        CH --- IV[Iron Vault]
+    end
+    CH -->|stair Portal| AVS
+    subgraph T["the Storm Forge (Story Site — open)"]
+        AVS[the Avalanche Stair] --> SF[the Storm Forge ⚑]
+    end
+    HT -.world map.-> W([Broken Mountains])
+```
+
+### Deep Goblins — Lampcap Junction (19) · largest town, rail-warren
+
+```mermaid
+flowchart LR
+    subgraph V["Lampcap Junction (Outer Village — open)"]
+        LLd[Lampcap Landing ★] --- RJ[the Rail Junction]
+        RJ --- RM[Rivet Market]
+        RJ --- SA2[Sporeworks Apothecary]
+        RJ --- TY2[Tinkerers' Yard]
+        TY2 --- FR[Funglight Rest]
+        RJ --- FF[Fungus Farms]
+        RJ --- NA[Nexus Approach]
+    end
+    NA -->|sealed-vent gate<br/>Dark only| VH[Ventgate Hall]
+    subgraph S["the Deepworks Nexus (Stronghold)"]
+        VH --- RGB[Railguard Barracks]
+        VH --- PWk[Pump Works]
+        VH --- AF[Assembly Floor]
+        AF --- GA[Great Gearworks Assembly ✦]
+        AF --- RV[the Reactor Vault]
+        GA --- OV[Ore Vault]
+    end
+    AF -->|rail Portal| RH
+    subgraph T["Crystal Seam / Runaway Rail (Story Site — open)"]
+        RH[Railhead] --> RR[the Runaway Rail] --> CS[the Crystal Seam] --> DLd[the Deep Lode ⚑]
+    end
+    LLd -.world map.-> W([Underdeep])
+```
+
+### Sunscour — the Caravanserai (16) · a route-and-water spine
+
+```mermaid
+flowchart LR
+    subgraph V["the Caravanserai (Outer Village — open)"]
+        CC[Caravanserai Court ★] --- CY[the Caravan Yard]
+        CC --- SM2[Shade Market]
+        CC --- CA[Cistern Apothecary]
+        CC --- DYd[Drill Yard]
+        DYd --- WI[Waterrest Inn]
+        CC --- BA[Bastion Approach]
+    end
+    BA -->|Legion sentinels<br/>Dark only| AG[Aqueduct Gatehouse]
+    subgraph S["the Shade Bastion (Stronghold)"]
+        AG --- LB[Legion Barracks]
+        AG --- CWk[Cistern Works]
+        AG --- HTal[Hall of Tallies]
+        HTal --- LCt[the Legion Court ✦]
+    end
+    HTal -->|aqueduct Portal| ASp
+    subgraph T["Solar Furnace / Mirage Aqueduct (Story Site — open)"]
+        ASp[Aqueduct Span] --> MC[Mirage Causeway] --> SFn[the Solar Furnace] --> SCi[the Sunken Cistern ⚑]
+    end
+    CC -.world map.-> W([Ember Desert])
+```
+
+### Rimeborn — Thawcamp (14) · a compact mobile camp around one hearth
+
+```mermaid
+flowchart LR
+    subgraph V["Thawcamp (Outer Village — open)"]
+        TCi[Thawcamp Circle ★] --- FMk[Furmarket]
+        TCi --- TA[Tallow Apothecary]
+        TCi --- HLg[Hunters' Lodge]
+        TCi --- HGa[Hearthgate Approach]
+    end
+    HGa -->|windbreak gate<br/>Dark only| WG[Windbreak Gatehouse]
+    subgraph S["the Aurora Hall (Stronghold)"]
+        WG --- WB[Warmthguard Barracks]
+        WG --- TW[Thermal Works]
+        WG --- AH[the Aurora Hall]
+        AH --- HH[the Hearth Hall ✦]
+    end
+    AH -->|buried Portal| BT
+    subgraph T["Snow-buried Ruin / Aurora Vault (Story Site — open)"]
+        BT[Buried Threshold] --> ID[Ice-cave Descent] --> FG[the Frozen Gallery] --> AV[the Aurora Vault ⚑]
+    end
+    TCi -.world map.-> W([Ice Lands])
+```
 
 ## Art-generation prompts
 
@@ -508,6 +711,8 @@ per-hero zone routing.
 ## Change log
 - 2026-08-24: Initial home-town model, per-Lineage towns, NPC template, Provision
   set, portal graph, and art prompts established.
-- 2026-08-24: Expanded all seven non-Human towns to explicit 15-Zone map
-  breakdowns; added stronghold-gate + Story-Site art prompts per Lineage and an
-  eight-town summary table.
+- 2026-08-24: Expanded all seven non-Human towns to explicit map breakdowns;
+  added stronghold-gate + Story-Site art prompts per Lineage and an eight-town
+  summary table.
+- 2026-08-24: Varied zone counts per culture (13–19 Zones; Stronghold held to
+  5–10) instead of a uniform 15, and added a portal-graph mermaid for every town.
