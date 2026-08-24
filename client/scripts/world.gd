@@ -7,6 +7,22 @@ extends Node2D
 const NetworkClientScript := preload("res://scripts/network_client.gd")
 const ChronicleButtonScript := preload("res://scripts/chronicle_button.gd")
 const HudStripScript := preload("res://prototypes/combat_arena/chronicle_hud_strip.gd")
+const CharacterPanelsScript := preload("res://prototypes/combat_arena/chronicle_character_panels.gd")
+const OnboardingScene := "res://prototypes/onboarding/onboarding.tscn"
+
+# Portal markers per zone, in screen space: [center_x, center_y, label].
+const ZONE_PORTALS := {
+    "sunlit_forest": [
+        [1205, 500, "TO MOONLIT MARKET"],
+        [75, 500, "TO BUTTONCAP HOLLOW"],
+    ],
+    "moonlit_market": [[70, 500, "TO SUNLIT FOREST"]],
+    "buttoncap_hollow": [
+        [75, 500, "TO SUNLIT FOREST"],
+        [1205, 500, "TO THE GAUNTLET"],
+    ],
+    "the_gauntlet": [[3440, 420, "FINISH"]],
+}
 const ForestTexture := preload("res://assets/backgrounds/storybook-forest-battleground-v1.png")
 const MarketTexture := preload("res://assets/backgrounds/storybook-moonlit-market-v1.png")
 const HumanFrames := preload("res://assets/characters/human_m03/v1/human_m03_sprite_frames.tres")
@@ -34,11 +50,13 @@ var _network: NetworkClient
 var _camera: Camera2D
 var _background: TextureRect
 var _hud_strip
+var _character_panels
 var _map_label: Label
 var _hint_label: Label
 var _local_player_id := ""
 var _account_id := "local-account"
 var _hero_name := ""
+var _selected_hero: Dictionary = {}
 var _current_zone := "sunlit_forest"
 
 # entity_id -> { data, target: Vector2, pos: Vector2, sprite: AnimatedSprite2D|null }
@@ -82,8 +100,8 @@ func _resolve_identity() -> void:
     if tree.has_meta("account_email"):
         _account_id = str(tree.get_meta("account_email"))
     if tree.has_meta("selected_hero"):
-        var hero := tree.get_meta("selected_hero") as Dictionary
-        _hero_name = str(hero.get("name", ""))
+        _selected_hero = (tree.get_meta("selected_hero") as Dictionary).duplicate(true)
+        _hero_name = str(_selected_hero.get("name", ""))
     if _hero_name.is_empty():
         _hero_name = "Wanderer-%04d" % (randi() % 10000)
     for argument: String in OS.get_cmdline_user_args():
@@ -91,6 +109,14 @@ func _resolve_identity() -> void:
             _hero_name = argument.trim_prefix("--hero=")
         elif argument.begins_with("--account="):
             _account_id = argument.trim_prefix("--account=")
+    # Ensure the character panels always have a usable hero record.
+    if _selected_hero.is_empty():
+        _selected_hero = {
+            "name": _hero_name,
+            "lineage_id": "human",
+            "lineage_name": "Human",
+            "allegiance": "light",
+        }
 
 
 # --- scene construction ---
@@ -141,22 +167,39 @@ func _build_hud() -> void:
         button.pressed.connect(_on_weapon_pressed.bind(pair[1]))
         weapons.add_child(button)
 
-    # Hotbar (bottom).
+    # Logout (top-left, below the HUD strip).
+    var logout := _make_button("LOG OUT")
+    logout.position = Vector2(24, 150)
+    logout.pressed.connect(_logout)
+    hud.add_child(logout)
+
+    # Hotbar (bottom) in slot order: 1 Attack, 2 Guard(held), 3 Power, 4 Whirl,
+    # 5 Lunge, 6 Heal, then Jump.
     var hotbar := HBoxContainer.new()
     hotbar.position = Vector2(24, 640)
     hotbar.add_theme_constant_override("separation", 8)
     hud.add_child(hotbar)
-    for pair in [["1 ATTACK", 1], ["3 POWER", 3], ["4 WHIRL", 4], ["5 LUNGE", 5], ["6 HEAL", 6]]:
-        var button := _make_button(pair[0])
-        button.pressed.connect(_on_action_pressed.bind(pair[1]))
-        hotbar.add_child(button)
+    var attack := _make_button("1 ATTACK")
+    attack.pressed.connect(_on_action_pressed.bind(1))
+    hotbar.add_child(attack)
     var guard := _make_button("2 GUARD")
     guard.button_down.connect(func() -> void: _touch_guard = true)
     guard.button_up.connect(func() -> void: _touch_guard = false)
     hotbar.add_child(guard)
+    for pair in [["3 POWER", 3], ["4 WHIRL", 4], ["5 LUNGE", 5], ["6 HEAL", 6]]:
+        var button := _make_button(pair[0])
+        button.pressed.connect(_on_action_pressed.bind(pair[1]))
+        hotbar.add_child(button)
     var jump := _make_button("JUMP")
     jump.pressed.connect(func() -> void: _jump_edge = true)
     hotbar.add_child(jump)
+
+    # Character panels: Hints quick button + item pouch / gear / talents /
+    # world map windows (with their keyboard shortcuts), reused from the prototype.
+    _character_panels = CharacterPanelsScript.new()
+    hud.add_child(_character_panels)
+    if _character_panels.has_method("configure_hero"):
+        _character_panels.configure_hero(_selected_hero)
 
 
 func _make_button(text: String) -> Button:
@@ -196,9 +239,8 @@ func _sample_edges() -> void:
     for pair in [[KEY_1, 1], [KEY_3, 3], [KEY_4, 4], [KEY_5, 5], [KEY_6, 6]]:
         if Input.is_key_pressed(pair[0]):
             _pending_action = pair[1]
-    for pair in [[KEY_Z, "sword"], [KEY_X, "axe_shield"], [KEY_C, "bow"], [KEY_V, "staff"], [KEY_B, "wand"]]:
-        if Input.is_key_pressed(pair[0]):
-            _pending_weapon = pair[1]
+    # Weapon switching is via the top-right weapon bar buttons; letter keys are
+    # reserved for the character panels (O/B-C/L/K/M/I).
 
 
 func _send_intent() -> void:
@@ -236,6 +278,15 @@ func _on_action_pressed(slot: int) -> void:
     _pending_action = slot
 
 
+func _logout() -> void:
+    var tree := get_tree()
+    if tree.has_meta("selected_hero"):
+        tree.remove_meta("selected_hero")
+    if tree.has_meta("account_email"):
+        tree.remove_meta("account_email")
+    tree.change_scene_to_file(OnboardingScene)
+
+
 func _update_camera() -> void:
     if _current_zone == "the_gauntlet" and _entities.has(_local_player_id):
         var pos := (_entities[_local_player_id] as Dictionary)["pos"] as Vector2
@@ -253,7 +304,7 @@ func _update_hud() -> void:
             float(data.get("mana", 0)), float(MAX_RESOURCE),
             int(data.get("stamina", 0)), MAX_RESOURCE,
         )
-    _hint_label.text = "AD move · W jump · S drop · Shift guard · 1/3/4/5/6 actions · Z X C V B weapons"
+    _hint_label.text = "AD move · W jump · S drop · Shift guard · 1/3/4/5/6 actions · weapon bar top-right · I hints"
 
 
 # --- snapshots ---
@@ -434,6 +485,10 @@ func _draw() -> void:
             _draw_ground(Color(0.035, 0.11, 0.075, 0.58), Color("a9c564"))
             _draw_ledge(590, 450, 210, Color("344a35"), Color("a7c360"))
             draw_rect(Rect2(583, 438, 14, 111), Color("6a4f2c"), true)
+    # Portals for this zone.
+    for portal: Array in ZONE_PORTALS.get(_current_zone, []):
+        _draw_portal(Vector2(portal[0], portal[1]), str(portal[2]))
+
     # Monster + projectiles are drawn (no dedicated sprite in the prototype).
     for id: String in _entities:
         var entry := _entities[id] as Dictionary
@@ -464,6 +519,22 @@ func _draw_goal(base: Vector2) -> void:
         PackedVector2Array([base + Vector2(2, -46), base + Vector2(74, -32), base + Vector2(2, -14)]),
         Color("d94f45")
     )
+
+
+func _draw_portal(center: Vector2, label: String) -> void:
+    var outer := PackedVector2Array()
+    var inner := PackedVector2Array()
+    for index in 33:
+        var angle := TAU * float(index) / 32.0
+        outer.append(center + Vector2(cos(angle) * 35.0, sin(angle) * 61.0))
+        inner.append(center + Vector2(cos(angle) * 25.0, sin(angle) * 50.0))
+    draw_colored_polygon(inner, Color(0.2, 0.8, 0.95, 0.22))
+    draw_polyline(outer, Color("86e5ff"), 7.0, true)
+    draw_polyline(inner, Color("b991ff"), 4.0, true)
+    draw_circle(center, 9.0, Color(0.9, 0.96, 1.0, 0.72))
+    var font := ThemeDB.fallback_font
+    if font != null:
+        draw_string(font, center + Vector2(-84, -74), label, HORIZONTAL_ALIGNMENT_CENTER, 168, 14, Color("cbe6ff"))
 
 
 func _draw_monster(pos: Vector2, data: Dictionary) -> void:
