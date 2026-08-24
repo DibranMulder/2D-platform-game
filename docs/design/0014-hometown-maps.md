@@ -176,6 +176,11 @@ All proper names are ⊕ new unless a doc named them.
   Crowncrab; Tidal Gate Eel lurks past the gate.
 - **Palette/materials:** deep teal, sea green, foam cream, indigo, coral-orange
   accents; shell, polished coral, pearl, woven kelp, sea glass, verdigris bronze.
+- **Maps (15):** *Village* — Tidewharf Landing (spawn) · Coral Market · Kelp
+  Apothecary · Divers' Yard · Foamrest Inn · Tidal Gate Approach; *Stronghold* —
+  Gatehall of Shells · Reefguard Barracks · Cistern Works · Pearl Hall · **the
+  Tide Chamber** · Deepvault; *Story* — Shrine Causeway · Flooded Nave · the
+  Pearl Sanctum.
 
 ### 3. Grove Centaurs — Elder Forests (Light)
 - **Outer Village — Rootway Commons.** Broad living paths and canopy roads into
@@ -191,6 +196,11 @@ All proper names are ⊕ new unless a doc named them.
   Briarhorn Boar and Hollowroot Mimic off the paths.
 - **Palette/materials:** moss, fern, bark brown, warm cream, amber & spring-green
   accents; living wood, bark lamellae, woven reeds, bronze, amber, seed pods.
+- **Maps (15):** *Village* — Rootway Green (spawn) · Barkstall Market ·
+  Herbalist's Hollow · Runners' Track · Mossrest Lodge · Grovegate Path;
+  *Stronghold* — Root Arch Gate · Pathguard Warren · Sap Works · Elderroot Hall ·
+  **the Council Grove** · Seedvault; *Story* — Trunk Base · Canopy Climb · the
+  Luminous Clearing.
 
 ### 4. Aeralith — Sky Reaches (Light)
 - **Outer Village — Lowdock.** Lower sky docks and controlled lifts; rope bridges
@@ -206,6 +216,11 @@ All proper names are ⊕ new unless a doc named them.
 - **Palette/materials:** cloud white, azure, blue-grey, soft lavender, sunrise-gold
   accents; layered silk, lacquered light wood, brass, pale stone, crystal,
   taut membrane. Motifs: spirals, kites, wind harps, open arches.
+- **Maps (15):** *Village* — Lowdock Landing (spawn) · Skymarket · Windbell
+  Apothecary · Glidewrights' Yard · Cloudrest Inn · Liftgate Approach;
+  *Stronghold* — Liftgate Hall · Skywatch Barracks · Vane Works · Bell Hall ·
+  **the Windcourt** · Sky Vault; *Story* — Spire Base · Wind-harp Ascent · the
+  Star Gallery.
 
 ### 5. Crag Trolls — Broken Mountains (Dark)
 - **Outer Village — Hoistyard.** Quarry terraces, rope-hoist yards, forge markets,
@@ -221,6 +236,11 @@ All proper names are ⊕ new unless a doc named them.
 - **Palette/materials:** granite blue, charcoal, umber, storm grey, rust-orange &
   pale-lichen accents; basalt, slate, raw iron, horn, thick hide, rope,
   lichen-dyed cloth. Motifs: wedges, stacked slabs, fault lines, metal bands.
+- **Maps (15):** *Village* — Hoistyard Terrace (spawn) · Forge Market · Lichen
+  Apothecary · Breakers' Yard · Deeprest Lodge · Stormgate Approach;
+  *Stronghold* — Monolith Gatehouse · Slabguard Barracks · Quarry Works ·
+  Clanhall · **the Forge Seat** · Iron Vault; *Story* — Avalanche Stair Base ·
+  Chute Ascent · the Storm Forge.
 
 ### 6. Deep Goblins — The Underdeep (Dark)
 - **Outer Village — Lampcap Junction.** Trade tunnels and guarded surface
@@ -238,6 +258,11 @@ All proper names are ⊕ new unless a doc named them.
 - **Palette/materials:** soot black, copper, umber, fungus violet, chartreuse/cyan
   bioluminescence; sooted iron, copper, leather, fungal fiber, glass, ceramic
   pipe, crystal. Motifs: diamonds, tunnel ribs, rivets, rails, mycelial nets.
+- **Maps (15):** *Village* — Lampcap Landing (spawn, surface elevator) · Rivet
+  Market · Sporeworks Apothecary · Tinkerers' Yard · Funglight Rest · Nexus
+  Approach; *Stronghold* — Ventgate Hall · Railguard Barracks · Pump Works ·
+  Assembly Floor · **the Great Gearworks Assembly** · Ore Vault; *Story* —
+  Railhead · Cart Descent · the Crystal Seam.
 
 ### 7. Sunscour — Ember Desert (Dark)
 - **Outer Village — the Caravanserai.** Caravan village and cistern market before
@@ -256,6 +281,11 @@ All proper names are ⊕ new unless a doc named them.
   accents; sun-bleached linen, dark cooling cloth, blackened bronze, glazed
   ceramic, salt crystal, colored glass. Motifs: split sun, horizon line, mirage
   wave, geometric shade screens, water tallies.
+- **Maps (15):** *Village* — Caravanserai Court (spawn) · Shade Market · Cistern
+  Apothecary · Drill Yard · Waterrest Inn · Bastion Approach; *Stronghold* —
+  Aqueduct Gatehouse · Legion Barracks · Cistern Works · Hall of Tallies · **the
+  Legion Court** · Salt Vault; *Story* — Aqueduct Span · Mirage Causeway · the
+  Solar Furnace.
 
 ### 8. Rimeborn — The Ice Lands (Dark)
 - **Outer Village — Thawcamp.** A thermal village of mobile windbreak shelters
@@ -275,6 +305,27 @@ All proper names are ⊕ new unless a doc named them.
   aurora-green/magenta & hearth-amber accents; layered fur, felt, bone, dark iron,
   sealable leather, ice glass, luminous mineral pigment. Motifs: hexagonal
   fracture, spear points, braided cord, constellations, circles of warmth.
+- **Maps (15):** *Village* — Thawcamp Circle (spawn, hearth) · Furmarket · Tallow
+  Apothecary · Hunters' Yard · Longrest Lodge · Hearthgate Approach;
+  *Stronghold* — Windbreak Gatehouse · Warmthguard Barracks · Thermal Works ·
+  Aurora Hall · **the Hearth Hall** · Frost Vault; *Story* — Buried Threshold ·
+  Ice-cave Descent · the Aurora Vault.
+
+### Summary — all eight towns (15 Zones each: 6 Village · 6 Stronghold · 3 Story)
+
+| Lineage (Alleg.) | Home town | Stronghold → culmination | Story Site |
+| --- | --- | --- | --- |
+| Humans (L) | Wendmere Crossroads | the King's Keep → the King's Room | the Princess's Tower |
+| Tidekin (L) | Tidewharf | the Pearl Citadel → the Tide Chamber | the Sunken Shrine |
+| Grove Centaurs (L) | Rootway Commons | the Heartgrove → the Council Grove | Elder Tree: Trial of Paths |
+| Aeralith (L) | Lowdock | Skyspire Aerie → the Windcourt | the Observatory of Storms |
+| Crag Trolls (D) | Hoistyard | Stormgate Hold → the Forge Seat | the Storm Forge |
+| Deep Goblins (D) | Lampcap Junction | the Deepworks Nexus → the Great Gearworks Assembly | the Crystal Seam |
+| Sunscour (D) | the Caravanserai | the Shade Bastion → the Legion Court | the Solar Furnace |
+| Rimeborn (D) | Thawcamp | the Aurora Hall → the Hearth Hall | the Aurora Vault |
+
+Total: **120 Zones** across the eight home towns (within the 240–360-Zone
+Homeland budget in DESIGN-0010).
 
 ## Portal graph (human home town, representative)
 
@@ -368,6 +419,42 @@ their own Zone names.
   aurora-green and hearth-amber; hexagonal-fracture, braided-cord and
   circle-of-warmth motifs; snow-buried ruin on the horizon."
 
+### Stronghold-gate + Story-Site prompts (per Lineage)
+Each pairs with the marquee village keyframe above; prepend the style preamble.
+
+- **Tidekin** — *Gate:* "…the Gatehall of Shells behind great tidal gates, a
+  bonded whale-scaled guardian coiled at the threshold, water sluicing between
+  coral-arch platforms; pearl, kelp, verdigris bronze." *Story (Pearl Sanctum):*
+  "…a flooded shrine nave with tide-timed platforms rising from indigo water,
+  shafts of green light, a pearl altar."
+- **Grove Centaurs** — *Gate:* "…a living Root Arch Gate woven from colossal
+  roots, an Elderbloom Dryad standing warden, canopy-road platforms; moss, amber
+  glow, bark." *Story (Luminous Clearing):* "…a sacred moonlit clearing atop the
+  elder tree, floating pollen light, a ring of standing seed-stones."
+- **Aeralith** — *Gate:* "…the Liftgate Hall on a wind-carved spire, a sail-lift
+  platform and a bound Liftline Drake, open air and hanging bells; cloud white,
+  azure, sunrise-gold." *Story (Star Gallery):* "…a domed observatory of brass
+  astrolabes and wind-harps open to a starfield above the clouds."
+- **Crag Trolls** — *Gate:* "…the Monolith Gatehouse under storm-battered basalt,
+  a Thunderquarry Golem at the gate, rope-hoist and stacked-slab platforms;
+  granite blue, rust orange, hammered iron bands." *Story (Storm Forge):* "…a
+  cliff-top forge fed by captured lightning at the head of a monumental stair,
+  molten glow on wet slate."
+- **Deep Goblins** — *Gate:* "…the Ventgate Hall of sealed ventilation doors and
+  rails, a Ventshade lurking, chain-lift platforms; soot black, copper, fungus
+  violet, cyan glow." *Story (Crystal Seam):* "…a vast cavern of glowing crystal
+  veins with a minecart track winding down, chartreuse bioluminescence."
+- **Sunscour** — *Gate:* "…the Aqueduct Gatehouse of a shaded desert bastion,
+  Legion sentinels and geometric shade screens over a protected cistern, low
+  ember sun; sand, indigo, blackened bronze." *Story (Solar Furnace):* "…a
+  monumental aqueduct span leading to a mirror-lit solar furnace, heat-shimmer
+  hiding platforms, turquoise and brass accents."
+- **Rimeborn** — *Gate:* "…the Windbreak Gatehouse of an insulated ice hold, a
+  Steamhide Ursa bonded to a glowing hearth-gate, fur-and-bone shelters, aurora
+  overhead; midnight navy, glacial blue, hearth amber." *Story (Aurora Vault):*
+  "…a snow-buried ruin descent opening into an aurora-lit ice vault, luminous
+  mineral veins, breath fog and hearth-amber lanterns."
+
 ### NPC prompt template (reuse per role, swap Lineage palette/materials)
 > *"…a [Lineage] [role] Character in the storybook-anime style, 3.5–4 heads tall,
 > readable silhouette and a single clear role prop ([anvil / mortar & pestle /
@@ -421,3 +508,6 @@ per-hero zone routing.
 ## Change log
 - 2026-08-24: Initial home-town model, per-Lineage towns, NPC template, Provision
   set, portal graph, and art prompts established.
+- 2026-08-24: Expanded all seven non-Human towns to explicit 15-Zone map
+  breakdowns; added stronghold-gate + Story-Site art prompts per Lineage and an
+  eight-town summary table.
