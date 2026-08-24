@@ -4,7 +4,7 @@ use std::collections::BTreeMap;
 
 pub const WORLD_UNITS_PER_PIXEL: i32 = 100;
 
-#[derive(Clone, Copy, Debug, Eq, Ord, PartialEq, PartialOrd)]
+#[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
 pub struct PlayerId(u64);
 
 impl PlayerId {

@@ -1,23 +1,17 @@
 #![forbid(unsafe_code)]
 
-use std::{
-    env,
-    error::Error,
-    io,
-    net::SocketAddr,
-    sync::{
-        Arc,
-        atomic::{AtomicU64, Ordering},
-    },
-    time::Duration,
-};
+mod identity;
+
+use std::{env, error::Error, io, net::SocketAddr, sync::Arc, time::Duration};
 
 use futures_util::{SinkExt, StreamExt};
 use game_domain::{IntentError, PlayerId, PlayerIntent, World, WorldSnapshot};
 use game_protocol::{
-    ClientMessage, DisconnectReason, MAX_CLIENT_MESSAGE_BYTES, PROTOCOL_VERSION, RejectionReason,
-    ServerMessage, WireCharacterState, decode_client_message, encode_server_message,
+    ClientMessage, DisconnectReason, JoinRejectionReason, MAX_CLIENT_MESSAGE_BYTES,
+    PROTOCOL_VERSION, RejectionReason, ServerMessage, WireCharacterState, decode_client_message,
+    encode_server_message,
 };
+use identity::AccountRegistry;
 use tokio::{
     net::{TcpListener, TcpStream},
     sync::{Mutex, broadcast},
@@ -34,8 +28,8 @@ type AnyError = Box<dyn Error + Send + Sync>;
 
 struct SharedServer {
     world: Mutex<World>,
+    registry: Mutex<AccountRegistry>,
     snapshots: broadcast::Sender<String>,
-    next_player_id: AtomicU64,
 }
 
 struct IntentRateLimit {
@@ -76,8 +70,8 @@ async fn main() -> Result<(), AnyError> {
     let (snapshot_sender, _) = broadcast::channel(64);
     let shared = Arc::new(SharedServer {
         world: Mutex::new(World::default()),
+        registry: Mutex::new(AccountRegistry::new()),
         snapshots: snapshot_sender,
-        next_player_id: AtomicU64::new(1),
     });
 
     tokio::spawn(run_simulation(Arc::clone(&shared)));
@@ -164,25 +158,87 @@ async fn handle_connection(
         return Ok(());
     }
 
-    let player_id = PlayerId::new(shared.next_player_id.fetch_add(1, Ordering::Relaxed));
-    shared
-        .world
-        .lock()
-        .await
-        .join(player_id)
-        .map_err(|_| io::Error::new(io::ErrorKind::AlreadyExists, "player already joined"))?;
-
     let accepted = ServerMessage::HelloAccepted {
         protocol_version: PROTOCOL_VERSION,
-        player_id: player_id.get().to_string(),
         tick_rate_hz: TICK_RATE_HZ,
     };
     sink.send(Message::Text(encode_server_message(&accepted)?.into()))
         .await?;
 
+    // --- Phase 2: session admission (JoinWorld) ---
+    // The account/hero registry — not a raw counter — decides identity. A
+    // rejected join is recoverable: the client may retry with another hero.
+    let admission = loop {
+        let message = time::timeout(Duration::from_secs(30), source.next())
+            .await
+            .map_err(|_| io::Error::new(io::ErrorKind::TimedOut, "join timed out"))?
+            .ok_or_else(|| io::Error::new(io::ErrorKind::UnexpectedEof, "connection closed"))??;
+
+        if message.is_close() {
+            return Ok(());
+        }
+
+        let Some(text) = message_text(message) else {
+            continue;
+        };
+        if text.len() > MAX_CLIENT_MESSAGE_BYTES {
+            send_disconnect(&mut sink, DisconnectReason::MessageTooLarge).await?;
+            return Ok(());
+        }
+
+        match decode_client_message(&text) {
+            Ok(ClientMessage::JoinWorld {
+                account_id,
+                hero_name,
+            }) => {
+                let admitted = shared.registry.lock().await.admit(&account_id, &hero_name);
+                match admitted {
+                    Ok(admission) => {
+                        // The registry already guarantees a hero joins once, so a
+                        // world.join failure here means the hero is already present.
+                        if shared.world.lock().await.join(admission.player_id).is_err() {
+                            shared.registry.lock().await.release(admission.player_id);
+                            send_join_rejected(&mut sink, JoinRejectionReason::HeroAlreadyOnline)
+                                .await?;
+                            continue;
+                        }
+                        let joined = ServerMessage::WorldJoined {
+                            player_id: admission.player_id.get().to_string(),
+                            hero_name: admission.hero_name.clone(),
+                            lineage: admission.lineage.clone(),
+                        };
+                        sink.send(Message::Text(encode_server_message(&joined)?.into()))
+                            .await?;
+                        break admission;
+                    }
+                    Err(reason) => send_join_rejected(&mut sink, reason).await?,
+                }
+            }
+            Ok(ClientMessage::Ping { nonce }) => {
+                let pong = encode_server_message(&ServerMessage::Pong { nonce })?;
+                sink.send(Message::Text(pong.into())).await?;
+            }
+            Ok(_) => {
+                send_disconnect(&mut sink, DisconnectReason::ExpectedJoin).await?;
+                return Ok(());
+            }
+            Err(_) => {
+                send_disconnect(&mut sink, DisconnectReason::MalformedMessage).await?;
+                return Ok(());
+            }
+        }
+    };
+
+    let player_id = admission.player_id;
     let mut snapshots = shared.snapshots.subscribe();
     let mut rate_limit = IntentRateLimit::new();
-    info!(%peer, player_id = player_id.get(), %client_build, "session joined");
+    info!(
+        %peer,
+        player_id = player_id.get(),
+        hero = %admission.hero_name,
+        %client_build,
+        "session joined"
+    );
 
     loop {
         tokio::select! {
@@ -216,6 +272,7 @@ async fn handle_connection(
     }
 
     shared.world.lock().await.leave(player_id);
+    shared.registry.lock().await.release(player_id);
     info!(%peer, player_id = player_id.get(), "session left");
     Ok(())
 }
@@ -288,7 +345,9 @@ where
             let pong = encode_server_message(&ServerMessage::Pong { nonce })?;
             sink.send(Message::Text(pong.into())).await?;
         }
-        ClientMessage::Hello { .. } => {
+        // A hello or a second join after the session is already playing is a
+        // protocol violation; only intents and pings are valid here.
+        ClientMessage::Hello { .. } | ClientMessage::JoinWorld { .. } => {
             send_disconnect(sink, DisconnectReason::MalformedMessage).await?;
             return Ok(false);
         }
@@ -314,6 +373,16 @@ where
     S::Error: Error + Send + Sync + 'static,
 {
     let json = encode_server_message(&ServerMessage::IntentRejected { sequence, reason })?;
+    sink.send(Message::Text(json.into())).await?;
+    Ok(())
+}
+
+async fn send_join_rejected<S>(sink: &mut S, reason: JoinRejectionReason) -> Result<(), AnyError>
+where
+    S: futures_util::Sink<Message> + Unpin,
+    S::Error: Error + Send + Sync + 'static,
+{
+    let json = encode_server_message(&ServerMessage::JoinRejected { reason })?;
     sink.send(Message::Text(json.into())).await?;
     Ok(())
 }

@@ -40,13 +40,21 @@ not contain game rules.
 
 ## Data flow and ownership
 
-1. The client samples local controls and sends an Intent with a monotonically
+1. **Negotiate.** The client sends `Hello` (protocol version, build); the
+   server replies `HelloAccepted` (tick rate) once the version matches. No
+   identity is exchanged yet.
+2. **Admit.** The client sends `JoinWorld` (account id, hero name). An in-memory
+   Account registry assigns the Hero a stable identity, enforces that a Hero is
+   controlled by one live Session at a time, and replies `WorldJoined` or a
+   recoverable `JoinRejected`. This is the seam a real identity/gateway tier
+   later replaces with authenticated, token-based admission.
+3. The client samples local controls and sends an Intent with a monotonically
    increasing sequence number. It never sends a position or damage result.
-2. The world-server validates message shape, protocol version, session state,
+4. The world-server validates message shape, protocol version, session state,
    size, and rate.
-3. `game-domain` rejects invalid or stale Intent, advances fixed-point rules on
+5. `game-domain` rejects invalid or stale Intent, advances fixed-point rules on
    a fixed Simulation Tick, and owns the resulting state.
-4. The server broadcasts a World Snapshot. The client renders observations and
+6. The server broadcasts a World Snapshot. The client renders observations and
    will later reconcile local prediction against them.
 
 ## Cross-platform client

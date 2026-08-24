@@ -12,6 +12,8 @@ const INTENT_INTERVAL_SECONDS := 0.05
 var _network: NetworkClient
 var _avatars: Dictionary = {}
 var _local_player_id := ""
+var _account_id := "local-account"
+var _hero_name := ""
 var _left_touch_held := false
 var _right_touch_held := false
 var _jump_queued := false
@@ -25,9 +27,13 @@ func _ready() -> void:
     _network = NetworkClientScene.new() as NetworkClient
     add_child(_network)
     _network.connection_changed.connect(_on_connection_changed)
-    _network.hello_accepted.connect(_on_hello_accepted)
+    _network.negotiated.connect(_on_negotiated)
+    _network.world_joined.connect(_on_world_joined)
+    _network.join_rejected.connect(_on_join_rejected)
     _network.snapshot_received.connect(_on_snapshot_received)
     _network.intent_rejected.connect(_on_intent_rejected)
+
+    _resolve_identity()
 
     left_button.button_down.connect(func() -> void: _left_touch_held = true)
     left_button.button_up.connect(func() -> void: _left_touch_held = false)
@@ -77,11 +83,37 @@ func _on_connection_changed(state: String) -> void:
     status_label.text = state
 
 
-func _on_hello_accepted(player_id: String, tick_rate_hz: int) -> void:
+func _resolve_identity() -> void:
+    # A hero name unique per launched instance, so two clients on one machine
+    # do not collide on the same Hero. Override with `-- --hero=Name --account=Id`.
+    _hero_name = "Wanderer-%04d" % (randi() % 10000)
+    for argument: String in OS.get_cmdline_user_args():
+        if argument.begins_with("--hero="):
+            _hero_name = argument.trim_prefix("--hero=")
+        elif argument.begins_with("--account="):
+            _account_id = argument.trim_prefix("--account=")
+
+
+func _on_negotiated(tick_rate_hz: int) -> void:
+    status_label.text = "Negotiated at %s Hz; joining as %s" % [tick_rate_hz, _hero_name]
+    _network.join_world(_account_id, _hero_name)
+
+
+func _on_world_joined(player_id: String, hero_name: String, lineage: String) -> void:
     _local_player_id = player_id
-    status_label.text = "World admitted player %s at %s Hz" % [player_id, tick_rate_hz]
+    status_label.text = "Playing %s (%s) as player %s" % [hero_name, lineage, player_id]
     for avatar_id: String in _avatars:
         (_avatars[avatar_id] as PlayerAvatar).configure(avatar_id == _local_player_id)
+
+
+func _on_join_rejected(reason: String) -> void:
+    if reason == "hero_already_online":
+        # This instance's hero name is taken; pick another and retry.
+        _hero_name = "Wanderer-%04d" % (randi() % 10000)
+        status_label.text = "Hero taken; retrying as %s" % _hero_name
+        _network.join_world(_account_id, _hero_name)
+        return
+    status_label.text = "Join rejected: %s" % reason
 
 
 func _on_snapshot_received(server_tick: int, characters: Array) -> void:
