@@ -16,6 +16,10 @@ themes, and content can be added without reshaping the runtime.
 | [Playable Lineage art direction](0008-playable-lineage-art-direction.md) | Exploring | Designer handoff for silhouettes, materials, palettes, movement, and Homelands |
 | [Exchange and Lineage Strongholds](0009-exchange-and-strongholds.md) | Proposed | Central player market, protected Strongholds, open Outer Villages, and Guardian rules |
 | [Interactive world map](0010-interactive-world-map.md) | Exploring | Eight Homelands, four Frontiers, Dungeon Sites, routes, access, and three interactive layouts |
+| [Creature roster](0011-creature-roster.md) | Exploring | Level 1–120 creatures by Homeland biome, dispositions, and named low-level foes |
+| [Combat classes and equipment tiers](0012-combat-classes-and-equipment-tiers.md) | Exploring | Six Combat Classes, weapon families, armor slots, and 12 equipment tiers |
+| [Class talent trees](0013-class-talent-trees.md) | Exploring | Three talent branches per Combat Class and baseline Class actions |
+| [Home-town maps](0014-hometown-maps.md) | Exploring | Per-Lineage Outer Village + Stronghold + Story Site clusters, NPC template, and art prompts |
 
 Durable decisions whose reversal would be expensive are recorded separately in
 [`docs/adr`](../adr/). Project-specific terminology is defined in
