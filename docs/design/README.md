@@ -20,6 +20,7 @@ themes, and content can be added without reshaping the runtime.
 | [Combat classes and equipment tiers](0012-combat-classes-and-equipment-tiers.md) | Exploring | Six Combat Classes, weapon families, armor slots, and 12 equipment tiers |
 | [Class talent trees](0013-class-talent-trees.md) | Exploring | Three talent branches per Combat Class and baseline Class actions |
 | [Home-town maps](0014-hometown-maps.md) | Exploring | Per-Lineage Outer Village + Stronghold + Story Site clusters, NPC template, and art prompts |
+| [World map layout](0015-world-map-layout.md) | Exploring | Light/Dark halves, neutral Frontier seam, the City of Babylon and Tower, and the featured dungeon |
 
 Durable decisions whose reversal would be expensive are recorded separately in
 [`docs/adr`](../adr/). Project-specific terminology is defined in
