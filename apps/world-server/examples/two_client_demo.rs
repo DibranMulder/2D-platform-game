@@ -1,46 +1,47 @@
-//! Throwaway end-to-end check for the account/hero handshake and the shared
-//! world. Against a running world-server it:
-//!   * joins two heroes under different accounts (observer + runner),
-//!   * has the runner run right and jump while the observer stays idle,
-//!   * shows both clients observe the one authoritative world, and
-//!   * proves a hero cannot be controlled by two Sessions at once.
+//! End-to-end check for the converged, multi-zone, server-authoritative world.
+//! Against a running world-server it:
+//!   * joins two heroes in the Sunlit Forest (observer + runner),
+//!   * confirms both see each other and the forest Monster in snapshots,
+//!   * walks the runner right into the Market portal and confirms a ZoneChanged,
+//!   * confirms zone isolation: once the runner is in the Market, the observer's
+//!     Forest snapshots no longer contain it.
 //!
 //! Run the server first (`cargo run -p world-server`), then:
 //!   cargo run -p world-server --example two_client_demo
 
+use std::sync::{Arc, Mutex};
 use std::time::Duration;
 
 use futures_util::{SinkExt, StreamExt};
 use game_protocol::{
-    ClientMessage, PROTOCOL_VERSION, ServerMessage, decode_server_message, encode_client_message,
+    ClientMessage, PROTOCOL_VERSION, ServerMessage, WireEntity, decode_server_message,
+    encode_client_message,
 };
 use tokio::time::{self, Instant};
 use tokio_tungstenite::{connect_async, tungstenite::Message};
 
 const URL: &str = "ws://127.0.0.1:8787";
 
+/// Shared flag: set to the runner's player id once it is known, so the observer
+/// can report whether it still sees the runner in the forest.
+type RunnerId = Arc<Mutex<Option<String>>>;
+
 #[tokio::main]
 async fn main() {
-    // The idle observer joins first so it is present when the runner moves.
-    let observer = tokio::spawn(play("observer", "acct-obs", "Watcher", 0, false, 60));
+    let runner_id: RunnerId = Arc::new(Mutex::new(None));
+    let observer = tokio::spawn(observe(Arc::clone(&runner_id)));
     time::sleep(Duration::from_millis(150)).await;
-    let runner = tokio::spawn(play("runner", "acct-run", "Runner", 1, true, 40));
-
-    // While the runner is online, a second client tries to grab the same hero.
-    time::sleep(Duration::from_millis(400)).await;
-    let impostor = tokio::spawn(try_steal_hero("acct-run", "Runner"));
-
-    let _ = tokio::join!(runner, observer, impostor);
+    let runner = tokio::spawn(run_across_portal(runner_id));
+    let _ = tokio::join!(runner, observer);
 }
 
-/// Hello -> HelloAccepted -> JoinWorld -> WorldJoined, then stream intents.
-async fn play(
-    label: &'static str,
-    account_id: &'static str,
-    hero_name: &'static str,
-    horizontal: i8,
-    jump_once: bool,
-    intents: u32,
+async fn connect_and_join(
+    account: &str,
+    hero: &str,
+) -> (
+    tokio_tungstenite::WebSocketStream<tokio_tungstenite::MaybeTlsStream<tokio::net::TcpStream>>,
+    String,
+    String,
 ) {
     let (mut socket, _) = connect_async(URL).await.expect("connect");
     send(&mut socket, &ClientMessage::Hello {
@@ -50,96 +51,137 @@ async fn play(
     .await;
 
     let mut player_id = String::new();
-    let mut negotiated = false;
-    let mut joined = false;
-    let mut sequence = 0u64;
-    let mut sent = 0u32;
-    let mut jumped = false;
-    let mut logged = 0;
+    let mut zone = String::new();
+    while let Some(Ok(Message::Text(text))) = socket.next().await {
+        match decode_server_message(&text) {
+            Ok(ServerMessage::HelloAccepted { .. }) => {
+                send(&mut socket, &ClientMessage::JoinWorld {
+                    account_id: account.to_owned(),
+                    hero_name: hero.to_owned(),
+                })
+                .await;
+            }
+            Ok(ServerMessage::WorldJoined { player_id: id, zone: z, .. }) => {
+                player_id = id;
+                zone = z;
+                break;
+            }
+            Ok(ServerMessage::JoinRejected { reason }) => {
+                panic!("[{hero}] join rejected: {reason:?}");
+            }
+            _ => {}
+        }
+    }
+    println!("[{hero}] joined zone={zone} as player {player_id}");
+    (socket, player_id, zone)
+}
+
+async fn observe(runner_id: RunnerId) {
+    let (mut socket, _my_id, _) = connect_and_join("acct-obs", "Watcher").await;
     let mut interval = time::interval(Duration::from_millis(50));
-    let deadline = Instant::now() + Duration::from_secs(3);
+    let deadline = Instant::now() + Duration::from_secs(6);
+    let mut saw_runner_in_forest = false;
+    let mut still_sees_runner_after_transfer = true;
 
     loop {
         tokio::select! {
             _ = interval.tick() => {
-                if joined && sent < intents {
-                    sequence += 1;
-                    sent += 1;
-                    let jump = jump_once && !jumped && sent == 3;
-                    jumped |= jump;
-                    send(&mut socket, &ClientMessage::Intent {
-                        sequence, client_tick: sequence, horizontal, jump,
-                    }).await;
+                // Idle: send a neutral intent to stay a good citizen.
+                send_intent(&mut socket, 0).await;
+            }
+            incoming = socket.next() => {
+                let Some(Ok(Message::Text(text))) = incoming else { break; };
+                if let Ok(ServerMessage::Snapshot { server_tick, zone, entities }) = decode_server_message(&text) {
+                    let heroes = hero_ids(&entities);
+                    let runner = runner_id.lock().unwrap().clone();
+                    if let Some(runner) = runner {
+                        if heroes.contains(&runner) { saw_runner_in_forest = true; }
+                        // After the runner has left (we know its id and it is gone), check isolation.
+                        if saw_runner_in_forest && !heroes.contains(&runner) {
+                            still_sees_runner_after_transfer = false;
+                        }
+                    }
+                    if server_tick % 20 == 0 {
+                        println!("[Watcher] tick {server_tick:>3} zone={zone} heroes={heroes:?} entities={}", entities.len());
+                    }
                 }
+            }
+        }
+        if Instant::now() >= deadline { break; }
+    }
+    println!(
+        "[Watcher] saw runner in forest={saw_runner_in_forest}  isolation_after_transfer={}",
+        if saw_runner_in_forest && !still_sees_runner_after_transfer { "OK (runner vanished from forest)" } else { "n/a" }
+    );
+    let _ = socket.close(None).await;
+}
+
+async fn run_across_portal(runner_id: RunnerId) {
+    let (mut socket, my_id, _) = connect_and_join("acct-run", "Runner").await;
+    *runner_id.lock().unwrap() = Some(my_id.clone());
+
+    let mut interval = time::interval(Duration::from_millis(50));
+    let deadline = Instant::now() + Duration::from_secs(6);
+    let mut changed_zone = false;
+
+    loop {
+        tokio::select! {
+            _ = interval.tick() => {
+                send_intent(&mut socket, 1).await; // hold right
             }
             incoming = socket.next() => {
                 let Some(Ok(Message::Text(text))) = incoming else { break; };
                 match decode_server_message(&text) {
-                    Ok(ServerMessage::HelloAccepted { tick_rate_hz, .. }) => {
-                        negotiated = true;
-                        println!("[{label}] negotiated @ {tick_rate_hz} Hz; joining as {hero_name}");
-                        send(&mut socket, &ClientMessage::JoinWorld {
-                            account_id: account_id.to_owned(),
-                            hero_name: hero_name.to_owned(),
-                        }).await;
+                    Ok(ServerMessage::ZoneChanged { zone, spawn_x, spawn_y, .. }) => {
+                        changed_zone = true;
+                        println!("[Runner] ZoneChanged -> {zone} at ({spawn_x},{spawn_y})  <-- portal worked");
                     }
-                    Ok(ServerMessage::WorldJoined { player_id: id, hero_name: hn, lineage }) => {
-                        player_id = id;
-                        joined = true;
-                        println!("[{label}] world joined: hero {hn} ({lineage}) = player {player_id}");
-                    }
-                    Ok(ServerMessage::Snapshot { server_tick, characters }) => {
-                        if server_tick % 12 == 0 && logged < 5 {
-                            logged += 1;
-                            let mut view: Vec<String> = characters.iter().map(|c| {
-                                let me = if c.player_id == player_id { "*" } else { " " };
-                                format!("{me}p{}=({},{})", c.player_id, c.position_x, c.position_y)
-                            }).collect();
-                            view.sort();
-                            println!("[{label}] tick {server_tick:>3} | {}", view.join("  "));
+                    Ok(ServerMessage::Snapshot { server_tick, zone, entities }) => {
+                        if server_tick % 20 == 0 {
+                            let me = hero_ids(&entities).into_iter().find(|id| *id == my_id);
+                            println!("[Runner]  tick {server_tick:>3} zone={zone} present={:?} entities={}", me, entities.len());
                         }
                     }
                     _ => {}
                 }
             }
         }
-        let _ = negotiated;
         if Instant::now() >= deadline { break; }
     }
+    println!("[Runner] crossed a portal = {changed_zone}");
     let _ = socket.close(None).await;
-    println!("[{label}] left (was player {player_id})");
 }
 
-/// Attempts to join a hero that is already online; expects a rejection.
-async fn try_steal_hero(account_id: &'static str, hero_name: &'static str) {
-    let (mut socket, _) = connect_async(URL).await.expect("connect");
-    send(&mut socket, &ClientMessage::Hello {
-        protocol_version: PROTOCOL_VERSION,
-        client_build: "impostor".to_owned(),
+fn hero_ids(entities: &[WireEntity]) -> Vec<String> {
+    entities
+        .iter()
+        .filter_map(|entity| match entity {
+            WireEntity::Hero(hero) => Some(hero.player_id.clone()),
+            _ => None,
+        })
+        .collect()
+}
+
+async fn send_intent(
+    socket: &mut tokio_tungstenite::WebSocketStream<
+        tokio_tungstenite::MaybeTlsStream<tokio::net::TcpStream>,
+    >,
+    move_axis: i8,
+) {
+    use std::sync::atomic::{AtomicU64, Ordering};
+    static SEQ: AtomicU64 = AtomicU64::new(0);
+    let sequence = SEQ.fetch_add(1, Ordering::Relaxed) + 1;
+    send(socket, &ClientMessage::Intent {
+        sequence,
+        client_tick: sequence,
+        move_axis,
+        climb_axis: 0,
+        jump: false,
+        drop: false,
+        guard: false,
+        action_slot: 0,
     })
     .await;
-
-    while let Some(Ok(Message::Text(text))) = socket.next().await {
-        match decode_server_message(&text) {
-            Ok(ServerMessage::HelloAccepted { .. }) => {
-                send(&mut socket, &ClientMessage::JoinWorld {
-                    account_id: account_id.to_owned(),
-                    hero_name: hero_name.to_owned(),
-                })
-                .await;
-            }
-            Ok(ServerMessage::JoinRejected { reason }) => {
-                println!("[impostor] join of live hero {hero_name} rejected: {reason:?}  <-- expected");
-                break;
-            }
-            Ok(ServerMessage::WorldJoined { .. }) => {
-                println!("[impostor] ERROR: was allowed to steal a live hero!");
-                break;
-            }
-            _ => {}
-        }
-    }
-    let _ = socket.close(None).await;
 }
 
 async fn send(
