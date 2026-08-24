@@ -485,8 +485,11 @@ func _select_lineage(lineage_id: String, rebuild: bool = true) -> void:
 
 
 func _enter_world(hero: Dictionary) -> void:
+    # Hand the chosen hero and account identity to the canonical, networked
+    # world scene, which joins the server with them (account_id + hero name).
     get_tree().set_meta("selected_hero", hero.duplicate(true))
-    get_tree().change_scene_to_file("res://prototypes/combat_arena/combat_arena.tscn")
+    get_tree().set_meta("account_email", _state.active_email())
+    get_tree().change_scene_to_file("res://scenes/world.tscn")
 
 
 func _clear_content() -> void:
