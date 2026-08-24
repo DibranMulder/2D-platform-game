@@ -61,6 +61,8 @@ var _magic_flash := 0.0
 var _magic_color := Color("72d8ff")
 var _magic_radius := 0.0
 var _target: Node2D
+var _world_min_x := 44.0
+var _world_max_x := 1236.0
 var _climbables: Dictionary = {}
 var _active_climbable_id := -1
 var _collision_mask_before_climb := 1
@@ -100,6 +102,11 @@ func configure_hero(hero_data: Dictionary) -> void:
 
 func set_target(target: Node2D) -> void:
     _target = target
+
+
+func set_world_bounds(min_x: float, max_x: float) -> void:
+    _world_min_x = min_x
+    _world_max_x = max_x
 
 
 func set_move_axis(axis: float) -> void:
@@ -428,7 +435,7 @@ func _physics_process(delta: float) -> void:
     move_and_slide()
     if is_climbing:
         _finish_climb_at_boundary()
-    position.x = clampf(position.x, 44.0, 1236.0)
+    position.x = clampf(position.x, _world_min_x, _world_max_x)
     _update_human_sprite()
     queue_redraw()
 

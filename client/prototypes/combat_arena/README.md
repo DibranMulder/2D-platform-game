@@ -42,7 +42,7 @@ the game closes; weapons are unique while supplies may be bought repeatedly.
 
 ## Buttoncap Hollow (third map)
 
-The arena hosts three maps that swap **in place** inside the one scene, so the
+The arena hosts several maps that swap **in place** inside the one scene, so the
 full HUD — resource bars, hotbar and weapon slots, character-panel buttons,
 combat log, and Log Out — stays present in every map. A glowing portal at the
 **left** edge of the Sunlit Forest ("TO BUTTONCAP HOLLOW") swaps to Buttoncap
@@ -68,6 +68,27 @@ Movement, jumping, and climbing are the same shared `PrototypeHero` controls as
 the forest. Walk left into the portal to return to the Sunlit Forest. The
 platforms (`HollowPlatforms`) and enemies (`HollowBiters`) are toggled per map
 by `_configure_map`, exactly like the forest ladder and the market merchant.
+
+## The Gauntlet (fourth map — scrolling parkour)
+
+A portal on the **right** edge of Buttoncap Hollow ("TO THE GAUNTLET") opens a
+side-scrolling parkour course that is much wider than the viewport (about
+`3600` px). A `ParkourCamera` follows the Hero horizontally (vertical stays
+fixed) and stops at the level edges; the Hero's normal one-screen clamp is
+widened for this map via `PrototypeHero.set_world_bounds`.
+
+The course is a traversal challenge to reach the finish banner at the far end:
+staggered stone platforms, two knotted **ropes**, a tall **ladder**, and two
+**staircases** of small ledges, over a continuous safety floor (falling just
+drops you to the ground to try a section again). Walking onto the finish banner
+completes the run and returns you to the Sunlit Forest.
+
+The geometry is built in code from data tables (`PARKOUR_PLATFORMS`,
+`PARKOUR_ROPES`, `PARKOUR_LADDERS`, `PARKOUR_GOAL`) in `_build_parkour`, so the
+scene file stays small; ropes and ladders reuse `PrototypeClimbable`. Ascending
+jumps are kept within the Hero's jump arc; big climbs use the ropes and ladder.
+Controls are unchanged: `A`/`D` move, `Space` jump, `W`/`S` climb on a rope or
+ladder.
 
 The World Map includes three prototype layouts. Use the bottom arrows or the
 keyboard Left/Right arrows while the map is open to compare them. It supports

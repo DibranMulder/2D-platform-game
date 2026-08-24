@@ -3,12 +3,18 @@ extends Node2D
 
 const CharacterPanelsScript := preload("res://prototypes/combat_arena/chronicle_character_panels.gd")
 const MerchantShopScript := preload("res://prototypes/combat_arena/merchant_shop.gd")
+const ClimbableScript := preload("res://prototypes/combat_arena/climbable.gd")
 const MoonlitMarketTexture := preload("res://assets/backgrounds/storybook-moonlit-market-v1.png")
 const ForestBattlegroundTexture := preload("res://assets/backgrounds/storybook-forest-battleground-v1.png")
 const MAP_FOREST := "sunlit_forest"
 const MAP_MARKET := "moonlit_market"
 const MAP_HOLLOW := "buttoncap_hollow"
+const MAP_PARKOUR := "the_gauntlet"
 const RESPAWN_DELAY := 3.0
+
+const PARKOUR_WIDTH := 3600.0
+const PARKOUR_GROUND_Y := 550.0
+const VIEW_HALF_W := 640.0
 
 # Painted ledge overlays for the hollow, kept in sync with the HollowPlatforms
 # StaticBody2D nodes: [center_x, center_y, width].
@@ -18,6 +24,37 @@ const HOLLOW_PLATFORMS := [
     Vector3(980.0, 300.0, 240.0),
     Vector3(500.0, 240.0, 180.0),
 ]
+
+# The Gauntlet layout. One-way jump platforms as [center_x, center_y, width];
+# ropes and ladders as [x, top_y, bottom_y]; the goal sits on the last platform.
+const PARKOUR_PLATFORMS := [
+    Vector3(360.0, 500.0, 170.0),
+    Vector3(600.0, 440.0, 150.0),
+    Vector3(900.0, 250.0, 180.0),
+    Vector3(1120.0, 330.0, 150.0),
+    Vector3(1300.0, 410.0, 150.0),
+    Vector3(1440.0, 400.0, 90.0),
+    Vector3(1540.0, 340.0, 90.0),
+    Vector3(1640.0, 280.0, 90.0),
+    Vector3(1740.0, 220.0, 90.0),
+    Vector3(1900.0, 220.0, 180.0),
+    Vector3(2160.0, 470.0, 150.0),
+    Vector3(2360.0, 400.0, 150.0),
+    Vector3(2640.0, 180.0, 180.0),
+    Vector3(2860.0, 260.0, 150.0),
+    Vector3(3060.0, 330.0, 120.0),
+    Vector3(3180.0, 380.0, 100.0),
+    Vector3(3300.0, 430.0, 100.0),
+    Vector3(3440.0, 470.0, 220.0),
+]
+const PARKOUR_ROPES := [
+    Vector3(760.0, 250.0, 430.0),
+    Vector3(2500.0, 180.0, 400.0),
+]
+const PARKOUR_LADDERS := [
+    Vector3(2000.0, 220.0, 560.0),
+]
+const PARKOUR_GOAL := Vector2(3440.0, 455.0)
 
 @onready var hero: PrototypeHero = $Hero
 @onready var monster: PrototypeMonster = $Monster
@@ -33,6 +70,10 @@ const HOLLOW_PLATFORMS := [
 @onready var merchant_name: Label = $MerchantName
 @onready var hollow_platforms: Node2D = $HollowPlatforms
 @onready var hollow_biters: Node2D = $HollowBiters
+@onready var parkour_map: Node2D = $ParkourMap
+@onready var parkour_camera: Camera2D = $ParkourCamera
+@onready var parkour_portal_area: Area2D = $ParkourPortalArea
+@onready var parkour_portal_label: Label = $ParkourPortalLabel
 @onready var joystick: PrototypeVirtualJoystick = $HUD/VirtualJoystick
 @onready var map_label: Label = $HUD/MapLabel
 @onready var trade_button: Button = $HUD/TradeButton
@@ -124,9 +165,11 @@ func _ready() -> void:
     trade_button.pressed.connect(_open_shop)
     portal_area.body_entered.connect(_on_portal_body_entered)
     hollow_portal_area.body_entered.connect(_on_hollow_portal_body_entered)
+    parkour_portal_area.body_entered.connect(_on_parkour_portal_body_entered)
     merchant_area.body_entered.connect(_on_merchant_body_entered)
     merchant_area.body_exited.connect(_on_merchant_body_exited)
 
+    _build_parkour()
     _add_combat_message("A horned monster blocks the road.")
     _configure_map(MAP_FOREST)
     queue_redraw()
@@ -163,6 +206,12 @@ func _process(_delta: float) -> void:
         hero.set_target(_nearest_living_biter())
     elif _current_map == MAP_FOREST:
         hero.set_target(monster)
+    elif _current_map == MAP_PARKOUR:
+        # Horizontal-only follow camera; vertical stays fixed and centered.
+        parkour_camera.position = Vector2(
+            clampf(hero.position.x, VIEW_HALF_W, PARKOUR_WIDTH - VIEW_HALF_W),
+            360.0,
+        )
     _update_hud()
 
 
@@ -267,6 +316,21 @@ func _on_hollow_portal_body_entered(body: Node2D) -> void:
     get_tree().create_timer(0.65).timeout.connect(func() -> void: _portal_locked = false)
 
 
+func _on_parkour_portal_body_entered(body: Node2D) -> void:
+    if body != hero or _portal_locked or _current_map == MAP_FOREST or _current_map == MAP_MARKET:
+        return
+    _portal_locked = true
+    if _current_map == MAP_HOLLOW:
+        _configure_map(MAP_PARKOUR)
+        hero.position = Vector2(140.0, 500.0)
+        _add_combat_message("The Gauntlet stretches out before you — reach the far banner.")
+    else:
+        _configure_map(MAP_FOREST)
+        hero.position = Vector2(640.0, 549.0)
+        _add_combat_message("You conquered the Gauntlet and step back into the Sunlit Forest.")
+    get_tree().create_timer(0.65).timeout.connect(func() -> void: _portal_locked = false)
+
+
 func _on_merchant_body_entered(body: Node2D) -> void:
     if body != hero or _current_map != MAP_MARKET:
         return
@@ -300,18 +364,21 @@ func _configure_map(map_id: String) -> void:
     var in_forest := map_id == MAP_FOREST
     var in_market := map_id == MAP_MARKET
     var in_hollow := map_id == MAP_HOLLOW
+    var in_parkour := map_id == MAP_PARKOUR
 
+    storybook_background.visible = not in_parkour
     storybook_background.texture = MoonlitMarketTexture if in_market else ForestBattlegroundTexture
     storybook_background.modulate = Color(0.72, 0.82, 0.78) if in_hollow else Color.WHITE
     map_label.text = (
-        "BUTTONCAP HOLLOW" if in_hollow
+        "THE GAUNTLET" if in_parkour
+        else "BUTTONCAP HOLLOW" if in_hollow
         else "MOONLIT MARKET" if in_market
         else "SUNLIT FOREST"
     )
 
-    # Primary portal links Forest <-> Market; it is dormant in the hollow.
-    portal_area.set_deferred("monitoring", not in_hollow)
-    portal_label.visible = not in_hollow
+    # Primary portal links Forest <-> Market; dormant in the hollow and gauntlet.
+    portal_area.set_deferred("monitoring", in_forest or in_market)
+    portal_label.visible = in_forest or in_market
     portal_area.position = Vector2(1205.0, 500.0) if in_forest else Vector2(70.0, 500.0)
     portal_label.text = "TO MOONLIT MARKET" if in_forest else "TO SUNLIT FOREST"
     portal_label.position = Vector2(
@@ -319,7 +386,7 @@ func _configure_map(map_id: String) -> void:
         portal_area.position.y - 92.0,
     )
 
-    # Hollow portal links Forest <-> Hollow; it is dormant in the market.
+    # Hollow portal links Forest <-> Hollow; dormant in the market and gauntlet.
     hollow_portal_area.set_deferred("monitoring", in_forest or in_hollow)
     hollow_portal_label.visible = in_forest or in_hollow
     hollow_portal_area.position = Vector2(75.0, 500.0)
@@ -328,6 +395,19 @@ func _configure_map(map_id: String) -> void:
         clampf(hollow_portal_area.position.x - 90.0, 0.0, 1110.0),
         hollow_portal_area.position.y - 92.0,
     )
+
+    # Gauntlet portal is the entrance (right side of the hollow) and the finish
+    # banner (far end of the gauntlet).
+    parkour_portal_area.set_deferred("monitoring", in_hollow or in_parkour)
+    parkour_portal_label.visible = in_hollow or in_parkour
+    if in_parkour:
+        parkour_portal_area.position = Vector2(PARKOUR_GOAL.x, PARKOUR_GOAL.y - 35.0)
+        parkour_portal_label.text = "FINISH"
+        parkour_portal_label.position = PARKOUR_GOAL + Vector2(-40.0, -96.0)
+    else:
+        parkour_portal_area.position = Vector2(1205.0, 500.0)
+        parkour_portal_label.text = "TO THE GAUNTLET"
+        parkour_portal_label.position = Vector2(1108.0, 408.0)
 
     merchant_name.visible = in_market
     merchant_area.set_deferred("monitoring", in_market)
@@ -340,6 +420,7 @@ func _configure_map(map_id: String) -> void:
     monster.process_mode = Node.PROCESS_MODE_INHERIT if in_forest else Node.PROCESS_MODE_DISABLED
 
     _set_hollow_active(in_hollow)
+    _set_parkour_active(in_parkour)
 
     _near_merchant = false
     trade_button.visible = false
@@ -356,6 +437,81 @@ func _set_hollow_active(active: bool) -> void:
     hollow_biters.visible = active
     for biter: PrototypeButtoncapBiter in hollow_biters.get_children():
         biter.set_active(active)
+
+
+func _set_parkour_active(active: bool) -> void:
+    parkour_map.visible = active
+    for child: Node in parkour_map.get_children():
+        if child is StaticBody2D:
+            var shape := child.get_node_or_null("CollisionShape2D") as CollisionShape2D
+            if shape != null:
+                shape.set_deferred("disabled", not active)
+        elif child.has_method("set_climbing_enabled"):
+            child.call("set_climbing_enabled", active)
+    parkour_camera.enabled = active
+    if active:
+        parkour_camera.make_current()
+        hero.set_world_bounds(30.0, PARKOUR_WIDTH - 30.0)
+    else:
+        hero.set_world_bounds(44.0, 1236.0)
+
+
+func _build_parkour() -> void:
+    _add_parkour_solid(Rect2(0.0, PARKOUR_GROUND_Y, PARKOUR_WIDTH, 220.0))
+    for platform: Vector3 in PARKOUR_PLATFORMS:
+        _add_parkour_platform(platform.x, platform.y, platform.z)
+    for rope: Vector3 in PARKOUR_ROPES:
+        _add_parkour_climbable(rope.x, rope.y, rope.z, 1)
+    for ladder: Vector3 in PARKOUR_LADDERS:
+        _add_parkour_climbable(ladder.x, ladder.y, ladder.z, 0)
+
+
+func _add_parkour_solid(rect: Rect2) -> void:
+    var body := StaticBody2D.new()
+    body.position = rect.position + rect.size * 0.5
+    body.collision_layer = 1
+    body.collision_mask = 0
+    var shape := CollisionShape2D.new()
+    shape.name = "CollisionShape2D"
+    var rectangle := RectangleShape2D.new()
+    rectangle.size = rect.size
+    shape.shape = rectangle
+    body.add_child(shape)
+    parkour_map.add_child(body)
+
+
+func _add_parkour_platform(cx: float, cy: float, w: float) -> void:
+    var body := StaticBody2D.new()
+    body.position = Vector2(cx, cy)
+    body.collision_layer = 1
+    body.collision_mask = 0
+    var shape := CollisionShape2D.new()
+    shape.name = "CollisionShape2D"
+    var rectangle := RectangleShape2D.new()
+    rectangle.size = Vector2(w, 22.0)
+    shape.shape = rectangle
+    shape.one_way_collision = true
+    shape.one_way_collision_margin = 8.0
+    body.add_child(shape)
+    parkour_map.add_child(body)
+
+
+func _add_parkour_climbable(x: float, top_y: float, bottom_y: float, kind: int) -> void:
+    var climb := ClimbableScript.new() as Area2D
+    var mid := (top_y + bottom_y) * 0.5
+    climb.position = Vector2(x, mid)
+    climb.collision_layer = 0
+    climb.collision_mask = 2
+    climb.set("visual_kind", kind)
+    climb.set("top_exit_offset_y", top_y - mid - 12.0)
+    climb.set("bottom_exit_offset_y", bottom_y - mid)
+    climb.set("show_hint", false)
+    var shape := CollisionShape2D.new()
+    var rectangle := RectangleShape2D.new()
+    rectangle.size = Vector2(70.0, bottom_y - top_y)
+    shape.shape = rectangle
+    climb.add_child(shape)
+    parkour_map.add_child(climb)
 
 
 func _on_hero_defeated() -> void:
@@ -455,6 +611,9 @@ func _update_weapon_button(button: Button, button_weapon_id: String, title: Stri
 
 
 func _draw() -> void:
+    if _current_map == MAP_PARKOUR:
+        _draw_parkour()
+        return
     var in_forest := _current_map == MAP_FOREST
     var in_market := _current_map == MAP_MARKET
     var in_hollow := _current_map == MAP_HOLLOW
@@ -487,6 +646,8 @@ func _draw() -> void:
         _draw_portal(portal_area.position)
     if in_forest or in_hollow:
         _draw_portal(hollow_portal_area.position)
+    if in_hollow:
+        _draw_portal(parkour_portal_area.position)
     if in_market:
         _draw_merchant(merchant_area.position + Vector2(0.0, 49.0))
 
@@ -498,6 +659,60 @@ func _draw_hollow_platform(center_x: float, center_y: float, width: float) -> vo
     draw_rect(Rect2(left, top, width, 7.0), Color("a7c360"), true)
     draw_line(Vector2(left + 6.0, top + 3.0), Vector2(left + width - 6.0, top + 3.0), Color("7d9a4d"), 2.0)
     draw_rect(Rect2(left, top, width, 22.0), Color(0.08, 0.12, 0.07, 0.9), false, 1.0)
+
+
+func _draw_parkour() -> void:
+    # Sky and distant hills spanning the full level width (the camera crops it).
+    draw_rect(Rect2(0.0, 0.0, PARKOUR_WIDTH, 720.0), Color("bfe0e6"), true)
+    draw_rect(Rect2(0.0, 0.0, PARKOUR_WIDTH, 300.0), Color("d6ecec"), true)
+    for hill in range(0, int(PARKOUR_WIDTH), 520):
+        var hx := float(hill)
+        draw_colored_polygon(PackedVector2Array([
+            Vector2(hx - 40.0, 552.0),
+            Vector2(hx + 200.0, 360.0),
+            Vector2(hx + 440.0, 552.0),
+        ]), Color(0.53, 0.71, 0.6, 0.55))
+        draw_colored_polygon(PackedVector2Array([
+            Vector2(hx + 220.0, 552.0),
+            Vector2(hx + 430.0, 400.0),
+            Vector2(hx + 640.0, 552.0),
+        ]), Color(0.44, 0.63, 0.55, 0.5))
+
+    # Ground band.
+    draw_rect(Rect2(0.0, PARKOUR_GROUND_Y, PARKOUR_WIDTH, 200.0), Color(0.16, 0.29, 0.18, 1.0), true)
+    draw_rect(Rect2(0.0, PARKOUR_GROUND_Y, PARKOUR_WIDTH, 10.0), Color("8fb25a"), true)
+    draw_line(Vector2(0.0, PARKOUR_GROUND_Y + 10.0), Vector2(PARKOUR_WIDTH, PARKOUR_GROUND_Y + 10.0), Color("2c3a24"), 3.0)
+
+    for platform: Vector3 in PARKOUR_PLATFORMS:
+        _draw_stone_platform(platform.x, platform.y, platform.z)
+
+    _draw_goal_banner(PARKOUR_GOAL)
+
+
+func _draw_stone_platform(center_x: float, center_y: float, width: float) -> void:
+    var left := center_x - width * 0.5
+    var top := center_y - 11.0
+    draw_rect(Rect2(left, top, width, 22.0), Color("6a5b45"), true)
+    draw_rect(Rect2(left, top, width, 8.0), Color("9a8560"), true)
+    draw_rect(Rect2(left, top + 8.0, width, 3.0), Color("cbb98a"), true)
+    draw_rect(Rect2(left, top, width, 22.0), Color(0.13, 0.1, 0.07, 0.9), false, 1.0)
+
+
+func _draw_goal_banner(base: Vector2) -> void:
+    # Pole
+    draw_line(base + Vector2(0.0, 60.0), base + Vector2(0.0, -46.0), Color("4a3722"), 5.0)
+    # Pennant
+    draw_colored_polygon(PackedVector2Array([
+        base + Vector2(2.0, -46.0),
+        base + Vector2(74.0, -32.0),
+        base + Vector2(2.0, -14.0),
+    ]), Color("d94f45"))
+    draw_colored_polygon(PackedVector2Array([
+        base + Vector2(2.0, -34.0),
+        base + Vector2(44.0, -27.0),
+        base + Vector2(2.0, -20.0),
+    ]), Color("f2c45f"))
+    draw_circle(base + Vector2(0.0, -48.0), 4.0, Color("f2c45f"))
 
 
 func _draw_portal(center: Vector2) -> void:
