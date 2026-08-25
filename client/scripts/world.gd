@@ -181,16 +181,16 @@ const AP_HELM_STAND := Rect2(999, 671, 322, 295)
 # the critical route, ladder mouths, portal volumes, and NPC interaction spaces.
 const SQ_PROPS := [
     # settlement dressing across the plaza floor (ground top y2400)
-    ["s", SP_GRAIN_SACKS, 780.0, 2400.0, 168.0, false],
-    ["s", SP_CRATE, 1180.0, 2400.0, 150.0, true],
-    ["s", SP_PRODUCE_BASKET, 2650.0, 2400.0, 150.0, false],
-    ["s", SP_BARREL_STACK, 3470.0, 2400.0, 214.0, false],
-    ["s", SP_POTTERY, 4720.0, 2380.0, 166.0, false],
+    ["s", SP_GRAIN_SACKS, 780.0, 2400.0, 82.0, false],
+    ["s", SP_CRATE, 1180.0, 2400.0, 74.0, true],
+    ["s", SP_PRODUCE_BASKET, 2650.0, 2400.0, 74.0, false],
+    ["s", SP_BARREL_STACK, 3470.0, 2400.0, 106.0, false],
+    ["s", SP_POTTERY, 4720.0, 2380.0, 82.0, false],
     # armory dressing: Trainers' ledge (top y1240) + sentry + top watch balcony
-    ["a", AP_SPEAR_RACK, 1690.0, 1240.0, 226.0, false],
-    ["a", AP_TRAINING_DUMMY, 1960.0, 1240.0, 232.0, true],
-    ["a", AP_PROPPED_SHIELD, 660.0, 2400.0, 150.0, false],
-    ["a", AP_SHIELD_RACK, 3980.0, 720.0, 188.0, false],
+    ["a", AP_SPEAR_RACK, 1690.0, 1240.0, 112.0, false],
+    ["a", AP_TRAINING_DUMMY, 1960.0, 1240.0, 116.0, true],
+    ["a", AP_PROPPED_SHIELD, 660.0, 2400.0, 74.0, false],
+    ["a", AP_SHIELD_RACK, 3980.0, 720.0, 94.0, false],
 ]
 
 # NPC animation sheets (3x2, idle frames 1-3 on the top row). Per role:
