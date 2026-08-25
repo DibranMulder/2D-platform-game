@@ -1,0 +1,79 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 5120 2880">
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#c9e7ef"/>
+      <stop offset="1" stop-color="#f5d79a"/>
+    </linearGradient>
+    <linearGradient id="earth" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#82985e"/>
+      <stop offset="1" stop-color="#3f5234"/>
+    </linearGradient>
+    <style>
+      .grid { stroke:#fff; stroke-opacity:.24; stroke-width:8; stroke-dasharray:28 22 }
+      .platform { fill:#8d7b5a; stroke:#403728; stroke-width:18 }
+      .route { fill:none; stroke:#eed58a; stroke-width:34; stroke-linecap:round; stroke-linejoin:round }
+      .ladder { fill:none; stroke:#815d32; stroke-width:24; stroke-dasharray:18 16 }
+      .portal { fill:#233d61; stroke:#e3bd62; stroke-width:20 }
+      .interactive { fill:#77cbb7; stroke:#143f40; stroke-width:14 }
+      .label { font:700 64px sans-serif; fill:#fff8dd; paint-order:stroke; stroke:#152133; stroke-width:15 }
+      .small { font:600 48px sans-serif; fill:#fff8dd; paint-order:stroke; stroke:#152133; stroke-width:12 }
+    </style>
+  </defs>
+
+  <rect width="5120" height="2880" fill="url(#sky)"/>
+  <path d="M0 1020 Q680 620 1320 1000 T2620 940 T3920 900 T5120 980 V2880 H0Z" fill="#86a06e" opacity=".5"/>
+  <path d="M0 2200 Q900 2050 1700 2180 T3400 2140 T5120 2080 V2880 H0Z" fill="url(#earth)"/>
+
+  <!-- viewport grid: 4 × 4 -->
+  <path class="grid" d="M1280 0V2880 M2560 0V2880 M3840 0V2880 M0 720H5120 M0 1440H5120 M0 2160H5120"/>
+
+  <!-- ground plaza and lower branch -->
+  <path class="platform" d="M0 2400 H3520 L3720 2520 H4380 L4580 2380 H5120 V2880 H0Z"/>
+  <path class="route" d="M80 2310 H1200 Q1640 2280 2020 2360 H3180 Q3500 2320 3740 2550 H4320 M3180 2350 H5020"/>
+
+  <!-- west vertical traversal -->
+  <path class="platform" d="M540 2020 H1370 V2160 H540Z M980 1630 H1900 V1760 H980Z M1540 1240 H2390 V1370 H1540Z"/>
+  <path class="route" d="M620 2320 L920 2060 L1260 2060 L1460 1680 L1850 1680 L2020 1290 L2280 1290"/>
+  <path class="ladder" d="M1370 1990V1680 M1900 1600V1290"/>
+
+  <!-- east tower traversal -->
+  <rect class="platform" x="3540" y="760" width="760" height="1700" rx="70"/>
+  <path class="platform" d="M3300 2000 H4560 V2140 H3300Z M3440 1580 H4420 V1720 H3440Z M3580 1160 H4300 V1300 H3580Z M3700 720 H4480 V860 H3700Z"/>
+  <path class="route" d="M3320 2350 L3480 2050 H4380 L4240 1640 H3540 L3690 1220 H4240 L4380 780 H4880"/>
+  <path class="ladder" d="M3420 2300V2050 M4300 1980V1640 M3580 1560V1220 M4240 1130V790"/>
+
+  <!-- portal facades -->
+  <rect class="portal" x="30" y="2140" width="230" height="290" rx="90"/>
+  <text class="small" x="300" y="2230">Open Lands</text>
+
+  <rect class="portal" x="2180" y="1020" width="250" height="330" rx="70"/>
+  <text class="small" x="1510" y="980">Trainers' Yard</text>
+
+  <rect class="portal" x="4100" y="2470" width="250" height="330" rx="70"/>
+  <text class="small" x="3620" y="2750">Apothecary Lane</text>
+
+  <rect class="portal" x="4860" y="2130" width="240" height="310" rx="70"/>
+  <text class="small" x="4390" y="2070">Market Row</text>
+
+  <rect class="portal" x="4740" y="560" width="300" height="340" rx="70"/>
+  <text class="small" x="4080" y="500">Stronghold Approach</text>
+
+  <!-- runtime sprites -->
+  <circle class="interactive" cx="2480" cy="2260" r="92"/>
+  <text class="small" x="2210" y="2110">Spawn waystone</text>
+
+  <rect class="interactive" x="2770" y="2130" width="390" height="240" rx="45"/>
+  <text class="small" x="2680" y="2060">Exchange kiosk + Broker</text>
+
+  <circle class="interactive" cx="2080" cy="2290" r="58"/>
+  <text class="small" x="1770" y="2470">Lorekeeper</text>
+
+  <circle class="interactive" cx="520" cy="2310" r="58"/>
+  <circle class="interactive" cx="4650" cy="760" r="58"/>
+  <text class="small" x="360" y="2520">Sentry</text>
+
+  <circle class="interactive" cx="1590" cy="2280" r="48"/>
+  <text class="small" x="1400" y="2470">Puffkin</text>
+
+  <text class="label" x="1650" y="280">Wendmere Village Square · 5120 × 2880</text>
+</svg>
