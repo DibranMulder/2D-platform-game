@@ -99,6 +99,13 @@ fn spawn(id: SpawnId, x: i32, y: i32, facing: i8) -> SpawnPoint {
     }
 }
 
+/// Spawn a hero arrives at when entering a zone FROM `from`. Keyed by the source
+/// zone so a return trip lands at the door you came through, not the waystone.
+/// Offset by 100 to avoid the overworld's low spawn ids (FROM_MARKET, ...).
+fn arrival_spawn(from: ZoneId) -> SpawnId {
+    SpawnId(100 + from.0)
+}
+
 fn monster(x: i32, y: i32) -> EnemySpawn {
     EnemySpawn {
         kind: EnemyKind::Monster,
@@ -135,13 +142,19 @@ fn forest() -> ZoneGeometry {
             portal(2, 40, 110, 435, 565, BUTTONCAP_HOLLOW, spawn_ids::DEFAULT),
             // World road into the Human home town (DESIGN-0014): a manual door so
             // it does not intercept Heroes walking to the Market portal.
-            door(3, 350, WENDMERE_SQUARE),
+            {
+                let mut town_road = door(3, 350, WENDMERE_SQUARE);
+                town_road.target_spawn = arrival_spawn(SUNLIT_FOREST);
+                town_road
+            },
         ],
         spawns: vec![
             spawn(spawn_ids::DEFAULT, 285, 549, 1),
             spawn(spawn_ids::FROM_MARKET, 1110, 549, -1),
             spawn(spawn_ids::FROM_HOLLOW, 175, 549, 1),
             spawn(spawn_ids::FROM_GAUNTLET, 640, 549, 1),
+            // Returning from the home town lands at the town road, not elsewhere.
+            spawn(arrival_spawn(WENDMERE_SQUARE), 410, 549, 1),
         ],
         enemy_spawns: vec![monster(760, 549)],
         npc_spawns: Vec::new(),
@@ -282,9 +295,18 @@ fn town_room(
     id: ZoneId,
     spawn_x: i32,
     one_ways: Vec<OneWayPlatform>,
-    portals: Vec<PortalVolume>,
+    mut portals: Vec<PortalVolume>,
     npcs: Vec<NpcSpawn>,
 ) -> ZoneGeometry {
+    // New heroes / world-map arrivals use DEFAULT; each door also gets an
+    // arrival spawn just inside it, keyed by the neighbor beyond that door.
+    let mut spawns = vec![spawn(spawn_ids::DEFAULT, spawn_x, 549, 1)];
+    for portal in portals.iter_mut() {
+        portal.target_spawn = arrival_spawn(id);
+        let cx = (portal.bounds.min_x + portal.bounds.max_x) / 2 / 100;
+        let (interior_x, facing) = if cx < 640 { (cx + 60, 1) } else { (cx - 60, -1) };
+        spawns.push(spawn(arrival_spawn(portal.target), interior_x, 549, facing));
+    }
     ZoneGeometry {
         id,
         ground_top_y: from_client_y(550),
@@ -294,14 +316,14 @@ fn town_room(
         one_ways,
         climbs: Vec::new(),
         portals,
-        spawns: vec![spawn(spawn_ids::DEFAULT, spawn_x, 549, 1)],
+        spawns,
         enemy_spawns: Vec::new(),
         npc_spawns: npcs,
     }
 }
 
 // --- Wendmere Village Square: a 5120x2880 layered map authored in
-// village-square-layout-v1.svg. Coordinates below are the SVG's (y-down, origin
+// 01-village-square-layout-v1.svg. Coordinates below are the SVG's (y-down, origin
 // top-left); the sq* helpers flip to y-up world units with a 2880 baseline. ---
 const SQ_HEIGHT: i32 = 2880;
 const SQ_GROUND: i32 = 2400; // plaza floor top (SVG y)
@@ -332,9 +354,20 @@ fn sq_portal(id: u16, x: i32, y: i32, w: i32, h: i32, target: ZoneId) -> PortalV
         id: PortalId(id),
         bounds: Aabb::new(sqx(x), sqy(y + h), sqx(x + w), sqy(y)),
         target,
-        target_spawn: spawn_ids::DEFAULT,
+        // Entering a zone from the Square drops you at that zone's door back here.
+        target_spawn: arrival_spawn(WENDMERE_SQUARE),
         required_allegiance: None,
         manual: true,
+    }
+}
+
+/// A square arrival spawn (keyed by the zone you came from), at a client-px door.
+fn sq_arrival(from: ZoneId, x: i32, y: i32, facing: i8) -> SpawnPoint {
+    SpawnPoint {
+        id: arrival_spawn(from),
+        x: sqx(x),
+        y: sqy(y),
+        facing,
     }
 }
 fn sq_npc(role: &'static str, name: &'static str, x: i32, y: i32, facing: i8) -> NpcSpawn {
@@ -384,12 +417,16 @@ fn wendmere_square() -> ZoneGeometry {
             sq_portal(4, 4860, 2130, 240, 310, WENDMERE_MARKET), // far-right ground arch
             sq_portal(5, 4740, 560, 300, 340, WENDMERE_APPROACH), // high east gate (via tower climb)
         ],
-        spawns: vec![SpawnPoint {
-            id: spawn_ids::DEFAULT,
-            x: sqx(2480),
-            y: sqy(SQ_GROUND),
-            facing: 1,
-        }],
+        spawns: vec![
+            // New-join / world arrivals appear at the central waystone.
+            SpawnPoint { id: spawn_ids::DEFAULT, x: sqx(2480), y: sqy(SQ_GROUND), facing: 1 },
+            // Return trips land just inside the matching door.
+            sq_arrival(SUNLIT_FOREST, 260, SQ_GROUND, 1),
+            sq_arrival(WENDMERE_TRAINERS, 2180, 1240, -1),
+            sq_arrival(WENDMERE_APOTHECARY, 4020, SQ_GROUND, -1),
+            sq_arrival(WENDMERE_MARKET, 4780, SQ_GROUND, -1),
+            sq_arrival(WENDMERE_APPROACH, 4660, 760, -1),
+        ],
         enemy_spawns: Vec::new(),
         npc_spawns: vec![
             sq_npc("sentry", "Gate Sentry", 520, SQ_GROUND, 1),

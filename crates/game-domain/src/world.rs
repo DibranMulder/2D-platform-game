@@ -376,6 +376,87 @@ mod tests {
     }
 
     #[test]
+    fn returning_through_a_portal_lands_at_the_door_not_the_waystone() {
+        use crate::entity::EntitySnapshot;
+        use crate::geometry::{Allegiance, WENDMERE_MARKET, WENDMERE_SQUARE};
+
+        fn hero_where(outcome: &TickOutcome, player: PlayerId) -> Option<(ZoneId, i32)> {
+            for snap in &outcome.snapshots {
+                for entity in &snap.entities {
+                    if let EntitySnapshot::Hero(h) = entity {
+                        if h.player_id == player {
+                            return Some((snap.zone, h.position_x));
+                        }
+                    }
+                }
+            }
+            None
+        }
+
+        fn step(world: &mut World, player: PlayerId, seq: u64, mv: i8, up: bool) -> Option<(ZoneId, i32)> {
+            world
+                .submit_intent(
+                    player,
+                    PlayerIntent {
+                        sequence: seq,
+                        client_tick: seq,
+                        move_axis: mv,
+                        climb_axis: if up { 1 } else { 0 },
+                        jump: false,
+                        drop: false,
+                        guard: false,
+                        action_slot: 0,
+                    },
+                )
+                .unwrap();
+            hero_where(&world.advance_tick(), player)
+        }
+
+        let mut world = World::default();
+        let p = PlayerId::new(1);
+        world
+            .join(
+                p,
+                HeroDescriptor {
+                    hero_name: "Aldric".to_owned(),
+                    lineage: "human".to_owned(),
+                    weapon: WeaponId::Sword,
+                    allegiance: Allegiance::Light,
+                },
+            )
+            .unwrap();
+
+        // Walk right to the Market arch and enter it.
+        let mut cur = (WENDMERE_SQUARE, 248_000);
+        for seq in 1..400u64 {
+            let at_door = cur.0 == WENDMERE_SQUARE && (486_000..=510_000).contains(&cur.1);
+            let mv: i8 = if cur.0 == WENDMERE_SQUARE && !at_door { 1 } else { 0 };
+            if let Some(v) = step(&mut world, p, seq, mv, at_door) {
+                cur = v;
+            }
+            if cur.0 == WENDMERE_MARKET {
+                break;
+            }
+        }
+        assert_eq!(cur.0, WENDMERE_MARKET, "should have entered the Market");
+
+        // In the Market, walk to its door back to the Square and enter it.
+        for seq in 400..900u64 {
+            let at_door = cur.0 == WENDMERE_MARKET && (5_000..=13_000).contains(&cur.1);
+            let mv: i8 = if cur.0 == WENDMERE_MARKET && !at_door { -1 } else { 0 };
+            if let Some(v) = step(&mut world, p, seq, mv, at_door) {
+                cur = v;
+            }
+            if cur.0 == WENDMERE_SQUARE {
+                break;
+            }
+        }
+        assert_eq!(cur.0, WENDMERE_SQUARE, "should have returned to the Square");
+        // Should land near the Market door (~478000), not the central waystone (~248000).
+        assert!(cur.1 > 400_000, "expected to exit at the Market door, got x={}", cur.1);
+    }
+
+    #[test]
     fn a_zone_snapshot_never_shows_another_zones_hero() {
         let mut world = World::default();
         let traveler = PlayerId::new(1);
