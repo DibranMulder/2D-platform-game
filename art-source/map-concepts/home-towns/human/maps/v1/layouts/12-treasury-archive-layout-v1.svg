@@ -1,0 +1,143 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="5120" height="4320" viewBox="0 0 5120 4320">
+  <defs>
+    <linearGradient id="sky" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0" stop-color="#73859d"/>
+      <stop offset="1" stop-color="#c3a97d"/>
+    </linearGradient>
+    <style>
+      .grid { stroke:#fff; stroke-opacity:.22; stroke-width:8; stroke-dasharray:28 22 }
+      .platform { fill:#74644f; stroke:#332d24; stroke-width:18 }
+      .route { fill:none; stroke:#eed58a; stroke-width:34; stroke-linecap:round; stroke-linejoin:round }
+      .stairs { fill:none; stroke:#d5bd80; stroke-width:48; stroke-linecap:square; stroke-linejoin:miter }
+      .ladder { fill:none; stroke:#815d32; stroke-width:28; stroke-dasharray:22 18 }
+      .portal { fill:#233d61; stroke:#e3bd62; stroke-width:20 }
+      .locked { fill:#552e49; stroke:#e0a4c1; stroke-width:20 }
+      .interactive { fill:#77cbb7; stroke:#143f40; stroke-width:14 }
+      .hazard { fill:#bc654e; stroke:#51281f; stroke-width:14 }
+      .floorline { stroke:#fff8dd; stroke-opacity:.34; stroke-width:10; stroke-dasharray:36 30 }
+      .title { font-family:Arial,sans-serif; font-weight:700; font-size:72px; fill:#fff8dd; paint-order:stroke; stroke:#152133; stroke-width:18 }
+      .subtitle { font-family:Arial,sans-serif; font-weight:600; font-size:46px; fill:#fff8dd; paint-order:stroke; stroke:#152133; stroke-width:13 }
+      .small { font-family:Arial,sans-serif; font-weight:600; font-size:48px; fill:#fff8dd; paint-order:stroke; stroke:#152133; stroke-width:12 }
+      .tiny { font-family:Arial,sans-serif; font-weight:600; font-size:38px; fill:#fff8dd; paint-order:stroke; stroke:#152133; stroke-width:10 }
+      .floor { font-family:Arial,sans-serif; font-weight:700; font-size:42px; fill:#fff4c5; paint-order:stroke; stroke:#152133; stroke-width:10 }
+    </style>
+  </defs>
+  <rect width="5120" height="4320" fill="#c3a97d"/>
+  <rect width="5120" height="1641" fill="#73859d" opacity=".76"/>
+  <path d="M0 1641 Q1280 864 2560 1555 T5120 1382 V4320 H0Z" fill="#4f5963" opacity=".48"/>
+  <rect y="3628" width="5120" height="691" fill="#313944"/>
+  <line class="grid" x1="1280" y1="0" x2="1280" y2="4320"/>
+  <line class="grid" x1="2560" y1="0" x2="2560" y2="4320"/>
+  <line class="grid" x1="3840" y1="0" x2="3840" y2="4320"/>
+  <line class="grid" x1="0" y1="720" x2="5120" y2="720"/>
+  <line class="grid" x1="0" y1="1440" x2="5120" y2="1440"/>
+  <line class="grid" x1="0" y1="2160" x2="5120" y2="2160"/>
+  <line class="grid" x1="0" y1="2880" x2="5120" y2="2880"/>
+  <line class="grid" x1="0" y1="3600" x2="5120" y2="3600"/>
+  <rect class="platform" x="260" y="3840" width="3600" height="150" rx="24"/>
+  <line class="floorline" x1="120" y1="3840" x2="5000" y2="3840"/>
+  <text class="floor" x="170" y="3812" text-anchor="start">Archive level 1</text>
+  <rect class="platform" x="1180" y="3160" width="3600" height="150" rx="24"/>
+  <line class="floorline" x1="120" y1="3160" x2="5000" y2="3160"/>
+  <text class="floor" x="170" y="3132" text-anchor="start">Archive level 2</text>
+  <rect class="platform" x="260" y="2480" width="3600" height="150" rx="24"/>
+  <line class="floorline" x1="120" y1="2480" x2="5000" y2="2480"/>
+  <text class="floor" x="170" y="2452" text-anchor="start">Archive level 3</text>
+  <rect class="platform" x="1180" y="1800" width="3600" height="150" rx="24"/>
+  <line class="floorline" x1="120" y1="1800" x2="5000" y2="1800"/>
+  <text class="floor" x="170" y="1772" text-anchor="start">Archive level 4</text>
+  <rect class="platform" x="260" y="1120" width="3600" height="150" rx="24"/>
+  <line class="floorline" x1="120" y1="1120" x2="5000" y2="1120"/>
+  <text class="floor" x="170" y="1092" text-anchor="start">Archive level 5</text>
+  <rect class="platform" x="1180" y="440" width="3600" height="150" rx="24"/>
+  <line class="floorline" x1="120" y1="440" x2="5000" y2="440"/>
+  <text class="floor" x="170" y="412" text-anchor="start">Archive level 6</text>
+  <polygon class="route" points="300.0,3777.0 3800.0,3777.0 3800.0,3743.0 300.0,3743.0" fill="#eed58a"/>
+  <polygon class="route" points="3816.8,3762.5 3916.8,3092.5 3883.2,3087.5 3783.2,3757.5" fill="#eed58a"/>
+  <polygon class="route" points="3900.0,3073.0 1300.0,3073.0 1300.0,3107.0 3900.0,3107.0" fill="#eed58a"/>
+  <polygon class="route" points="1316.7,3087.0 1196.7,2407.0 1163.3,2413.0 1283.3,3093.0" fill="#eed58a"/>
+  <polygon class="route" points="1180.0,2427.0 3900.0,2427.0 3900.0,2393.0 1180.0,2393.0" fill="#eed58a"/>
+  <polygon class="route" points="3917.0,2410.0 3917.0,1730.0 3883.0,1730.0 3883.0,2410.0" fill="#eed58a"/>
+  <polygon class="route" points="3900.0,1713.0 1300.0,1713.0 1300.0,1747.0 3900.0,1747.0" fill="#eed58a"/>
+  <polygon class="route" points="1316.7,1727.0 1196.7,1047.0 1163.3,1053.0 1283.3,1733.0" fill="#eed58a"/>
+  <polygon class="route" points="1180.0,1067.0 3900.0,1067.0 3900.0,1033.0 1180.0,1033.0" fill="#eed58a"/>
+  <polygon class="route" points="3917.0,1050.0 3917.0,370.0 3883.0,370.0 3883.0,1050.0" fill="#eed58a"/>
+  <polygon class="route" points="3900.0,353.0 1500.0,353.0 1500.0,387.0 3900.0,387.0" fill="#eed58a"/>
+  <circle class="route" cx="300" cy="3760" r="17" fill="#eed58a"/>
+  <circle class="route" cx="3800" cy="3760" r="17" fill="#eed58a"/>
+  <circle class="route" cx="3900" cy="3090" r="17" fill="#eed58a"/>
+  <circle class="route" cx="1300" cy="3090" r="17" fill="#eed58a"/>
+  <circle class="route" cx="1180" cy="2410" r="17" fill="#eed58a"/>
+  <circle class="route" cx="3900" cy="2410" r="17" fill="#eed58a"/>
+  <circle class="route" cx="3900" cy="1730" r="17" fill="#eed58a"/>
+  <circle class="route" cx="1300" cy="1730" r="17" fill="#eed58a"/>
+  <circle class="route" cx="1180" cy="1050" r="17" fill="#eed58a"/>
+  <circle class="route" cx="3900" cy="1050" r="17" fill="#eed58a"/>
+  <circle class="route" cx="3900" cy="370" r="17" fill="#eed58a"/>
+  <circle class="route" cx="1500" cy="370" r="17" fill="#eed58a"/>
+  <rect class="ladder" x="3912" y="3220" width="18" height="580" fill="#815d32"/>
+  <rect class="ladder" x="3990" y="3220" width="18" height="580" fill="#815d32"/>
+  <rect class="ladder" x="3912" y="3238" width="96" height="16" rx="8" fill="#a57a43"/>
+  <rect class="ladder" x="3912" y="3304" width="96" height="16" rx="8" fill="#a57a43"/>
+  <rect class="ladder" x="3912" y="3370" width="96" height="16" rx="8" fill="#a57a43"/>
+  <rect class="ladder" x="3912" y="3436" width="96" height="16" rx="8" fill="#a57a43"/>
+  <rect class="ladder" x="3912" y="3502" width="96" height="16" rx="8" fill="#a57a43"/>
+  <rect class="ladder" x="3912" y="3568" width="96" height="16" rx="8" fill="#a57a43"/>
+  <rect class="ladder" x="3912" y="3634" width="96" height="16" rx="8" fill="#a57a43"/>
+  <rect class="ladder" x="3912" y="3700" width="96" height="16" rx="8" fill="#a57a43"/>
+  <rect class="ladder" x="3912" y="3766" width="96" height="16" rx="8" fill="#a57a43"/>
+  <rect class="ladder" x="1072" y="2540" width="18" height="580" fill="#815d32"/>
+  <rect class="ladder" x="1150" y="2540" width="18" height="580" fill="#815d32"/>
+  <rect class="ladder" x="1072" y="2558" width="96" height="16" rx="8" fill="#a57a43"/>
+  <rect class="ladder" x="1072" y="2624" width="96" height="16" rx="8" fill="#a57a43"/>
+  <rect class="ladder" x="1072" y="2690" width="96" height="16" rx="8" fill="#a57a43"/>
+  <rect class="ladder" x="1072" y="2756" width="96" height="16" rx="8" fill="#a57a43"/>
+  <rect class="ladder" x="1072" y="2822" width="96" height="16" rx="8" fill="#a57a43"/>
+  <rect class="ladder" x="1072" y="2888" width="96" height="16" rx="8" fill="#a57a43"/>
+  <rect class="ladder" x="1072" y="2954" width="96" height="16" rx="8" fill="#a57a43"/>
+  <rect class="ladder" x="1072" y="3020" width="96" height="16" rx="8" fill="#a57a43"/>
+  <rect class="ladder" x="1072" y="3086" width="96" height="16" rx="8" fill="#a57a43"/>
+  <rect class="ladder" x="3912" y="1860" width="18" height="580" fill="#815d32"/>
+  <rect class="ladder" x="3990" y="1860" width="18" height="580" fill="#815d32"/>
+  <rect class="ladder" x="3912" y="1878" width="96" height="16" rx="8" fill="#a57a43"/>
+  <rect class="ladder" x="3912" y="1944" width="96" height="16" rx="8" fill="#a57a43"/>
+  <rect class="ladder" x="3912" y="2010" width="96" height="16" rx="8" fill="#a57a43"/>
+  <rect class="ladder" x="3912" y="2076" width="96" height="16" rx="8" fill="#a57a43"/>
+  <rect class="ladder" x="3912" y="2142" width="96" height="16" rx="8" fill="#a57a43"/>
+  <rect class="ladder" x="3912" y="2208" width="96" height="16" rx="8" fill="#a57a43"/>
+  <rect class="ladder" x="3912" y="2274" width="96" height="16" rx="8" fill="#a57a43"/>
+  <rect class="ladder" x="3912" y="2340" width="96" height="16" rx="8" fill="#a57a43"/>
+  <rect class="ladder" x="3912" y="2406" width="96" height="16" rx="8" fill="#a57a43"/>
+  <rect class="ladder" x="1072" y="1180" width="18" height="580" fill="#815d32"/>
+  <rect class="ladder" x="1150" y="1180" width="18" height="580" fill="#815d32"/>
+  <rect class="ladder" x="1072" y="1198" width="96" height="16" rx="8" fill="#a57a43"/>
+  <rect class="ladder" x="1072" y="1264" width="96" height="16" rx="8" fill="#a57a43"/>
+  <rect class="ladder" x="1072" y="1330" width="96" height="16" rx="8" fill="#a57a43"/>
+  <rect class="ladder" x="1072" y="1396" width="96" height="16" rx="8" fill="#a57a43"/>
+  <rect class="ladder" x="1072" y="1462" width="96" height="16" rx="8" fill="#a57a43"/>
+  <rect class="ladder" x="1072" y="1528" width="96" height="16" rx="8" fill="#a57a43"/>
+  <rect class="ladder" x="1072" y="1594" width="96" height="16" rx="8" fill="#a57a43"/>
+  <rect class="ladder" x="1072" y="1660" width="96" height="16" rx="8" fill="#a57a43"/>
+  <rect class="ladder" x="1072" y="1726" width="96" height="16" rx="8" fill="#a57a43"/>
+  <rect class="ladder" x="3912" y="500" width="18" height="580" fill="#815d32"/>
+  <rect class="ladder" x="3990" y="500" width="18" height="580" fill="#815d32"/>
+  <rect class="ladder" x="3912" y="518" width="96" height="16" rx="8" fill="#a57a43"/>
+  <rect class="ladder" x="3912" y="584" width="96" height="16" rx="8" fill="#a57a43"/>
+  <rect class="ladder" x="3912" y="650" width="96" height="16" rx="8" fill="#a57a43"/>
+  <rect class="ladder" x="3912" y="716" width="96" height="16" rx="8" fill="#a57a43"/>
+  <rect class="ladder" x="3912" y="782" width="96" height="16" rx="8" fill="#a57a43"/>
+  <rect class="ladder" x="3912" y="848" width="96" height="16" rx="8" fill="#a57a43"/>
+  <rect class="ladder" x="3912" y="914" width="96" height="16" rx="8" fill="#a57a43"/>
+  <rect class="ladder" x="3912" y="980" width="96" height="16" rx="8" fill="#a57a43"/>
+  <rect class="ladder" x="3912" y="1046" width="96" height="16" rx="8" fill="#a57a43"/>
+  <rect class="portal" x="80" y="3510" width="260" height="320" rx="72"/>
+  <text class="small" x="380" y="3670" text-anchor="start">Great Hall</text>
+  <circle class="interactive" cx="1800" cy="3700" r="58"/>
+  <text class="tiny" x="1800" y="3585" text-anchor="middle">Archivist</text>
+  <circle class="interactive" cx="3400" cy="2410" r="58"/>
+  <text class="tiny" x="3400" y="2295" text-anchor="middle">Sealed archive door</text>
+  <circle class="interactive" cx="1800" cy="1020" r="58"/>
+  <text class="tiny" x="1800" y="905" text-anchor="middle">Treasury vault</text>
+  <text class="title" x="2560" y="105" text-anchor="middle">King&#x27;s Keep · Treasury &amp; Archive</text>
+  <text class="subtitle" x="2560" y="170" text-anchor="middle">six-level archive and sealed vault · 5120×4320 · 4×6 viewports</text>
+</svg>

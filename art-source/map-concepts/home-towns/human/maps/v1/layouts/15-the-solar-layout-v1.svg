@@ -1,0 +1,120 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="2560" height="3600" viewBox="0 0 2560 3600">
+  <defs>
+    <linearGradient id="sky" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0" stop-color="#778aa8"/>
+      <stop offset="1" stop-color="#d7bd91"/>
+    </linearGradient>
+    <style>
+      .grid { stroke:#fff; stroke-opacity:.22; stroke-width:8; stroke-dasharray:28 22 }
+      .platform { fill:#756752; stroke:#332d24; stroke-width:18 }
+      .route { fill:none; stroke:#eed58a; stroke-width:34; stroke-linecap:round; stroke-linejoin:round }
+      .stairs { fill:none; stroke:#d5bd80; stroke-width:48; stroke-linecap:square; stroke-linejoin:miter }
+      .ladder { fill:none; stroke:#815d32; stroke-width:28; stroke-dasharray:22 18 }
+      .portal { fill:#233d61; stroke:#e3bd62; stroke-width:20 }
+      .locked { fill:#552e49; stroke:#e0a4c1; stroke-width:20 }
+      .interactive { fill:#77cbb7; stroke:#143f40; stroke-width:14 }
+      .hazard { fill:#bc654e; stroke:#51281f; stroke-width:14 }
+      .floorline { stroke:#fff8dd; stroke-opacity:.34; stroke-width:10; stroke-dasharray:36 30 }
+      .title { font-family:Arial,sans-serif; font-weight:700; font-size:72px; fill:#fff8dd; paint-order:stroke; stroke:#152133; stroke-width:18 }
+      .subtitle { font-family:Arial,sans-serif; font-weight:600; font-size:46px; fill:#fff8dd; paint-order:stroke; stroke:#152133; stroke-width:13 }
+      .small { font-family:Arial,sans-serif; font-weight:600; font-size:48px; fill:#fff8dd; paint-order:stroke; stroke:#152133; stroke-width:12 }
+      .tiny { font-family:Arial,sans-serif; font-weight:600; font-size:38px; fill:#fff8dd; paint-order:stroke; stroke:#152133; stroke-width:10 }
+      .floor { font-family:Arial,sans-serif; font-weight:700; font-size:42px; fill:#fff4c5; paint-order:stroke; stroke:#152133; stroke-width:10 }
+    </style>
+  </defs>
+  <rect width="2560" height="3600" fill="#d7bd91"/>
+  <rect width="2560" height="1368" fill="#778aa8" opacity=".76"/>
+  <path d="M0 1368 Q640 720 1280 1296 T2560 1152 V3600 H0Z" fill="#5d6675" opacity=".48"/>
+  <rect y="3024" width="2560" height="576" fill="#2d3541"/>
+  <line class="grid" x1="1280" y1="0" x2="1280" y2="3600"/>
+  <line class="grid" x1="0" y1="720" x2="2560" y2="720"/>
+  <line class="grid" x1="0" y1="1440" x2="2560" y2="1440"/>
+  <line class="grid" x1="0" y1="2160" x2="2560" y2="2160"/>
+  <line class="grid" x1="0" y1="2880" x2="2560" y2="2880"/>
+  <rect class="platform" x="220" y="3160" width="2120" height="140" rx="24"/>
+  <line class="floorline" x1="120" y1="3160" x2="2440" y2="3160"/>
+  <text class="floor" x="170" y="3132" text-anchor="start">Tower floor 15</text>
+  <rect class="platform" x="220" y="2500" width="2120" height="140" rx="24"/>
+  <line class="floorline" x1="120" y1="2500" x2="2440" y2="2500"/>
+  <text class="floor" x="170" y="2472" text-anchor="start">Tower floor 16</text>
+  <rect class="platform" x="220" y="1840" width="2120" height="140" rx="24"/>
+  <line class="floorline" x1="120" y1="1840" x2="2440" y2="1840"/>
+  <text class="floor" x="170" y="1812" text-anchor="start">Tower floor 17</text>
+  <rect class="platform" x="220" y="1180" width="2120" height="140" rx="24"/>
+  <line class="floorline" x1="120" y1="1180" x2="2440" y2="1180"/>
+  <text class="floor" x="170" y="1152" text-anchor="start">Tower floor 18</text>
+  <rect class="platform" x="220" y="520" width="2120" height="140" rx="24"/>
+  <line class="floorline" x1="120" y1="520" x2="2440" y2="520"/>
+  <text class="floor" x="170" y="492" text-anchor="start">Tower floor 19</text>
+  <polygon class="route" points="360.0,3097.0 2200.0,3097.0 2200.0,3063.0 360.0,3063.0" fill="#eed58a"/>
+  <polygon class="route" points="2217.0,3080.0 2217.0,2420.0 2183.0,2420.0 2183.0,3080.0" fill="#eed58a"/>
+  <polygon class="route" points="2200.0,2403.0 360.0,2403.0 360.0,2437.0 2200.0,2437.0" fill="#eed58a"/>
+  <polygon class="route" points="377.0,2420.0 377.0,1760.0 343.0,1760.0 343.0,2420.0" fill="#eed58a"/>
+  <polygon class="route" points="360.0,1777.0 2200.0,1777.0 2200.0,1743.0 360.0,1743.0" fill="#eed58a"/>
+  <polygon class="route" points="2217.0,1760.0 2217.0,1100.0 2183.0,1100.0 2183.0,1760.0" fill="#eed58a"/>
+  <polygon class="route" points="2200.0,1083.0 360.0,1083.0 360.0,1117.0 2200.0,1117.0" fill="#eed58a"/>
+  <polygon class="route" points="377.0,1100.0 377.0,440.0 343.0,440.0 343.0,1100.0" fill="#eed58a"/>
+  <polygon class="route" points="360.0,457.0 1280.0,457.0 1280.0,423.0 360.0,423.0" fill="#eed58a"/>
+  <circle class="route" cx="360" cy="3080" r="17" fill="#eed58a"/>
+  <circle class="route" cx="2200" cy="3080" r="17" fill="#eed58a"/>
+  <circle class="route" cx="2200" cy="2420" r="17" fill="#eed58a"/>
+  <circle class="route" cx="360" cy="2420" r="17" fill="#eed58a"/>
+  <circle class="route" cx="360" cy="1760" r="17" fill="#eed58a"/>
+  <circle class="route" cx="2200" cy="1760" r="17" fill="#eed58a"/>
+  <circle class="route" cx="2200" cy="1100" r="17" fill="#eed58a"/>
+  <circle class="route" cx="360" cy="1100" r="17" fill="#eed58a"/>
+  <circle class="route" cx="360" cy="440" r="17" fill="#eed58a"/>
+  <circle class="route" cx="1280" cy="440" r="17" fill="#eed58a"/>
+  <rect class="ladder" x="2152" y="2570" width="18" height="530" fill="#815d32"/>
+  <rect class="ladder" x="2230" y="2570" width="18" height="530" fill="#815d32"/>
+  <rect class="ladder" x="2152" y="2588" width="96" height="16" rx="8" fill="#a57a43"/>
+  <rect class="ladder" x="2152" y="2654" width="96" height="16" rx="8" fill="#a57a43"/>
+  <rect class="ladder" x="2152" y="2720" width="96" height="16" rx="8" fill="#a57a43"/>
+  <rect class="ladder" x="2152" y="2786" width="96" height="16" rx="8" fill="#a57a43"/>
+  <rect class="ladder" x="2152" y="2852" width="96" height="16" rx="8" fill="#a57a43"/>
+  <rect class="ladder" x="2152" y="2918" width="96" height="16" rx="8" fill="#a57a43"/>
+  <rect class="ladder" x="2152" y="2984" width="96" height="16" rx="8" fill="#a57a43"/>
+  <rect class="ladder" x="2152" y="3050" width="96" height="16" rx="8" fill="#a57a43"/>
+  <rect class="ladder" x="312" y="1910" width="18" height="530" fill="#815d32"/>
+  <rect class="ladder" x="390" y="1910" width="18" height="530" fill="#815d32"/>
+  <rect class="ladder" x="312" y="1928" width="96" height="16" rx="8" fill="#a57a43"/>
+  <rect class="ladder" x="312" y="1994" width="96" height="16" rx="8" fill="#a57a43"/>
+  <rect class="ladder" x="312" y="2060" width="96" height="16" rx="8" fill="#a57a43"/>
+  <rect class="ladder" x="312" y="2126" width="96" height="16" rx="8" fill="#a57a43"/>
+  <rect class="ladder" x="312" y="2192" width="96" height="16" rx="8" fill="#a57a43"/>
+  <rect class="ladder" x="312" y="2258" width="96" height="16" rx="8" fill="#a57a43"/>
+  <rect class="ladder" x="312" y="2324" width="96" height="16" rx="8" fill="#a57a43"/>
+  <rect class="ladder" x="312" y="2390" width="96" height="16" rx="8" fill="#a57a43"/>
+  <rect class="ladder" x="2152" y="1250" width="18" height="530" fill="#815d32"/>
+  <rect class="ladder" x="2230" y="1250" width="18" height="530" fill="#815d32"/>
+  <rect class="ladder" x="2152" y="1268" width="96" height="16" rx="8" fill="#a57a43"/>
+  <rect class="ladder" x="2152" y="1334" width="96" height="16" rx="8" fill="#a57a43"/>
+  <rect class="ladder" x="2152" y="1400" width="96" height="16" rx="8" fill="#a57a43"/>
+  <rect class="ladder" x="2152" y="1466" width="96" height="16" rx="8" fill="#a57a43"/>
+  <rect class="ladder" x="2152" y="1532" width="96" height="16" rx="8" fill="#a57a43"/>
+  <rect class="ladder" x="2152" y="1598" width="96" height="16" rx="8" fill="#a57a43"/>
+  <rect class="ladder" x="2152" y="1664" width="96" height="16" rx="8" fill="#a57a43"/>
+  <rect class="ladder" x="2152" y="1730" width="96" height="16" rx="8" fill="#a57a43"/>
+  <rect class="ladder" x="312" y="590" width="18" height="530" fill="#815d32"/>
+  <rect class="ladder" x="390" y="590" width="18" height="530" fill="#815d32"/>
+  <rect class="ladder" x="312" y="608" width="96" height="16" rx="8" fill="#a57a43"/>
+  <rect class="ladder" x="312" y="674" width="96" height="16" rx="8" fill="#a57a43"/>
+  <rect class="ladder" x="312" y="740" width="96" height="16" rx="8" fill="#a57a43"/>
+  <rect class="ladder" x="312" y="806" width="96" height="16" rx="8" fill="#a57a43"/>
+  <rect class="ladder" x="312" y="872" width="96" height="16" rx="8" fill="#a57a43"/>
+  <rect class="ladder" x="312" y="938" width="96" height="16" rx="8" fill="#a57a43"/>
+  <rect class="ladder" x="312" y="1004" width="96" height="16" rx="8" fill="#a57a43"/>
+  <rect class="ladder" x="312" y="1070" width="96" height="16" rx="8" fill="#a57a43"/>
+  <rect class="portal" x="100" y="2830" width="260" height="320" rx="72"/>
+  <text class="small" x="400" y="2990" text-anchor="start">Winding Stair · floor 14</text>
+  <rect class="portal" x="1140" y="190" width="260" height="320" rx="72"/>
+  <text class="small" x="1440" y="350" text-anchor="start">Return portal · Tower Base</text>
+  <circle class="interactive" cx="1280" cy="390" r="58"/>
+  <text class="tiny" x="1280" y="275" text-anchor="middle">The Solar · sealed archive</text>
+  <circle class="interactive" cx="780" cy="1080" r="58"/>
+  <text class="tiny" x="780" y="965" text-anchor="middle">Astronomer&#x27;s table</text>
+  <circle class="interactive" cx="1800" cy="1080" r="58"/>
+  <text class="tiny" x="1800" y="965" text-anchor="middle">Heir-Warden</text>
+  <text class="title" x="1280" y="105" text-anchor="middle">Princess&#x27;s Tower · The Solar</text>
+  <text class="subtitle" x="1280" y="170" text-anchor="middle">continuous ascent · floors 15–19 and summit · 2560×3600 · 2×5 viewports</text>
+</svg>

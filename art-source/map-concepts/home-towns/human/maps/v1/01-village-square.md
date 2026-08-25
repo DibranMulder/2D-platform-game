@@ -1,6 +1,6 @@
 # Wendmere Village Square — layered map kit v1
 
-This directory designs the first playable Zone in the Human hometown from
+This document designs the first playable Zone in the Human hometown from
 DESIGN-0014. It is a side-scrolling game map, not a region-map illustration.
 
 ## Scale
@@ -31,7 +31,7 @@ DESIGN-0014. It is a side-scrolling game map, not a region-map illustration.
 
 ## Village Square layout
 
-See `village-square-layout-v1.svg` for the full spatial blueprint.
+See [01-village-square-layout-v1.svg](layouts/01-village-square-layout-v1.svg) for the full spatial blueprint.
 
 - **Ground route:** Open Lands road → central square → Market Row arch.
 - **Lower branch:** broad steps descend to the Apothecary Lane door.
@@ -71,10 +71,13 @@ and portal transfers belong to Godot/runtime data rather than the paintings.
 
 ## Current artifact status
 
-- `village-square-parallax-background-v1.png` is usable RGB background art.
-- `village-square-layout-v1.svg` is the authoritative first-pass spatial plan.
-- `village-square-platform-kit-v1.png` and
-  `village-square-portal-facades-v1.png` are genuine RGBA atlases. Their baked
+- [01-village-square-parallax-background-v1.png](parallax/01-village-square-parallax-background-v1.png) is usable RGB background art.
+- [01-village-square-layout-v1.svg](layouts/01-village-square-layout-v1.svg) is the authoritative first-pass spatial plan.
+- [Village Square NPC artwork](npcs/README.md) provides transparent idle assets for the Exchange Broker, Herald, and reusable Gate Sentry.
+- [Village Square modular construction kits](platform-kits/README.md) provide tileable stairs, ladders, floors, walls, and watchtower pieces.
+- [Village Square decorative prop atlases](props/README.md) provide eighteen transparent settlement, armory, and foliage pieces for dressing empty spaces.
+- [01-village-square-platform-kit-v1.png](platform-kits/01-village-square-platform-kit-v1.png) and
+  [01-village-square-portal-facades-v1.png](portal-facades/01-village-square-portal-facades-v1.png) are genuine RGBA atlases. Their baked
   checkerboards were removed with the same local cleanup pattern used by the
   Human M03 action sheets: connected pale-background removal plus cleanup of
   enclosed neutral checker regions. Both were visually checked over a dark

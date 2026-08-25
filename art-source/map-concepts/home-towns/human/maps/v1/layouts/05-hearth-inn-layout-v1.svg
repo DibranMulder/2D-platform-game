@@ -1,0 +1,96 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="3840" height="2880" viewBox="0 0 3840 2880">
+  <defs>
+    <linearGradient id="sky" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0" stop-color="#73859d"/>
+      <stop offset="1" stop-color="#c3a97d"/>
+    </linearGradient>
+    <style>
+      .grid { stroke:#fff; stroke-opacity:.22; stroke-width:8; stroke-dasharray:28 22 }
+      .platform { fill:#74644f; stroke:#332d24; stroke-width:18 }
+      .route { fill:none; stroke:#eed58a; stroke-width:34; stroke-linecap:round; stroke-linejoin:round }
+      .stairs { fill:none; stroke:#d5bd80; stroke-width:48; stroke-linecap:square; stroke-linejoin:miter }
+      .ladder { fill:none; stroke:#815d32; stroke-width:28; stroke-dasharray:22 18 }
+      .portal { fill:#233d61; stroke:#e3bd62; stroke-width:20 }
+      .locked { fill:#552e49; stroke:#e0a4c1; stroke-width:20 }
+      .interactive { fill:#77cbb7; stroke:#143f40; stroke-width:14 }
+      .hazard { fill:#bc654e; stroke:#51281f; stroke-width:14 }
+      .floorline { stroke:#fff8dd; stroke-opacity:.34; stroke-width:10; stroke-dasharray:36 30 }
+      .title { font-family:Arial,sans-serif; font-weight:700; font-size:72px; fill:#fff8dd; paint-order:stroke; stroke:#152133; stroke-width:18 }
+      .subtitle { font-family:Arial,sans-serif; font-weight:600; font-size:46px; fill:#fff8dd; paint-order:stroke; stroke:#152133; stroke-width:13 }
+      .small { font-family:Arial,sans-serif; font-weight:600; font-size:48px; fill:#fff8dd; paint-order:stroke; stroke:#152133; stroke-width:12 }
+      .tiny { font-family:Arial,sans-serif; font-weight:600; font-size:38px; fill:#fff8dd; paint-order:stroke; stroke:#152133; stroke-width:10 }
+      .floor { font-family:Arial,sans-serif; font-weight:700; font-size:42px; fill:#fff4c5; paint-order:stroke; stroke:#152133; stroke-width:10 }
+    </style>
+  </defs>
+  <rect width="3840" height="2880" fill="#c3a97d"/>
+  <rect width="3840" height="1094" fill="#73859d" opacity=".76"/>
+  <path d="M0 1094 Q960 576 1920 1036 T3840 921 V2880 H0Z" fill="#4f5963" opacity=".48"/>
+  <rect y="2419" width="3840" height="460" fill="#313944"/>
+  <line class="grid" x1="1280" y1="0" x2="1280" y2="2880"/>
+  <line class="grid" x1="2560" y1="0" x2="2560" y2="2880"/>
+  <line class="grid" x1="0" y1="720" x2="3840" y2="720"/>
+  <line class="grid" x1="0" y1="1440" x2="3840" y2="1440"/>
+  <line class="grid" x1="0" y1="2160" x2="3840" y2="2160"/>
+  <rect class="platform" x="180" y="2480" width="3480" height="140" rx="24"/>
+  <rect class="platform" x="180" y="1770" width="3480" height="140" rx="24"/>
+  <rect class="platform" x="180" y="1060" width="3480" height="140" rx="24"/>
+  <rect class="platform" x="180" y="350" width="3480" height="140" rx="24"/>
+  <polygon class="route" points="260.0,2427.0 1100.0,2427.0 1100.0,2393.0 260.0,2393.0" fill="#eed58a"/>
+  <polygon class="route" points="1115.2,2417.5 1465.2,1707.5 1434.8,1692.5 1084.8,2402.5" fill="#eed58a"/>
+  <polygon class="route" points="1450.0,1717.0 2450.0,1717.0 2450.0,1683.0 1450.0,1683.0" fill="#eed58a"/>
+  <polygon class="route" points="2465.2,1707.5 2815.2,997.5 2784.8,982.5 2434.8,1692.5" fill="#eed58a"/>
+  <polygon class="route" points="2800.0,1007.0 3450.0,1007.0 3450.0,973.0 2800.0,973.0" fill="#eed58a"/>
+  <polygon class="route" points="3466.0,984.4 3216.0,274.4 3184.0,285.6 3434.0,995.6" fill="#eed58a"/>
+  <circle class="route" cx="260" cy="2410" r="17" fill="#eed58a"/>
+  <circle class="route" cx="1100" cy="2410" r="17" fill="#eed58a"/>
+  <circle class="route" cx="1450" cy="1700" r="17" fill="#eed58a"/>
+  <circle class="route" cx="2450" cy="1700" r="17" fill="#eed58a"/>
+  <circle class="route" cx="2800" cy="990" r="17" fill="#eed58a"/>
+  <circle class="route" cx="3450" cy="990" r="17" fill="#eed58a"/>
+  <circle class="route" cx="3200" cy="280" r="17" fill="#eed58a"/>
+  <rect class="ladder" x="1232" y="1830" width="18" height="590" fill="#815d32"/>
+  <rect class="ladder" x="1310" y="1830" width="18" height="590" fill="#815d32"/>
+  <rect class="ladder" x="1232" y="1848" width="96" height="16" rx="8" fill="#a57a43"/>
+  <rect class="ladder" x="1232" y="1914" width="96" height="16" rx="8" fill="#a57a43"/>
+  <rect class="ladder" x="1232" y="1980" width="96" height="16" rx="8" fill="#a57a43"/>
+  <rect class="ladder" x="1232" y="2046" width="96" height="16" rx="8" fill="#a57a43"/>
+  <rect class="ladder" x="1232" y="2112" width="96" height="16" rx="8" fill="#a57a43"/>
+  <rect class="ladder" x="1232" y="2178" width="96" height="16" rx="8" fill="#a57a43"/>
+  <rect class="ladder" x="1232" y="2244" width="96" height="16" rx="8" fill="#a57a43"/>
+  <rect class="ladder" x="1232" y="2310" width="96" height="16" rx="8" fill="#a57a43"/>
+  <rect class="ladder" x="1232" y="2376" width="96" height="16" rx="8" fill="#a57a43"/>
+  <rect class="ladder" x="2552" y="1120" width="18" height="590" fill="#815d32"/>
+  <rect class="ladder" x="2630" y="1120" width="18" height="590" fill="#815d32"/>
+  <rect class="ladder" x="2552" y="1138" width="96" height="16" rx="8" fill="#a57a43"/>
+  <rect class="ladder" x="2552" y="1204" width="96" height="16" rx="8" fill="#a57a43"/>
+  <rect class="ladder" x="2552" y="1270" width="96" height="16" rx="8" fill="#a57a43"/>
+  <rect class="ladder" x="2552" y="1336" width="96" height="16" rx="8" fill="#a57a43"/>
+  <rect class="ladder" x="2552" y="1402" width="96" height="16" rx="8" fill="#a57a43"/>
+  <rect class="ladder" x="2552" y="1468" width="96" height="16" rx="8" fill="#a57a43"/>
+  <rect class="ladder" x="2552" y="1534" width="96" height="16" rx="8" fill="#a57a43"/>
+  <rect class="ladder" x="2552" y="1600" width="96" height="16" rx="8" fill="#a57a43"/>
+  <rect class="ladder" x="2552" y="1666" width="96" height="16" rx="8" fill="#a57a43"/>
+  <rect class="ladder" x="3302" y="410" width="18" height="590" fill="#815d32"/>
+  <rect class="ladder" x="3380" y="410" width="18" height="590" fill="#815d32"/>
+  <rect class="ladder" x="3302" y="428" width="96" height="16" rx="8" fill="#a57a43"/>
+  <rect class="ladder" x="3302" y="494" width="96" height="16" rx="8" fill="#a57a43"/>
+  <rect class="ladder" x="3302" y="560" width="96" height="16" rx="8" fill="#a57a43"/>
+  <rect class="ladder" x="3302" y="626" width="96" height="16" rx="8" fill="#a57a43"/>
+  <rect class="ladder" x="3302" y="692" width="96" height="16" rx="8" fill="#a57a43"/>
+  <rect class="ladder" x="3302" y="758" width="96" height="16" rx="8" fill="#a57a43"/>
+  <rect class="ladder" x="3302" y="824" width="96" height="16" rx="8" fill="#a57a43"/>
+  <rect class="ladder" x="3302" y="890" width="96" height="16" rx="8" fill="#a57a43"/>
+  <rect class="ladder" x="3302" y="956" width="96" height="16" rx="8" fill="#a57a43"/>
+  <rect class="portal" x="70" y="2160" width="260" height="320" rx="72"/>
+  <text class="small" x="370" y="2320" text-anchor="start">Trainers&#x27; Yard</text>
+  <rect class="interactive" x="780" y="2285" width="240" height="170" rx="38"/>
+  <text class="tiny" x="900" y="2255" text-anchor="middle">Innkeeper</text>
+  <rect class="interactive" x="2080" y="1575" width="240" height="170" rx="38"/>
+  <text class="tiny" x="2200" y="1545" text-anchor="middle">Quartermaster</text>
+  <circle class="interactive" cx="2950" cy="930" r="58"/>
+  <text class="tiny" x="2950" y="815" text-anchor="middle">Guest rooms</text>
+  <circle class="interactive" cx="1600" cy="2370" r="58"/>
+  <text class="tiny" x="1600" y="2255" text-anchor="middle">Respawn hearth</text>
+  <text class="title" x="1920" y="105" text-anchor="middle">Wendmere · Hearth Inn</text>
+  <text class="subtitle" x="1920" y="170" text-anchor="middle">four-level inn and respawn hearth · 3840×2880 · 3×4 viewports</text>
+</svg>
