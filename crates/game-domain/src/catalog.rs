@@ -4,9 +4,12 @@
 
 use crate::fixed::{from_client_x, from_client_y};
 use crate::geometry::{
-    Aabb, BUTTONCAP_HOLLOW, ClimbKind, ClimbVolume, EnemyKind, EnemySpawn, MOONLIT_MARKET,
-    OneWayPlatform, PortalId, PortalVolume, SUNLIT_FOREST, SolidBox, SpawnId, SpawnPoint,
-    THE_GAUNTLET, ZoneGeometry, ZoneId,
+    Aabb, Allegiance, BUTTONCAP_HOLLOW, ClimbKind, ClimbVolume, EnemyKind, EnemySpawn,
+    KINGSKEEP_BARRACKS, KINGSKEEP_GATEHOUSE, KINGSKEEP_GREAT_HALL, KINGSKEEP_KINGS_ROOM,
+    KINGSKEEP_SERVICE, KINGSKEEP_TREASURY, MOONLIT_MARKET, NpcSpawn, OneWayPlatform, PortalId,
+    PortalVolume, SUNLIT_FOREST, SolidBox, SpawnId, SpawnPoint, THE_GAUNTLET, TOWER_BASE,
+    TOWER_SOLAR, TOWER_STAIR, WENDMERE_APOTHECARY, WENDMERE_APPROACH, WENDMERE_INN,
+    WENDMERE_MARKET, WENDMERE_SQUARE, WENDMERE_TRAINERS, ZoneGeometry, ZoneId,
 };
 
 /// Spawn ids used by portal targets. Id 0 is always "fresh arrival / new join".
@@ -25,9 +28,9 @@ pub struct ZoneCatalog {
 
 impl ZoneCatalog {
     pub fn prototype() -> Self {
-        Self {
-            zones: vec![forest(), market(), hollow(), gauntlet()],
-        }
+        let mut zones = vec![forest(), market(), hollow(), gauntlet()];
+        zones.extend(human_town());
+        Self { zones }
     }
 
     pub fn geometry(&self, id: ZoneId) -> &ZoneGeometry {
@@ -82,6 +85,8 @@ fn portal(
         ),
         target,
         target_spawn,
+        required_allegiance: None,
+        manual: false,
     }
 }
 
@@ -128,6 +133,9 @@ fn forest() -> ZoneGeometry {
         portals: vec![
             portal(1, 1170, 1240, 435, 565, MOONLIT_MARKET, spawn_ids::DEFAULT),
             portal(2, 40, 110, 435, 565, BUTTONCAP_HOLLOW, spawn_ids::DEFAULT),
+            // World road into the Human home town (DESIGN-0014): a manual door so
+            // it does not intercept Heroes walking to the Market portal.
+            door(3, 350, WENDMERE_SQUARE),
         ],
         spawns: vec![
             spawn(spawn_ids::DEFAULT, 285, 549, 1),
@@ -136,6 +144,7 @@ fn forest() -> ZoneGeometry {
             spawn(spawn_ids::FROM_GAUNTLET, 640, 549, 1),
         ],
         enemy_spawns: vec![monster(760, 549)],
+        npc_spawns: Vec::new(),
     }
 }
 
@@ -152,6 +161,7 @@ fn market() -> ZoneGeometry {
         portals: vec![portal(1, 35, 110, 435, 565, SUNLIT_FOREST, spawn_ids::FROM_MARKET)],
         spawns: vec![spawn(spawn_ids::DEFAULT, 155, 549, 1)],
         enemy_spawns: Vec::new(),
+        npc_spawns: Vec::new(),
     }
 }
 
@@ -179,6 +189,7 @@ fn hollow() -> ZoneGeometry {
             biter(980, 288, 875, 1085),
             biter(600, 376, 545, 735),
         ],
+        npc_spawns: Vec::new(),
     }
 }
 
@@ -225,7 +236,236 @@ fn gauntlet() -> ZoneGeometry {
         )],
         spawns: vec![spawn(spawn_ids::DEFAULT, 140, 500, 1)],
         enemy_spawns: Vec::new(),
+        npc_spawns: Vec::new(),
     }
+}
+
+// --- Human home town: Wendmere Crossroads, the King's Keep, the Princess's
+// Tower (DESIGN-0014). All rooms are the standard 1280x720 side-scroll room with
+// ground at y550; portals are ground-level doorways unless noted. ---
+
+/// A ground-level doorway centered at client x `cx`, targeting the destination's
+/// default spawn.
+fn door(id: u16, cx: i32, target: ZoneId) -> PortalVolume {
+    let mut portal = portal(id, cx - 40, cx + 40, 460, 565, target, spawn_ids::DEFAULT);
+    portal.manual = true; // town doors are entered deliberately (press up)
+    portal
+}
+
+/// A manual door raised off the ground (e.g. atop a climb), at client y span.
+fn high_door(id: u16, cx: i32, y_top: i32, y_bottom: i32, target: ZoneId) -> PortalVolume {
+    let mut portal = portal(id, cx - 50, cx + 50, y_top, y_bottom, target, spawn_ids::DEFAULT);
+    portal.manual = true;
+    portal
+}
+
+/// A doorway gated to one Allegiance (the Stronghold boundary).
+fn gated_door(id: u16, cx: i32, target: ZoneId, allegiance: Allegiance) -> PortalVolume {
+    let mut portal = door(id, cx, target);
+    portal.required_allegiance = Some(allegiance);
+    portal
+}
+
+fn tnpc(role: &'static str, name: &'static str, x: i32, facing: i8) -> NpcSpawn {
+    NpcSpawn {
+        role,
+        name,
+        x: from_client_x(x),
+        y: from_client_y(549),
+        facing,
+    }
+}
+
+/// A standard town room: flat ground, given platforms/portals/NPCs, one default
+/// spawn at client x `spawn_x`.
+fn town_room(
+    id: ZoneId,
+    spawn_x: i32,
+    one_ways: Vec<OneWayPlatform>,
+    portals: Vec<PortalVolume>,
+    npcs: Vec<NpcSpawn>,
+) -> ZoneGeometry {
+    ZoneGeometry {
+        id,
+        ground_top_y: from_client_y(550),
+        min_x: from_client_x(44),
+        max_x: from_client_x(1236),
+        solids: Vec::new(),
+        one_ways,
+        climbs: Vec::new(),
+        portals,
+        spawns: vec![spawn(spawn_ids::DEFAULT, spawn_x, 549, 1)],
+        enemy_spawns: Vec::new(),
+        npc_spawns: npcs,
+    }
+}
+
+fn human_town() -> Vec<ZoneGeometry> {
+    vec![
+        // --- Ring 1: Wendmere Crossroads (Outer Village) ---
+        town_room(
+            WENDMERE_SQUARE,
+            640,
+            Vec::new(),
+            vec![
+                door(1, 70, SUNLIT_FOREST), // world road out
+                door(2, 180, WENDMERE_APOTHECARY),
+                door(3, 360, WENDMERE_TRAINERS),
+                door(4, 900, WENDMERE_MARKET),
+                door(5, 1150, WENDMERE_APPROACH),
+            ],
+            vec![
+                tnpc("sentry", "Gate Sentry", 500, 1),
+                tnpc("exchange_broker", "Exchange Broker", 700, -1),
+                tnpc("lorekeeper", "Herald of Wendmere", 820, -1),
+            ],
+        ),
+        town_room(
+            WENDMERE_MARKET,
+            300,
+            Vec::new(),
+            vec![door(1, 90, WENDMERE_SQUARE)],
+            vec![
+                tnpc("weaponsmith", "Weaponsmith", 500, 1),
+                tnpc("armorer", "Armorer", 760, -1),
+                tnpc("wandwright", "Wandwright", 980, -1),
+            ],
+        ),
+        town_room(
+            WENDMERE_APOTHECARY,
+            300,
+            Vec::new(),
+            vec![door(1, 90, WENDMERE_SQUARE)],
+            vec![
+                tnpc("apothecary", "Apothecary", 520, 1),
+                tnpc("provisioner", "Provisioner", 780, -1),
+            ],
+        ),
+        town_room(
+            WENDMERE_TRAINERS,
+            220,
+            Vec::new(),
+            vec![door(1, 90, WENDMERE_SQUARE), door(2, 1150, WENDMERE_INN)],
+            vec![
+                tnpc("trainer_vanguard", "Vanguard Trainer", 320, 1),
+                tnpc("trainer_ravager", "Ravager Trainer", 440, 1),
+                tnpc("trainer_ranger", "Ranger Trainer", 560, 1),
+                tnpc("trainer_duelist", "Duelist Trainer", 680, 1),
+                tnpc("trainer_arcanist", "Arcanist Trainer", 800, 1),
+                tnpc("trainer_warden", "Warden Trainer", 920, 1),
+            ],
+        ),
+        town_room(
+            WENDMERE_INN,
+            640,
+            Vec::new(),
+            vec![door(1, 90, WENDMERE_TRAINERS)],
+            vec![
+                tnpc("innkeeper", "Innkeeper", 520, 1),
+                tnpc("quartermaster", "Quartermaster", 760, -1),
+            ],
+        ),
+        town_room(
+            WENDMERE_APPROACH,
+            250,
+            Vec::new(),
+            vec![
+                door(1, 90, WENDMERE_SQUARE),
+                gated_door(2, 1150, KINGSKEEP_GATEHOUSE, Allegiance::Light),
+            ],
+            vec![
+                tnpc("sentry", "Approach Sentry", 700, 1),
+                tnpc("guardian", "Stronghold Guardian", 1000, -1),
+            ],
+        ),
+        // --- Ring 2: the King's Keep (Stronghold, Light-gated) ---
+        town_room(
+            KINGSKEEP_GATEHOUSE,
+            300,
+            Vec::new(),
+            vec![
+                door(1, 90, WENDMERE_APPROACH),
+                door(2, 640, KINGSKEEP_SERVICE),
+                door(3, 1150, KINGSKEEP_BARRACKS),
+            ],
+            vec![tnpc("sentry", "Keep Sentry", 450, 1)],
+        ),
+        town_room(
+            KINGSKEEP_BARRACKS,
+            300,
+            Vec::new(),
+            vec![
+                door(1, 90, KINGSKEEP_GATEHOUSE),
+                door(2, 1150, KINGSKEEP_GREAT_HALL),
+            ],
+            vec![tnpc("captain", "Warden Captain", 620, 1)],
+        ),
+        town_room(
+            KINGSKEEP_SERVICE,
+            300,
+            vec![one_way(520, 470, 180), one_way(820, 400, 180)],
+            vec![door(1, 90, KINGSKEEP_GATEHOUSE)],
+            vec![tnpc("cook", "Keep Cook", 660, 1)],
+        ),
+        town_room(
+            KINGSKEEP_GREAT_HALL,
+            780,
+            Vec::new(),
+            vec![
+                door(1, 90, KINGSKEEP_BARRACKS),
+                door(2, 300, KINGSKEEP_TREASURY),
+                door(3, 520, TOWER_BASE), // quest road to the Princess's Tower
+                door(4, 1180, KINGSKEEP_KINGS_ROOM),
+            ],
+            vec![tnpc("lorekeeper", "Court Herald", 700, -1)],
+        ),
+        town_room(
+            KINGSKEEP_KINGS_ROOM,
+            640,
+            Vec::new(),
+            vec![door(1, 90, KINGSKEEP_GREAT_HALL)],
+            vec![tnpc("king", "King (placeholder)", 700, -1)],
+        ),
+        town_room(
+            KINGSKEEP_TREASURY,
+            640,
+            Vec::new(),
+            vec![door(1, 90, KINGSKEEP_GREAT_HALL)],
+            vec![tnpc("treasurer", "Treasurer", 700, -1)],
+        ),
+        // --- Ring 3: the Princess's Tower (Story Site, open) ---
+        town_room(
+            TOWER_BASE,
+            300,
+            Vec::new(),
+            vec![
+                door(1, 90, KINGSKEEP_GREAT_HALL),
+                door(2, 1150, TOWER_STAIR),
+            ],
+            vec![tnpc("sentry", "Tower Watch", 640, 1)],
+        ),
+        // The Winding Stair: a climb of one-way ledges; the exit to the Solar sits
+        // on the top ledge, so the Hero must ascend to leave.
+        town_room(
+            TOWER_STAIR,
+            200,
+            vec![
+                one_way(320, 470, 170),
+                one_way(560, 390, 170),
+                one_way(800, 310, 170),
+                one_way(980, 235, 170),
+            ],
+            vec![door(1, 90, TOWER_BASE), high_door(2, 980, 165, 285, TOWER_SOLAR)],
+            Vec::new(),
+        ),
+        town_room(
+            TOWER_SOLAR,
+            640,
+            Vec::new(),
+            vec![door(1, 90, TOWER_STAIR)],
+            vec![tnpc("princess", "Princess (placeholder)", 700, -1)],
+        ),
+    ]
 }
 
 #[cfg(test)]
@@ -233,10 +473,19 @@ mod tests {
     use super::*;
 
     #[test]
-    fn catalog_has_all_four_zones() {
+    fn catalog_has_the_overworld_and_human_town() {
         let catalog = ZoneCatalog::prototype();
-        assert_eq!(catalog.all().len(), 4);
-        for id in [SUNLIT_FOREST, MOONLIT_MARKET, BUTTONCAP_HOLLOW, THE_GAUNTLET] {
+        // 4 overworld prototype maps + 15 Human home-town zones.
+        assert_eq!(catalog.all().len(), 19);
+        for id in [
+            SUNLIT_FOREST,
+            MOONLIT_MARKET,
+            BUTTONCAP_HOLLOW,
+            THE_GAUNTLET,
+            WENDMERE_SQUARE,
+            KINGSKEEP_KINGS_ROOM,
+            TOWER_SOLAR,
+        ] {
             assert_eq!(catalog.geometry(id).id, id);
         }
     }

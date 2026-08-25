@@ -7,10 +7,10 @@
 
 use serde::{Deserialize, Serialize};
 
-/// Protocol version. v3 introduces multi-zone, entity-tagged snapshots and a
-/// richer intent (climb/drop/guard/action) alongside the account/hero
-/// handshake from v2.
-pub const PROTOCOL_VERSION: u16 = 3;
+/// Protocol version. v4 adds non-hostile NPC entities (town merchants, trainers,
+/// guardians) to snapshots. v3 introduced multi-zone, entity-tagged snapshots
+/// and a richer intent (climb/drop/guard/action).
+pub const PROTOCOL_VERSION: u16 = 4;
 pub const MAX_CLIENT_MESSAGE_BYTES: usize = 8 * 1024;
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
@@ -95,6 +95,18 @@ pub enum WireEntity {
     Monster(WireEnemy),
     Biter(WireEnemy),
     Projectile(WireProjectile),
+    Npc(WireNpc),
+}
+
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+pub struct WireNpc {
+    pub entity_id: String,
+    /// Machine role, e.g. "weaponsmith", "trainer_vanguard", "guardian".
+    pub role: String,
+    pub name: String,
+    pub position_x: i32,
+    pub position_y: i32,
+    pub facing: i8,
 }
 
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
@@ -296,6 +308,21 @@ mod tests {
         });
         let json = serde_json::to_string(&message).unwrap();
         assert!(json.contains(r#""entity":"projectile""#));
+        assert_eq!(serde_json::from_str::<WireEntity>(&json).unwrap(), message);
+    }
+
+    #[test]
+    fn npc_entity_round_trips() {
+        let message = WireEntity::Npc(WireNpc {
+            entity_id: "3000001".to_owned(),
+            role: "weaponsmith".to_owned(),
+            name: "Weaponsmith".to_owned(),
+            position_x: 50_000,
+            position_y: 17_100,
+            facing: 1,
+        });
+        let json = serde_json::to_string(&message).unwrap();
+        assert!(json.contains(r#""entity":"npc""#));
         assert_eq!(serde_json::from_str::<WireEntity>(&json).unwrap(), message);
     }
 }

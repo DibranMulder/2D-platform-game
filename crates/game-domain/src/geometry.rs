@@ -13,6 +13,31 @@ pub const MOONLIT_MARKET: ZoneId = ZoneId(2);
 pub const BUTTONCAP_HOLLOW: ZoneId = ZoneId(3);
 pub const THE_GAUNTLET: ZoneId = ZoneId(4);
 
+// Human home town (DESIGN-0014): Wendmere Crossroads, the King's Keep, and the
+// Princess's Tower.
+pub const WENDMERE_SQUARE: ZoneId = ZoneId(10);
+pub const WENDMERE_MARKET: ZoneId = ZoneId(11);
+pub const WENDMERE_APOTHECARY: ZoneId = ZoneId(12);
+pub const WENDMERE_TRAINERS: ZoneId = ZoneId(13);
+pub const WENDMERE_INN: ZoneId = ZoneId(14);
+pub const WENDMERE_APPROACH: ZoneId = ZoneId(15);
+pub const KINGSKEEP_GATEHOUSE: ZoneId = ZoneId(16);
+pub const KINGSKEEP_BARRACKS: ZoneId = ZoneId(17);
+pub const KINGSKEEP_SERVICE: ZoneId = ZoneId(18);
+pub const KINGSKEEP_GREAT_HALL: ZoneId = ZoneId(19);
+pub const KINGSKEEP_KINGS_ROOM: ZoneId = ZoneId(20);
+pub const KINGSKEEP_TREASURY: ZoneId = ZoneId(21);
+pub const TOWER_BASE: ZoneId = ZoneId(22);
+pub const TOWER_STAIR: ZoneId = ZoneId(23);
+pub const TOWER_SOLAR: ZoneId = ZoneId(24);
+
+/// The two cosmic-political groupings a Lineage belongs to (DESIGN-0009).
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum Allegiance {
+    Light,
+    Dark,
+}
+
 /// Stable wire/slug name for a zone.
 pub fn zone_slug(id: ZoneId) -> &'static str {
     match id {
@@ -20,6 +45,21 @@ pub fn zone_slug(id: ZoneId) -> &'static str {
         MOONLIT_MARKET => "moonlit_market",
         BUTTONCAP_HOLLOW => "buttoncap_hollow",
         THE_GAUNTLET => "the_gauntlet",
+        WENDMERE_SQUARE => "wendmere_square",
+        WENDMERE_MARKET => "wendmere_market",
+        WENDMERE_APOTHECARY => "wendmere_apothecary",
+        WENDMERE_TRAINERS => "wendmere_trainers",
+        WENDMERE_INN => "wendmere_inn",
+        WENDMERE_APPROACH => "wendmere_approach",
+        KINGSKEEP_GATEHOUSE => "kingskeep_gatehouse",
+        KINGSKEEP_BARRACKS => "kingskeep_barracks",
+        KINGSKEEP_SERVICE => "kingskeep_service",
+        KINGSKEEP_GREAT_HALL => "kingskeep_great_hall",
+        KINGSKEEP_KINGS_ROOM => "kingskeep_kings_room",
+        KINGSKEEP_TREASURY => "kingskeep_treasury",
+        TOWER_BASE => "tower_base",
+        TOWER_STAIR => "tower_stair",
+        TOWER_SOLAR => "tower_solar",
         _ => "unknown",
     }
 }
@@ -31,6 +71,21 @@ pub fn zone_by_slug(slug: &str) -> Option<ZoneId> {
         "moonlit_market" => Some(MOONLIT_MARKET),
         "buttoncap_hollow" => Some(BUTTONCAP_HOLLOW),
         "the_gauntlet" => Some(THE_GAUNTLET),
+        "wendmere_square" => Some(WENDMERE_SQUARE),
+        "wendmere_market" => Some(WENDMERE_MARKET),
+        "wendmere_apothecary" => Some(WENDMERE_APOTHECARY),
+        "wendmere_trainers" => Some(WENDMERE_TRAINERS),
+        "wendmere_inn" => Some(WENDMERE_INN),
+        "wendmere_approach" => Some(WENDMERE_APPROACH),
+        "kingskeep_gatehouse" => Some(KINGSKEEP_GATEHOUSE),
+        "kingskeep_barracks" => Some(KINGSKEEP_BARRACKS),
+        "kingskeep_service" => Some(KINGSKEEP_SERVICE),
+        "kingskeep_great_hall" => Some(KINGSKEEP_GREAT_HALL),
+        "kingskeep_kings_room" => Some(KINGSKEEP_KINGS_ROOM),
+        "kingskeep_treasury" => Some(KINGSKEEP_TREASURY),
+        "tower_base" => Some(TOWER_BASE),
+        "tower_stair" => Some(TOWER_STAIR),
+        "tower_solar" => Some(TOWER_SOLAR),
         _ => None,
     }
 }
@@ -116,6 +171,13 @@ pub struct PortalVolume {
     pub bounds: Aabb,
     pub target: ZoneId,
     pub target_spawn: SpawnId,
+    /// If set, only Heroes of this Allegiance may cross; others are repelled
+    /// (the Stronghold boundary, DESIGN-0009). `None` = open to all.
+    pub required_allegiance: Option<Allegiance>,
+    /// `true` = a town door the Hero must deliberately enter (stand in it and
+    /// press up), so hub rooms with several doors are unambiguous. `false` = a
+    /// walk-through overworld route that triggers on contact.
+    pub manual: bool,
 }
 
 /// The kind of enemy a spawn produces.
@@ -137,6 +199,19 @@ pub struct EnemySpawn {
     pub facing: i8,
 }
 
+/// A non-hostile Character placed in a zone (merchant, trainer, guard, guardian,
+/// quest-giver). Placeholder for now: it stands still and can be interacted with.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub struct NpcSpawn {
+    /// Machine role, e.g. "weaponsmith", "trainer_vanguard", "guardian".
+    pub role: &'static str,
+    /// Display name shown by the client placeholder.
+    pub name: &'static str,
+    pub x: i32,
+    pub y: i32,
+    pub facing: i8,
+}
+
 /// All static collision + placement data for one zone.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct ZoneGeometry {
@@ -150,6 +225,7 @@ pub struct ZoneGeometry {
     pub portals: Vec<PortalVolume>,
     pub spawns: Vec<SpawnPoint>,
     pub enemy_spawns: Vec<EnemySpawn>,
+    pub npc_spawns: Vec<NpcSpawn>,
 }
 
 impl ZoneGeometry {

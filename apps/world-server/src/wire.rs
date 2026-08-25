@@ -5,7 +5,7 @@ use game_domain::{
     EnemyKind, EntitySnapshot, WeaponId, ZoneSnapshot, zone_slug,
 };
 use game_protocol::{
-    ServerMessage, WireEnemy, WireEntity, WireHero, WireProjectile, WireWeapon,
+    ServerMessage, WireEnemy, WireEntity, WireHero, WireNpc, WireProjectile, WireWeapon,
 };
 
 /// Build a `Snapshot` server message from a domain zone snapshot.
@@ -65,6 +65,14 @@ fn map_entity(entity: &EntitySnapshot) -> WireEntity {
             position_y: projectile.position_y,
             velocity_x: projectile.velocity_x,
             facing: projectile.facing,
+        }),
+        EntitySnapshot::Npc(npc) => WireEntity::Npc(WireNpc {
+            entity_id: npc.entity_id.0.to_string(),
+            role: npc.role.clone(),
+            name: npc.name.clone(),
+            position_x: npc.position_x,
+            position_y: npc.position_y,
+            facing: npc.facing,
         }),
     }
 }

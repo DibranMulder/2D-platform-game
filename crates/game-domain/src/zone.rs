@@ -5,10 +5,11 @@ use std::collections::BTreeMap;
 
 use crate::combat::strike_hits;
 use crate::entity::{
-    EnemySnapshot, EntityId, EntitySnapshot, HeroSnapshot, ProjectileSnapshot, ZoneSnapshot,
+    EnemySnapshot, EntityId, EntitySnapshot, HeroSnapshot, NpcSnapshot, ProjectileSnapshot,
+    ZoneSnapshot,
 };
 use crate::enemy::Enemy;
-use crate::geometry::{SpawnId, ZoneGeometry, ZoneId};
+use crate::geometry::{NpcSpawn, SpawnId, ZoneGeometry, ZoneId};
 use crate::hero::{Hero, HeroEffect};
 use crate::intent::{IntentError, PlayerIntent};
 use crate::projectile::{PROJECTILE_HALF_WIDTH, PROJECTILE_LIFETIME, PROJECTILE_VERTICAL, Projectile};
@@ -16,6 +17,7 @@ use crate::PlayerId;
 
 const ENEMY_ID_BASE: u64 = 1_000_000;
 const PROJECTILE_ID_BASE: u64 = 2_000_000;
+const NPC_ID_BASE: u64 = 3_000_000;
 const PORTAL_COOLDOWN: u16 = 13; // ~0.65s, matches the prototype portal lock
 
 /// A hero that walked into a portal this tick and must move to another zone.
@@ -31,6 +33,7 @@ pub struct Zone {
     heroes: BTreeMap<PlayerId, Hero>,
     enemies: BTreeMap<EntityId, Enemy>,
     projectiles: Vec<Projectile>,
+    npcs: Vec<(EntityId, NpcSpawn)>,
     next_projectile: u64,
 }
 
@@ -41,11 +44,18 @@ impl Zone {
             let id = EntityId(ENEMY_ID_BASE + index as u64);
             enemies.insert(id, Enemy::from_spawn(id, *spawn));
         }
+        let npcs = geom
+            .npc_spawns
+            .iter()
+            .enumerate()
+            .map(|(index, spawn)| (EntityId(NPC_ID_BASE + index as u64), *spawn))
+            .collect();
         Self {
             geom,
             heroes: BTreeMap::new(),
             enemies,
             projectiles: Vec::new(),
+            npcs,
             next_projectile: 0,
         }
     }
@@ -238,6 +248,20 @@ impl Zone {
             }
             for portal in &self.geom.portals {
                 if portal.bounds.contains(hero.pos_x, hero.pos_y) {
+                    // Manual town doors only fire when the Hero presses up, so
+                    // hub rooms with several doors are unambiguous.
+                    if portal.manual && !hero.interacting() {
+                        continue;
+                    }
+                    // Allegiance gate: an opposing-Allegiance Hero is repelled
+                    // (nudged back) and does not cross (DESIGN-0009).
+                    if let Some(required) = portal.required_allegiance {
+                        if hero.descriptor.allegiance != required {
+                            hero.portal_cooldown = PORTAL_COOLDOWN;
+                            hero.vel_x = -hero.facing as i32 * crate::fixed::HERO_MOVE_SPEED;
+                            break;
+                        }
+                    }
                     hero.portal_cooldown = PORTAL_COOLDOWN;
                     crosses.push(PortalCross {
                         player_id: hero.player_id,
@@ -301,6 +325,16 @@ impl Zone {
                 facing: projectile.facing,
             }));
         }
+        for (id, npc) in &self.npcs {
+            entities.push(EntitySnapshot::Npc(NpcSnapshot {
+                entity_id: *id,
+                role: npc.role.to_owned(),
+                name: npc.name.to_owned(),
+                position_x: npc.x,
+                position_y: npc.y,
+                facing: npc.facing,
+            }));
+        }
         ZoneSnapshot {
             zone: self.geom.id,
             server_tick,
@@ -323,6 +357,7 @@ mod tests {
             hero_name: "Test".to_owned(),
             lineage: "human".to_owned(),
             weapon,
+            allegiance: crate::geometry::Allegiance::Light,
         }
     }
 
@@ -356,6 +391,7 @@ mod tests {
                 facing: 1,
             }],
             enemy_spawns: Vec::new(),
+            npc_spawns: Vec::new(),
         }
     }
 

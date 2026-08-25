@@ -31,6 +31,15 @@ pub struct TickOutcome {
     pub transfers: Vec<ZoneTransfer>,
 }
 
+/// The Zone a freshly created Hero of this Lineage spawns into (its home town's
+/// Village Square). Only the Human town is built so far; others fall back.
+fn home_zone_for(lineage: &str) -> ZoneId {
+    match lineage {
+        "human" => crate::geometry::WENDMERE_SQUARE,
+        _ => SUNLIT_FOREST,
+    }
+}
+
 pub struct World {
     catalog: ZoneCatalog,
     zones: BTreeMap<ZoneId, Zone>,
@@ -64,12 +73,22 @@ impl World {
         self.server_tick
     }
 
+    /// Every zone id in the world (used to pre-create per-zone broadcast channels).
+    pub fn zone_ids(&self) -> Vec<ZoneId> {
+        self.zones.keys().copied().collect()
+    }
+
     /// Place a new hero in the starting zone. Returns the zone it entered.
     pub fn join(&mut self, player_id: PlayerId, descriptor: HeroDescriptor) -> Result<ZoneId, JoinError> {
         if self.player_zone.contains_key(&player_id) {
             return Err(JoinError::AlreadyJoined);
         }
-        let zone_id = self.starting_zone;
+        // Route to the Hero's home town by Lineage, falling back to the shared
+        // starting zone if that town's zones are not built yet.
+        let mut zone_id = home_zone_for(&descriptor.lineage);
+        if !self.zones.contains_key(&zone_id) {
+            zone_id = self.starting_zone;
+        }
         let spawn = self
             .catalog
             .geometry(zone_id)
@@ -169,10 +188,12 @@ mod tests {
     use crate::geometry::{MOONLIT_MARKET, SUNLIT_FOREST};
 
     fn descriptor(name: &str) -> HeroDescriptor {
+        // Non-Human so these forest-based tests still spawn in the forest.
         HeroDescriptor {
             hero_name: name.to_owned(),
-            lineage: "human".to_owned(),
+            lineage: "tidekin".to_owned(),
             weapon: WeaponId::Sword,
+            allegiance: crate::geometry::Allegiance::Light,
         }
     }
 
@@ -276,6 +297,81 @@ mod tests {
             }
         }
         assert!(transferred, "walking right into the market portal should transfer");
+    }
+
+    #[test]
+    fn a_human_spawns_in_wendmere_with_npcs_and_enters_the_market() {
+        use crate::entity::EntitySnapshot;
+        use crate::geometry::{Allegiance, WENDMERE_MARKET, WENDMERE_SQUARE};
+
+        let mut world = World::default();
+        let player = PlayerId::new(1);
+        let zone = world
+            .join(
+                player,
+                HeroDescriptor {
+                    hero_name: "Aldric".to_owned(),
+                    lineage: "human".to_owned(),
+                    weapon: WeaponId::Sword,
+                    allegiance: Allegiance::Light,
+                },
+            )
+            .unwrap();
+        assert_eq!(zone, WENDMERE_SQUARE);
+
+        let first = world.advance_tick();
+        let square = first
+            .snapshots
+            .iter()
+            .find(|s| s.zone == WENDMERE_SQUARE)
+            .unwrap();
+        let npcs = square
+            .entities
+            .iter()
+            .filter(|e| matches!(e, EntitySnapshot::Npc(_)))
+            .count();
+        assert!(npcs >= 3, "expected placeholder NPCs in the square, got {npcs}");
+
+        // Walk right to the Market door (client x 900 -> world 86000..94000) and
+        // press up to enter it. Manual doors don't fire on contact alone.
+        let mut entered = false;
+        let mut pos_x = 64_000; // spawn x (client 640)
+        for tick in 2..300 {
+            let at_door = (86_000..=94_000).contains(&pos_x);
+            world
+                .submit_intent(
+                    player,
+                    PlayerIntent {
+                        sequence: tick,
+                        client_tick: tick,
+                        move_axis: if at_door { 0 } else { 1 },
+                        climb_axis: if at_door { 1 } else { 0 },
+                        jump: false,
+                        drop: false,
+                        guard: false,
+                        action_slot: 0,
+                    },
+                )
+                .unwrap();
+            let outcome = world.advance_tick();
+            if outcome
+                .transfers
+                .iter()
+                .any(|t| t.player_id == player && t.to == WENDMERE_MARKET)
+            {
+                entered = true;
+                break;
+            }
+            if let Some(square) = outcome.snapshots.iter().find(|s| s.zone == WENDMERE_SQUARE) {
+                if let Some(px) = square.entities.iter().find_map(|e| match e {
+                    EntitySnapshot::Hero(h) if h.player_id == player => Some(h.position_x),
+                    _ => None,
+                }) {
+                    pos_x = px;
+                }
+            }
+        }
+        assert!(entered, "should walk to the Market door and enter it");
     }
 
     #[test]

@@ -26,8 +26,8 @@ pub use entity::{
 };
 pub use fixed::WORLD_UNITS_PER_PIXEL;
 pub use geometry::{
-    BUTTONCAP_HOLLOW, EnemyKind, MOONLIT_MARKET, SUNLIT_FOREST, THE_GAUNTLET, ZoneId, zone_by_slug,
-    zone_slug,
+    Allegiance, BUTTONCAP_HOLLOW, EnemyKind, MOONLIT_MARKET, SUNLIT_FOREST, THE_GAUNTLET, ZoneId,
+    zone_by_slug, zone_slug,
 };
 pub use hero::{Hero, HeroDescriptor, WeaponId};
 pub use intent::{IntentError, JoinError, PlayerIntent, WeaponSelect};

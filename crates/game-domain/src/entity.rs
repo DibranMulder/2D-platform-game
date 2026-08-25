@@ -63,10 +63,21 @@ pub struct ProjectileSnapshot {
 }
 
 #[derive(Clone, Debug, PartialEq)]
+pub struct NpcSnapshot {
+    pub entity_id: EntityId,
+    pub role: String,
+    pub name: String,
+    pub position_x: i32,
+    pub position_y: i32,
+    pub facing: i8,
+}
+
+#[derive(Clone, Debug, PartialEq)]
 pub enum EntitySnapshot {
     Hero(HeroSnapshot),
     Enemy(EnemySnapshot),
     Projectile(ProjectileSnapshot),
+    Npc(NpcSnapshot),
 }
 
 /// The full observable state of one zone at a tick.

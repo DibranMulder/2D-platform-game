@@ -46,6 +46,42 @@ const PARKOUR_PLATFORMS := [
 ]
 const PARKOUR_GOAL := Vector2(3440, 455)
 
+# Human home town (DESIGN-0014) — client-side mirrors of the server geometry,
+# for drawing only. Platforms as [cx, cy, w]; doors as [cx, cy, label].
+const TOWN_ZONES := [
+    "wendmere_square", "wendmere_market", "wendmere_apothecary", "wendmere_trainers",
+    "wendmere_inn", "wendmere_approach", "kingskeep_gatehouse", "kingskeep_barracks",
+    "kingskeep_service", "kingskeep_great_hall", "kingskeep_kings_room", "kingskeep_treasury",
+    "tower_base", "tower_stair", "tower_solar",
+]
+const TOWN_PLATFORMS := {
+    "kingskeep_service": [Vector3(520, 470, 180), Vector3(820, 400, 180)],
+    "tower_stair": [
+        Vector3(320, 470, 170), Vector3(560, 390, 170), Vector3(800, 310, 170), Vector3(980, 235, 170),
+    ],
+}
+const TOWN_DOORS := {
+    "wendmere_square": [[70, 549, "ROAD"], [180, 549, "APOTHECARY"], [360, 549, "TRAINERS"], [900, 549, "MARKET"], [1150, 549, "APPROACH"]],
+    "wendmere_market": [[90, 549, "SQUARE"]],
+    "wendmere_apothecary": [[90, 549, "SQUARE"]],
+    "wendmere_trainers": [[90, 549, "SQUARE"], [1150, 549, "INN"]],
+    "wendmere_inn": [[90, 549, "TRAINERS"]],
+    "wendmere_approach": [[90, 549, "SQUARE"], [1150, 549, "KEEP · LIGHT"]],
+    "kingskeep_gatehouse": [[90, 549, "APPROACH"], [640, 549, "SERVICE"], [1150, 549, "BARRACKS"]],
+    "kingskeep_barracks": [[90, 549, "GATEHOUSE"], [1150, 549, "GREAT HALL"]],
+    "kingskeep_service": [[90, 549, "GATEHOUSE"]],
+    "kingskeep_great_hall": [[90, 549, "BARRACKS"], [300, 549, "TREASURY"], [520, 549, "TOWER"], [1180, 549, "KING'S ROOM"]],
+    "kingskeep_kings_room": [[90, 549, "GREAT HALL"]],
+    "kingskeep_treasury": [[90, 549, "GREAT HALL"]],
+    "tower_base": [[90, 549, "GREAT HALL"], [1150, 549, "STAIR"]],
+    "tower_stair": [[90, 549, "BASE"], [980, 235, "SOLAR"]],
+    "tower_solar": [[90, 549, "STAIR"]],
+}
+# Interior wash per ring.
+const TOWN_TINT := {
+    "village": Color("2a2620"), "keep": Color("241f2e"), "tower": Color("1c2436"),
+}
+
 var _network: NetworkClient
 var _camera: Camera2D
 var _background: TextureRect
@@ -304,7 +340,29 @@ func _update_hud() -> void:
             float(data.get("mana", 0)), float(MAX_RESOURCE),
             int(data.get("stamina", 0)), MAX_RESOURCE,
         )
-    _hint_label.text = "AD move · W jump · S drop · Shift guard · 1/3/4/5/6 actions · weapon bar top-right · I hints"
+    var interact := _interact_hint()
+    if interact.is_empty():
+        _hint_label.text = "AD move · W jump/up · S drop · Shift guard · 1/3/4/5/6 actions · weapon bar top-right"
+    else:
+        _hint_label.text = "▲  W / Up:  %s" % interact
+
+
+# In town, report the door or NPC the local hero is standing next to.
+func _interact_hint() -> String:
+    if not (_current_zone in TOWN_ZONES and _entities.has(_local_player_id)):
+        return ""
+    var hero := (_entities[_local_player_id] as Dictionary)["pos"] as Vector2
+    for spec: Array in TOWN_DOORS.get(_current_zone, []):
+        if absf(hero.x - float(spec[0])) <= 44.0 and absf(hero.y - float(spec[1])) <= 80.0:
+            return "enter %s" % str(spec[2])
+    for id: String in _entities:
+        var data := (_entities[id] as Dictionary)["data"] as Dictionary
+        if str(data.get("entity", "")) != "npc":
+            continue
+        var pos := (_entities[id] as Dictionary)["pos"] as Vector2
+        if absf(hero.x - pos.x) <= 48.0:
+            return "talk to %s" % str(data.get("name", "someone"))
+    return ""
 
 
 # --- snapshots ---
@@ -420,6 +478,9 @@ func _set_zone(zone: String) -> void:
         if sprite != null:
             sprite.queue_free()
     _entities.clear()
+    if zone in TOWN_ZONES:
+        _background.visible = false
+        return
     match zone:
         "moonlit_market":
             _background.texture = MarketTexture
@@ -466,6 +527,10 @@ func _on_join_rejected(reason: String) -> void:
 # --- map painting (ground, ledges, portals) drawn under the sprites ---
 
 func _draw() -> void:
+    if _current_zone in TOWN_ZONES:
+        _draw_town(_current_zone)
+        _draw_entities()
+        return
     match _current_zone:
         "the_gauntlet":
             draw_rect(Rect2(0, 0, 3600, 720), Color("bfe0e6"), true)
@@ -489,7 +554,12 @@ func _draw() -> void:
     for portal: Array in ZONE_PORTALS.get(_current_zone, []):
         _draw_portal(Vector2(portal[0], portal[1]), str(portal[2]))
 
-    # Monster + projectiles are drawn (no dedicated sprite in the prototype).
+    _draw_entities()
+
+
+# Entities without a sprite node (monster, projectiles, NPC placeholders) are
+# painted here; heroes and biters render as their own AnimatedSprite2D children.
+func _draw_entities() -> void:
     for id: String in _entities:
         var entry := _entities[id] as Dictionary
         var data := entry["data"] as Dictionary
@@ -499,6 +569,66 @@ func _draw() -> void:
                 _draw_monster(pos, data)
             "projectile":
                 draw_circle(pos + Vector2(0, -34), 6.0, Color("f2d27a"))
+            "npc":
+                _draw_npc(pos, data)
+
+
+func _draw_town(zone: String) -> void:
+    var tint := TOWN_TINT["village"] as Color
+    if zone.begins_with("kingskeep"):
+        tint = TOWN_TINT["keep"]
+    elif zone.begins_with("tower"):
+        tint = TOWN_TINT["tower"]
+    draw_rect(Rect2(0, 0, 1280, 720), tint, true)
+    # Floor.
+    draw_rect(Rect2(0, 550, 1280, 170), tint.lightened(0.06), true)
+    draw_rect(Rect2(0, 550, 1280, 6), Color("c8b27a"), true)
+    for platform: Vector3 in TOWN_PLATFORMS.get(zone, []):
+        _draw_ledge(platform.x, platform.y, platform.z, Color("6a5b45"), Color("9a8560"))
+    for spec: Array in TOWN_DOORS.get(zone, []):
+        _draw_door(float(spec[0]), float(spec[1]), str(spec[2]))
+
+
+func _draw_door(cx: float, cy: float, label: String) -> void:
+    var top := cy - 70.0
+    draw_rect(Rect2(cx - 24, top, 48, 70), Color(0.15, 0.5, 0.65, 0.32), true)
+    draw_rect(Rect2(cx - 24, top, 48, 70), Color("86e5ff"), false, 2.0)
+    # Up-arrow "enter here" cue.
+    draw_colored_polygon(
+        PackedVector2Array([Vector2(cx, top - 16), Vector2(cx - 9, top - 3), Vector2(cx + 9, top - 3)]),
+        Color("b991ff")
+    )
+    var font := ThemeDB.fallback_font
+    if font != null:
+        draw_string(font, Vector2(cx - 70, top - 22), label, HORIZONTAL_ALIGNMENT_CENTER, 140, 12, Color("cbe6ff"))
+
+
+func _draw_npc(pos: Vector2, data: Dictionary) -> void:
+    var role := str(data.get("role", ""))
+    var color := _npc_color(role)
+    draw_rect(Rect2(pos.x - 13, pos.y - 46, 26, 46), color, true)
+    draw_rect(Rect2(pos.x - 13, pos.y - 46, 26, 46), Color(0, 0, 0, 0.5), false, 1.0)
+    draw_circle(pos + Vector2(0, -52), 9.0, Color("f2d0a7"))
+    var font := ThemeDB.fallback_font
+    var label := str(data.get("name", ""))
+    if font != null and not label.is_empty():
+        draw_string(font, pos + Vector2(-70, -66), label, HORIZONTAL_ALIGNMENT_CENTER, 140, 11, Color("f4ecd6"))
+
+
+func _npc_color(role: String) -> Color:
+    if role == "guardian":
+        return Color("b6472f")
+    if role == "sentry" or role == "captain":
+        return Color("6d86b0")
+    if role.begins_with("trainer"):
+        return Color("8a7bb0")
+    if role == "weaponsmith" or role == "armorer" or role == "wandwright":
+        return Color("b58b4c")
+    if role == "apothecary" or role == "provisioner":
+        return Color("5fa06a")
+    if role == "king" or role == "princess":
+        return Color("d9b25a")
+    return Color("9aa0a8")
 
 
 func _draw_ground(fill: Color, edge: Color) -> void:

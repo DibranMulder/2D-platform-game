@@ -14,7 +14,7 @@ signal snapshot_received(server_tick: int, zone: String, entities: Array)
 signal zone_changed(zone: String, spawn_x: int, spawn_y: int, facing: int)
 signal intent_rejected(sequence: int, reason: String)
 
-const PROTOCOL_VERSION := 3
+const PROTOCOL_VERSION := 4
 
 var _socket := WebSocketPeer.new()
 var _url := ""

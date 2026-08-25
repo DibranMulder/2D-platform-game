@@ -10,7 +10,7 @@ use crate::fixed::{
     GRAVITY, HERO_AIR_ACCEL, HERO_CLIMB_SNAP_SPEED, HERO_CLIMB_SPEED, HERO_GROUND_ACCEL,
     HERO_JUMP_IMPULSE, HERO_MOVE_SPEED, HIT_VERTICAL_TOLERANCE, TERMINAL_FALL, move_toward,
 };
-use crate::geometry::{SpawnPoint, ZoneGeometry};
+use crate::geometry::{Allegiance, SpawnPoint, ZoneGeometry};
 use crate::intent::{IntentError, PlayerIntent};
 use crate::PlayerId;
 
@@ -64,6 +64,7 @@ pub struct HeroDescriptor {
     pub hero_name: String,
     pub lineage: String,
     pub weapon: WeaponId,
+    pub allegiance: Allegiance,
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -165,6 +166,12 @@ impl Hero {
 
     pub fn is_alive(&self) -> bool {
         self.health > 0
+    }
+
+    /// Whether the Hero is signalling "enter" (pressing up), used to trigger a
+    /// manual town door they are standing in.
+    pub fn interacting(&self) -> bool {
+        self.climb_axis > 0
     }
 
     pub fn is_blocking(&self) -> bool {

@@ -15,8 +15,7 @@ use std::{
 
 use futures_util::{SinkExt, StreamExt};
 use game_domain::{
-    BUTTONCAP_HOLLOW, HeroDescriptor, MOONLIT_MARKET, PlayerId, PlayerIntent, SUNLIT_FOREST,
-    THE_GAUNTLET, WeaponId, World, ZoneId, zone_slug,
+    Allegiance, HeroDescriptor, PlayerId, PlayerIntent, WeaponId, World, ZoneId, zone_slug,
 };
 use game_protocol::{
     ClientMessage, DisconnectReason, JoinRejectionReason, MAX_CLIENT_MESSAGE_BYTES,
@@ -34,9 +33,16 @@ use tracing_subscriber::EnvFilter;
 
 const TICK_RATE_HZ: u16 = 20;
 const MAX_INTENTS_PER_SECOND: u32 = 60;
-const ZONES: [ZoneId; 4] = [SUNLIT_FOREST, MOONLIT_MARKET, BUTTONCAP_HOLLOW, THE_GAUNTLET];
 
 type AnyError = Box<dyn Error + Send + Sync>;
+
+/// A Lineage's Allegiance (DESIGN-0008), used for Stronghold gate checks.
+fn allegiance_for(lineage: &str) -> Allegiance {
+    match lineage {
+        "crag_troll" | "deep_goblin" | "sunscour" | "rimeborn" => Allegiance::Dark,
+        _ => Allegiance::Light,
+    }
+}
 
 /// Sent from the simulation task to a connection when its hero changes zones,
 /// so the connection can tell the client and re-subscribe to the new zone.
@@ -92,12 +98,13 @@ async fn main() -> Result<(), AnyError> {
     let bind_address = env::var("MMO_BIND_ADDR").unwrap_or_else(|_| "127.0.0.1:8787".to_owned());
     let listener = TcpListener::bind(&bind_address).await?;
 
+    let world = World::default();
     let mut zone_tx = HashMap::new();
-    for zone in ZONES {
+    for zone in world.zone_ids() {
         zone_tx.insert(zone, broadcast::channel(64).0);
     }
     let shared = Arc::new(SharedServer {
-        world: Mutex::new(World::default()),
+        world: Mutex::new(world),
         registry: Mutex::new(AccountRegistry::new()),
         zone_tx,
         control: Mutex::new(HashMap::new()),
@@ -230,6 +237,7 @@ async fn handle_connection(
                             hero_name: admission.hero_name.clone(),
                             lineage: admission.lineage.clone(),
                             weapon: WeaponId::Sword,
+                            allegiance: allegiance_for(&admission.lineage),
                         };
                         let zone = match shared.world.lock().await.join(admission.player_id, descriptor) {
                             Ok(zone) => zone,
