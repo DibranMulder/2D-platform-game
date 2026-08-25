@@ -159,6 +159,40 @@ const TOWER_TOP := 720.0
 const TOWER_BASE := 2460.0
 const SQ_LEDGE := 150.0  # visual thickness of wall-module ledges / ground crust
 
+# Decorative prop atlases (settlement + armory dressing). Regions are tight
+# opaque bounding boxes; props are drawn feet-anchored at their native aspect.
+const SETTLEMENT_PROPS_PATH := "res://assets/maps/village-square/props/settlement-props-v1.png"
+const ARMORY_PROPS_PATH := "res://assets/maps/village-square/props/armory-props-v1.png"
+# settlement-props (3x2, 512 cells)
+const SP_BARREL := Rect2(127, 88, 274, 385)
+const SP_BARREL_STACK := Rect2(597, 49, 333, 435)
+const SP_CRATE := Rect2(1106, 155, 322, 326)
+const SP_GRAIN_SACKS := Rect2(51, 561, 412, 391)
+const SP_PRODUCE_BASKET := Rect2(559, 580, 409, 373)
+const SP_POTTERY := Rect2(1048, 565, 433, 391)
+# armory-props (3x2, 484x543 cells)
+const AP_SPEAR_RACK := Rect2(106, 112, 308, 377)
+const AP_SPEAR_BUNDLE := Rect2(630, 78, 338, 411)
+const AP_SHIELD_RACK := Rect2(968, 236, 423, 253)
+const AP_PROPPED_SHIELD := Rect2(130, 671, 277, 265)
+const AP_TRAINING_DUMMY := Rect2(589, 600, 228, 367)
+const AP_HELM_STAND := Rect2(999, 671, 322, 295)
+# Placement: [atlas("s"|"a"), region, center_x, feet_y, height, flip]. Kept off
+# the critical route, ladder mouths, portal volumes, and NPC interaction spaces.
+const SQ_PROPS := [
+    # settlement dressing across the plaza floor (ground top y2400)
+    ["s", SP_GRAIN_SACKS, 780.0, 2400.0, 168.0, false],
+    ["s", SP_CRATE, 1180.0, 2400.0, 150.0, true],
+    ["s", SP_PRODUCE_BASKET, 2650.0, 2400.0, 150.0, false],
+    ["s", SP_BARREL_STACK, 3470.0, 2400.0, 214.0, false],
+    ["s", SP_POTTERY, 4720.0, 2380.0, 166.0, false],
+    # armory dressing: Trainers' ledge (top y1240) + sentry + top watch balcony
+    ["a", AP_SPEAR_RACK, 1690.0, 1240.0, 226.0, false],
+    ["a", AP_TRAINING_DUMMY, 1960.0, 1240.0, 232.0, true],
+    ["a", AP_PROPPED_SHIELD, 660.0, 2400.0, 150.0, false],
+    ["a", AP_SHIELD_RACK, 3980.0, 720.0, 188.0, false],
+]
+
 # NPC animation sheets (3x2, idle frames 1-3 on the top row). Per role:
 # [path, cell_w, cell_h, [character bbox within each idle frame]]. Per-frame
 # bboxes keep each frame's character feet-anchored and centered (the broker
@@ -183,6 +217,8 @@ var _wall_kit: Texture2D
 var _tower_kit: Texture2D
 var _stair_kit: Texture2D
 var _ladder_kit: Texture2D
+var _settlement_props: Texture2D
+var _armory_props: Texture2D
 var _npc_textures: Dictionary = {}
 var _anim_time := 0.0
 var _hud_strip
@@ -216,6 +252,8 @@ func _ready() -> void:
     _tower_kit = load(TOWER_KIT_PATH) as Texture2D
     _stair_kit = load(STAIR_KIT_PATH) as Texture2D
     _ladder_kit = load(LADDER_KIT_PATH) as Texture2D
+    _settlement_props = load(SETTLEMENT_PROPS_PATH) as Texture2D
+    _armory_props = load(ARMORY_PROPS_PATH) as Texture2D
     for role: String in NPC_SHEETS:
         _npc_textures[role] = load((NPC_SHEETS[role] as Array)[0] as String) as Texture2D
 
@@ -744,6 +782,11 @@ func _draw_square() -> void:
     for l: Vector3 in SQ_LADDERS:
         _draw_kit_ladder(l.x, l.y, l.z)
 
+    # Decorative props (settlement + armory), feet-anchored on ground / ledges.
+    for spec: Array in SQ_PROPS:
+        var tex: Texture2D = _settlement_props if str(spec[0]) == "s" else _armory_props
+        _draw_prop(tex, spec[1] as Rect2, float(spec[2]), float(spec[3]), float(spec[4]), bool(spec[5]))
+
     _draw_waystone(SQ_WAYSTONE)
 
     # Portal facades (art), with an up-arrow cue for gameplay.
@@ -849,6 +892,22 @@ func _draw_kit_ladder(cx: float, top: float, bottom: float) -> void:
         draw_texture_rect_region(_ladder_kit, Rect2(left, y, w, mh + 1.0), LD_MID)
         y += mh
     draw_texture_rect_region(_ladder_kit, Rect2(left, y, w, h_bot), LD_BOT)
+
+
+# Draw a decorative prop at its native aspect, feet on `feet_y`, centered on
+# `cx`. `flip` mirrors it horizontally for variety.
+func _draw_prop(tex: Texture2D, region: Rect2, cx: float, feet_y: float, height: float, flip: bool) -> void:
+    if tex == null:
+        return
+    var w := height * region.size.x / region.size.y
+    # Sink the base a hair so it rests on the surface rather than hovering.
+    var base := feet_y + 6.0
+    if flip:
+        draw_set_transform(Vector2(cx, 0.0), 0.0, Vector2(-1.0, 1.0))
+        draw_texture_rect_region(tex, Rect2(-w * 0.5, base - height, w, height), region)
+        draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
+    else:
+        draw_texture_rect_region(tex, Rect2(cx - w * 0.5, base - height, w, height), region)
 
 
 # A small pyramidal entrance stoop of stair modules at the tower foot.
