@@ -121,11 +121,16 @@ const PF_TRAINERS := Rect2(141, 597, 669, 337)
 const PF_STRONGHOLD := Rect2(770, 539, 567, 390)
 
 # NPC animation sheets (3x2, idle frames 1-3 on the top row). Per role:
-# [path, cell_w, cell_h, character bbox within frame 0].
+# [path, cell_w, cell_h, [character bbox within each idle frame]]. Per-frame
+# bboxes keep each frame's character feet-anchored and centered (the broker
+# pans across its cell, so a single bbox would make it jump).
 const NPC_SHEETS := {
-    "exchange_broker": ["res://assets/maps/village-square/npcs/exchange-broker-v1.png", 512, 512, Rect2(231, 17, 211, 495)],
-    "lorekeeper": ["res://assets/maps/village-square/npcs/herald-v1.png", 342, 768, Rect2(5, 27, 337, 717)],
-    "sentry": ["res://assets/maps/village-square/npcs/gate-sentry-v1.png", 342, 768, Rect2(28, 8, 267, 733)],
+    "exchange_broker": ["res://assets/maps/village-square/npcs/exchange-broker-v1.png", 512, 512,
+        [Rect2(231, 17, 211, 495), Rect2(118, 17, 211, 495), Rect2(18, 17, 211, 495)]],
+    "lorekeeper": ["res://assets/maps/village-square/npcs/herald-v1.png", 342, 768,
+        [Rect2(5, 27, 337, 717), Rect2(0, 26, 342, 718), Rect2(0, 33, 328, 711)]],
+    "sentry": ["res://assets/maps/village-square/npcs/gate-sentry-v1.png", 342, 768,
+        [Rect2(28, 8, 267, 733), Rect2(38, 8, 264, 732), Rect2(41, 8, 262, 733)]],
 }
 const NPC_DISPLAY_H := 158.0
 const NPC_IDLE_FPS := 3.5
@@ -483,10 +488,12 @@ func _spawn_sprite(entry: Dictionary, data: Dictionary) -> void:
         "hero":
             var sprite := AnimatedSprite2D.new()
             sprite.sprite_frames = HumanFrames
-            sprite.scale = Vector2(0.3, 0.3)
+            # Human height matches the NPCs (idle char is 340px tall in-frame;
+            # feet at frame y447, centered sprite -> offset = -191 * scale).
+            sprite.scale = Vector2(0.46, 0.46)
             sprite.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR
             entry["sprite"] = sprite
-            entry["sprite_offset"] = Vector2(0, -58)
+            entry["sprite_offset"] = Vector2(0, -88)
             add_child(sprite)
         "biter":
             var sprite := AnimatedSprite2D.new()
@@ -834,9 +841,9 @@ func _draw_npc_sprite(role: String, pos: Vector2) -> float:
     var cfg := NPC_SHEETS[role] as Array
     var cw := float(cfg[1])
     var ch := float(cfg[2])
-    var bb := cfg[3] as Rect2
     # Idle loop over the top row (frames 1-3), desynced per NPC by x.
     var frame := (int(_anim_time * NPC_IDLE_FPS) + int(pos.x / 130.0)) % 3
+    var bb := (cfg[3] as Array)[frame] as Rect2
     var src := Rect2(frame * cw, 0.0, cw, ch)
     var scale := NPC_DISPLAY_H / bb.size.y
     var feet_in_cell := bb.position.y + bb.size.y
