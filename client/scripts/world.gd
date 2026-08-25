@@ -138,7 +138,10 @@ const TW_SHAFT := Rect2(49, 53, 422, 416)
 const TW_WINDOW := Rect2(559, 52, 418, 416)
 const TW_SLIT := Rect2(1069, 51, 418, 461)
 const TW_CORNICE := Rect2(40, 665, 472, 159)
-const TW_PARAPET := Rect2(512, 615, 512, 268)
+# Parapet: start after the cell's detached left interlock fragment (a merlon
+# split off by a transparent gap at cell-x96) so the first tile has no floating
+# block at the tower's top-left corner.
+const TW_PARAPET := Rect2(628, 615, 396, 252)
 const TW_PIER := Rect2(1024, 512, 373, 481)
 # ladder-modules (3x1, 627x836 cells): top + repeatable middle x N + bottom
 const LD_TOP := Rect2(143, 168, 367, 346)
@@ -735,10 +738,6 @@ func _draw_square() -> void:
     # Standable ledges: wall modules tiled across each platform (west + tower).
     for p: Vector3 in SQ_PLATFORMS:
         _tile_wall_kit(p.x, p.y, p.z - 4, SQ_LEDGE)
-    # Corbel cornices supporting each east balcony (drawn after the ledges so
-    # they read below the tower balconies).
-    for by: float in [2000.0, 1580.0, 1160.0, 720.0]:
-        _tower_cornice(TOWER_X0, TOWER_X1, by + SQ_LEDGE)
     # A short entrance stoop of stair modules at the tower foot.
     _draw_stoop(3920.0, SQ_GROUND_Y, 3)
     # Ladders: segmented top + middle x N + bottom from the ladder kit.
@@ -808,20 +807,6 @@ func _draw_tower() -> void:
     draw_texture_rect_region(_tower_kit, Rect2(TOWER_X1 - pier_w, TOWER_TOP, pier_w, TOWER_BASE - TOWER_TOP), TW_PIER)
     # Parapet crown framing the top balcony.
     _tower_parapet(TOWER_X0, TOWER_X1, TOWER_TOP + 60.0)
-
-
-# Tile the cornice band horizontally across [x0, x1] centered on `y`.
-func _tower_cornice(x0: float, x1: float, y: float) -> void:
-    if _tower_kit == null:
-        return
-    var h := 62.0
-    var pw := h * TW_CORNICE.size.x / TW_CORNICE.size.y
-    var x := x0
-    while x < x1 - 0.5:
-        var w: float = minf(pw, x1 - x)
-        var src := Rect2(TW_CORNICE.position, Vector2(TW_CORNICE.size.x * (w / pw), TW_CORNICE.size.y))
-        draw_texture_rect_region(_tower_kit, Rect2(x, y - h * 0.5, w, h), src)
-        x += pw
 
 
 # Tile the crenellated parapet across [x0, x1] with its base at `base_y`.
