@@ -332,12 +332,13 @@ mod tests {
             .count();
         assert!(npcs >= 3, "expected placeholder NPCs in the square, got {npcs}");
 
-        // Walk right to the Market door (client x 900 -> world 86000..94000) and
-        // press up to enter it. Manual doors don't fire on contact alone.
+        // Walk right across the plaza to the Market arch (SVG x4860 -> world
+        // 486000..510000) and press up to enter it. Manual doors don't fire on
+        // contact alone.
         let mut entered = false;
-        let mut pos_x = 64_000; // spawn x (client 640)
-        for tick in 2..300 {
-            let at_door = (86_000..=94_000).contains(&pos_x);
+        let mut pos_x = 248_000; // waystone spawn (SVG x2480)
+        for tick in 2..400 {
+            let at_door = (486_000..=510_000).contains(&pos_x);
             world
                 .submit_intent(
                     player,

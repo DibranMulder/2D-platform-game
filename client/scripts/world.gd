@@ -82,6 +82,26 @@ const TOWN_TINT := {
     "village": Color("2a2620"), "keep": Color("241f2e"), "tower": Color("1c2436"),
 }
 
+# Wendmere Village Square (5120x2880), mirroring village-square-layout-v1.svg
+# for drawing/hints. Coordinates are the SVG's (y-down). Server collision matches.
+const SQUARE_BG := "res://assets/backgrounds/village-square-parallax-v1.png"
+const SQ_GROUND_Y := 2400
+const SQ_PLATFORMS := [
+    Vector3(540, 1370, 2020), Vector3(980, 1900, 1630), Vector3(1540, 2390, 1240),
+    Vector3(3300, 4560, 2000), Vector3(3440, 4420, 1580), Vector3(3580, 4300, 1160),
+    Vector3(3700, 4480, 720), Vector3(4300, 5060, 760),
+]  # [x0, x1, top]
+const SQ_LADDERS := [
+    Vector3(620, 2020, 2400), Vector3(1370, 1630, 2020), Vector3(1900, 1240, 1630),
+    Vector3(3420, 2000, 2400), Vector3(4300, 1580, 2000), Vector3(3580, 1160, 1580),
+    Vector3(4240, 720, 1160),
+]  # [cx, top, bottom]
+const SQ_DOORS := [
+    [145, 2400, "OPEN LANDS"], [2305, 1240, "TRAINERS"], [4225, 2400, "APOTHECARY"],
+    [4980, 2400, "MARKET"], [4890, 760, "STRONGHOLD"],
+]  # [cx, feet_y, label]
+const SQ_WAYSTONE := Vector2(2480, 2400)
+
 var _network: NetworkClient
 var _camera: Camera2D
 var _background: TextureRect
@@ -323,10 +343,25 @@ func _logout() -> void:
     tree.change_scene_to_file(OnboardingScene)
 
 
+func _zone_px_size() -> Vector2:
+    match _current_zone:
+        "wendmere_square":
+            return Vector2(5120, 2880)
+        "the_gauntlet":
+            return Vector2(3600, 720)
+        _:
+            return Vector2(1280, 720)
+
+
 func _update_camera() -> void:
-    if _current_zone == "the_gauntlet" and _entities.has(_local_player_id):
+    var size := _zone_px_size()
+    # Follow the hero on any axis larger than one viewport; clamp to bounds.
+    if (size.x > 1280.0 or size.y > 720.0) and _entities.has(_local_player_id):
         var pos := (_entities[_local_player_id] as Dictionary)["pos"] as Vector2
-        _camera.position = Vector2(clampf(pos.x, 640.0, 3600.0 - 640.0), 360.0)
+        _camera.position = Vector2(
+            clampf(pos.x, 640.0, maxf(640.0, size.x - 640.0)),
+            clampf(pos.y, 360.0, maxf(360.0, size.y - 360.0)),
+        )
     else:
         _camera.position = Vector2(640, 360)
 
@@ -352,7 +387,8 @@ func _interact_hint() -> String:
     if not (_current_zone in TOWN_ZONES and _entities.has(_local_player_id)):
         return ""
     var hero := (_entities[_local_player_id] as Dictionary)["pos"] as Vector2
-    for spec: Array in TOWN_DOORS.get(_current_zone, []):
+    var doors: Array = SQ_DOORS if _current_zone == "wendmere_square" else TOWN_DOORS.get(_current_zone, [])
+    for spec: Array in doors:
         if absf(hero.x - float(spec[0])) <= 44.0 and absf(hero.y - float(spec[1])) <= 80.0:
             return "enter %s" % str(spec[2])
     for id: String in _entities:
@@ -368,7 +404,7 @@ func _interact_hint() -> String:
 # --- snapshots ---
 
 func _world_to_screen(wx: float, wy: float) -> Vector2:
-    return Vector2(wx / 100.0, 720.0 - wy / 100.0)
+    return Vector2(wx / 100.0, _zone_px_size().y - wy / 100.0)
 
 
 func _on_snapshot(_server_tick: int, zone: String, entities: Array) -> void:
@@ -478,6 +514,15 @@ func _set_zone(zone: String) -> void:
         if sprite != null:
             sprite.queue_free()
     _entities.clear()
+    if zone == "wendmere_square":
+        var tex: Texture2D = load(SQUARE_BG)
+        if tex != null:
+            _background.texture = tex
+            _background.modulate = Color.WHITE
+            _background.visible = true
+        else:
+            _background.visible = false
+        return
     if zone in TOWN_ZONES:
         _background.visible = false
         return
@@ -527,6 +572,10 @@ func _on_join_rejected(reason: String) -> void:
 # --- map painting (ground, ledges, portals) drawn under the sprites ---
 
 func _draw() -> void:
+    if _current_zone == "wendmere_square":
+        _draw_square()
+        _draw_entities()
+        return
     if _current_zone in TOWN_ZONES:
         _draw_town(_current_zone)
         _draw_entities()
@@ -571,6 +620,35 @@ func _draw_entities() -> void:
                 draw_circle(pos + Vector2(0, -34), 6.0, Color("f2d27a"))
             "npc":
                 _draw_npc(pos, data)
+
+
+func _draw_square() -> void:
+    # Plaza floor from the ground line down; the parallax vista shows above it.
+    draw_rect(Rect2(0, SQ_GROUND_Y, 5120, 2880 - SQ_GROUND_Y), Color(0.20, 0.19, 0.14, 0.92), true)
+    draw_rect(Rect2(0, SQ_GROUND_Y, 5120, 10), Color("c8b27a"), true)
+    for p: Vector3 in SQ_PLATFORMS:
+        _draw_ledge((p.x + p.y) * 0.5, p.z + 11.0, p.y - p.x, Color("6a5b45"), Color("9a8560"))
+    for l: Vector3 in SQ_LADDERS:
+        _draw_ladder(l.x, l.y, l.z)
+    _draw_waystone(SQ_WAYSTONE)
+    for spec: Array in SQ_DOORS:
+        _draw_door(float(spec[0]), float(spec[1]), str(spec[2]))
+
+
+func _draw_ladder(cx: float, top: float, bottom: float) -> void:
+    draw_line(Vector2(cx - 16, top), Vector2(cx - 16, bottom), Color("6a4c28"), 6.0)
+    draw_line(Vector2(cx + 16, top), Vector2(cx + 16, bottom), Color("6a4c28"), 6.0)
+    var y := top
+    while y < bottom:
+        draw_line(Vector2(cx - 18, y), Vector2(cx + 18, y), Color("a5793f"), 5.0)
+        y += 42.0
+
+
+func _draw_waystone(base: Vector2) -> void:
+    draw_rect(Rect2(base.x - 15, base.y - 72, 30, 72), Color("8a8f98"), true)
+    draw_rect(Rect2(base.x - 15, base.y - 72, 30, 72), Color(0, 0, 0, 0.4), false, 2.0)
+    draw_circle(base + Vector2(0, -82), 15.0, Color(0.55, 0.9, 1.0, 0.5))
+    draw_arc(base + Vector2(0, -82), 24.0, 0.0, TAU, 22, Color("86e5ff"), 2.0)
 
 
 func _draw_town(zone: String) -> void:

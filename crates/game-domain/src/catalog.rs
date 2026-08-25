@@ -300,26 +300,111 @@ fn town_room(
     }
 }
 
+// --- Wendmere Village Square: a 5120x2880 layered map authored in
+// village-square-layout-v1.svg. Coordinates below are the SVG's (y-down, origin
+// top-left); the sq* helpers flip to y-up world units with a 2880 baseline. ---
+const SQ_HEIGHT: i32 = 2880;
+const SQ_GROUND: i32 = 2400; // plaza floor top (SVG y)
+
+fn sqx(px: i32) -> i32 {
+    px * 100
+}
+fn sqy(px: i32) -> i32 {
+    (SQ_HEIGHT - px) * 100
+}
+fn sq_platform(x0: i32, x1: i32, top: i32) -> OneWayPlatform {
+    OneWayPlatform {
+        top_y: sqy(top),
+        min_x: sqx(x0),
+        max_x: sqx(x1),
+    }
+}
+fn sq_ladder(cx: i32, top: i32, bottom: i32) -> ClimbVolume {
+    ClimbVolume {
+        center_x: sqx(cx),
+        top_exit_y: sqy(top),
+        bottom_exit_y: sqy(bottom),
+        kind: ClimbKind::Ladder,
+    }
+}
+fn sq_portal(id: u16, x: i32, y: i32, w: i32, h: i32, target: ZoneId) -> PortalVolume {
+    PortalVolume {
+        id: PortalId(id),
+        bounds: Aabb::new(sqx(x), sqy(y + h), sqx(x + w), sqy(y)),
+        target,
+        target_spawn: spawn_ids::DEFAULT,
+        required_allegiance: None,
+        manual: true,
+    }
+}
+fn sq_npc(role: &'static str, name: &'static str, x: i32, y: i32, facing: i8) -> NpcSpawn {
+    NpcSpawn {
+        role,
+        name,
+        x: sqx(x),
+        y: sqy(y),
+        facing,
+    }
+}
+
+fn wendmere_square() -> ZoneGeometry {
+    ZoneGeometry {
+        id: WENDMERE_SQUARE,
+        ground_top_y: sqy(SQ_GROUND),
+        min_x: sqx(40),
+        max_x: sqx(5080),
+        solids: Vec::new(),
+        one_ways: vec![
+            // West climb: three wall ledges.
+            sq_platform(540, 1370, 2020),
+            sq_platform(980, 1900, 1630),
+            sq_platform(1540, 2390, 1240),
+            // East watch-tower: four floors plus the top walkway to the gate.
+            sq_platform(3300, 4560, 2000),
+            sq_platform(3440, 4420, 1580),
+            sq_platform(3580, 4300, 1160),
+            sq_platform(3700, 4480, 720),
+            sq_platform(4300, 5060, 760),
+        ],
+        climbs: vec![
+            // West ladders: ground -> ledge1 -> ledge2 -> ledge3.
+            sq_ladder(620, 2020, SQ_GROUND),
+            sq_ladder(1370, 1630, 2020),
+            sq_ladder(1900, 1240, 1630),
+            // East ladders: ground -> f1 -> f2 -> f3 -> f4.
+            sq_ladder(3420, 2000, SQ_GROUND),
+            sq_ladder(4300, 1580, 2000),
+            sq_ladder(3580, 1160, 1580),
+            sq_ladder(4240, 720, 1160),
+        ],
+        portals: vec![
+            sq_portal(1, 30, 2140, 230, 290, SUNLIT_FOREST), // Open Lands road (ground, far-left)
+            sq_portal(2, 2180, 1020, 250, 330, WENDMERE_TRAINERS), // west top ledge
+            sq_portal(3, 4100, 2280, 250, 320, WENDMERE_APOTHECARY), // lower-right (raised to ground reach)
+            sq_portal(4, 4860, 2130, 240, 310, WENDMERE_MARKET), // far-right ground arch
+            sq_portal(5, 4740, 560, 300, 340, WENDMERE_APPROACH), // high east gate (via tower climb)
+        ],
+        spawns: vec![SpawnPoint {
+            id: spawn_ids::DEFAULT,
+            x: sqx(2480),
+            y: sqy(SQ_GROUND),
+            facing: 1,
+        }],
+        enemy_spawns: Vec::new(),
+        npc_spawns: vec![
+            sq_npc("sentry", "Gate Sentry", 520, SQ_GROUND, 1),
+            sq_npc("lorekeeper", "Herald of Wendmere", 2080, SQ_GROUND, -1),
+            sq_npc("exchange_broker", "Exchange Broker", 2900, SQ_GROUND, -1),
+            sq_npc("wildlife", "Meadow Puffkin", 1590, SQ_GROUND, 1),
+            sq_npc("sentry", "Watch Sentry", 4650, 760, -1),
+        ],
+    }
+}
+
 fn human_town() -> Vec<ZoneGeometry> {
     vec![
         // --- Ring 1: Wendmere Crossroads (Outer Village) ---
-        town_room(
-            WENDMERE_SQUARE,
-            640,
-            Vec::new(),
-            vec![
-                door(1, 70, SUNLIT_FOREST), // world road out
-                door(2, 180, WENDMERE_APOTHECARY),
-                door(3, 360, WENDMERE_TRAINERS),
-                door(4, 900, WENDMERE_MARKET),
-                door(5, 1150, WENDMERE_APPROACH),
-            ],
-            vec![
-                tnpc("sentry", "Gate Sentry", 500, 1),
-                tnpc("exchange_broker", "Exchange Broker", 700, -1),
-                tnpc("lorekeeper", "Herald of Wendmere", 820, -1),
-            ],
-        ),
+        wendmere_square(),
         town_room(
             WENDMERE_MARKET,
             300,
