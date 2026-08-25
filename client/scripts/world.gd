@@ -82,7 +82,7 @@ const TOWN_TINT := {
     "village": Color("2a2620"), "keep": Color("241f2e"), "tower": Color("1c2436"),
 }
 
-# Wendmere Village Square (5120x2880), mirroring village-square-layout-v1.svg
+# Wendmere Village Square (5120x2880), mirroring 01-village-square-layout-v1.svg
 # for drawing/hints. Coordinates are the SVG's (y-down). Server collision matches.
 const SQUARE_BG := "res://assets/backgrounds/village-square-parallax-v1.png"
 const SQ_GROUND_Y := 2400
@@ -102,9 +102,29 @@ const SQ_DOORS := [
 ]  # [cx, feet_y, label]
 const SQ_WAYSTONE := Vector2(2480, 2400)
 
+# Sprite atlases (village-square-platform-kit / portal-facades). Regions are
+# source rects into the atlases (see the atlas READMEs).
+const PLATFORM_KIT_PATH := "res://assets/maps/village-square/platform-kit-v1.png"
+const PORTAL_FACADES_PATH := "res://assets/maps/village-square/portal-facades-v1.png"
+# platform kit (1448x1086, 4x3 cells of ~362)
+const PK_WALL := Rect2(24, 250, 320, 96)      # cobble wall-ledge (stone strip)
+const PK_LADDER := Rect2(505, 735, 110, 330)  # wooden ladder
+const PK_TOWER := Rect2(1110, 724, 330, 362)  # watch/bell tower
+const PK_FOUNTAIN := Rect2(732, 850, 344, 150) # fountain rim
+const PK_CART := Rect2(742, 470, 320, 210)    # wooden cart
+const PK_ORCHARD := Rect2(378, 120, 330, 236) # orchard terrace + tree
+# portal facades (1536x1024)
+const PF_OPEN := Rect2(20, 120, 480, 380)
+const PF_MARKET := Rect2(560, 60, 470, 440)
+const PF_APOTHECARY := Rect2(1064, 90, 440, 410)
+const PF_TRAINERS := Rect2(110, 555, 650, 460)
+const PF_STRONGHOLD := Rect2(778, 528, 748, 490)
+
 var _network: NetworkClient
 var _camera: Camera2D
 var _background: TextureRect
+var _platform_kit: Texture2D
+var _portal_facades: Texture2D
 var _hud_strip
 var _character_panels
 var _map_label: Label
@@ -130,6 +150,8 @@ var _pending_weapon := ""
 
 func _ready() -> void:
     _resolve_identity()
+    _platform_kit = load(PLATFORM_KIT_PATH) as Texture2D
+    _portal_facades = load(PORTAL_FACADES_PATH) as Texture2D
 
     _camera = Camera2D.new()
     _camera.position = Vector2(640, 360)
@@ -353,14 +375,18 @@ func _zone_px_size() -> Vector2:
             return Vector2(1280, 720)
 
 
+const CAMERA_GROUND_BIAS := 230.0
+
 func _update_camera() -> void:
     var size := _zone_px_size()
     # Follow the hero on any axis larger than one viewport; clamp to bounds.
     if (size.x > 1280.0 or size.y > 720.0) and _entities.has(_local_player_id):
         var pos := (_entities[_local_player_id] as Dictionary)["pos"] as Vector2
+        # Bias the view up so the hero sits in the lower third and the ground
+        # reads near the bottom of the screen (tall maps only; flat maps clamp).
         _camera.position = Vector2(
             clampf(pos.x, 640.0, maxf(640.0, size.x - 640.0)),
-            clampf(pos.y, 360.0, maxf(360.0, size.y - 360.0)),
+            clampf(pos.y - CAMERA_GROUND_BIAS, 360.0, maxf(360.0, size.y - 360.0)),
         )
     else:
         _camera.position = Vector2(640, 360)
@@ -624,15 +650,86 @@ func _draw_entities() -> void:
 
 func _draw_square() -> void:
     # Plaza floor from the ground line down; the parallax vista shows above it.
-    draw_rect(Rect2(0, SQ_GROUND_Y, 5120, 2880 - SQ_GROUND_Y), Color(0.20, 0.19, 0.14, 0.92), true)
+    draw_rect(Rect2(0, SQ_GROUND_Y, 5120, 2880 - SQ_GROUND_Y), Color(0.20, 0.19, 0.14, 0.9), true)
     draw_rect(Rect2(0, SQ_GROUND_Y, 5120, 10), Color("c8b27a"), true)
+
+    # East watch-tower backdrop, behind its floor ledges.
+    _kit(PK_TOWER, Rect2(3500, 560, 840, 1860))
+
+    # Decorative kit modules for local life.
+    _kit(PK_ORCHARD, Rect2(300, 2210, 360, 200))
+    _kit(PK_FOUNTAIN, Rect2(2250, 2320, 360, 120))
+    _kit(PK_CART, Rect2(3180, 2300, 250, 120))
+
+    # Standable surfaces: the cobble wall-ledge stretched across each platform.
     for p: Vector3 in SQ_PLATFORMS:
-        _draw_ledge((p.x + p.y) * 0.5, p.z + 11.0, p.y - p.x, Color("6a5b45"), Color("9a8560"))
+        _kit_or_ledge(PK_WALL, p.x, p.y, p.z)
+    # Ladders.
     for l: Vector3 in SQ_LADDERS:
-        _draw_ladder(l.x, l.y, l.z)
+        _kit_or_ladder(l.x, l.y, l.z)
+
     _draw_waystone(SQ_WAYSTONE)
+
+    # Portal facades (art), with an up-arrow cue for gameplay.
     for spec: Array in SQ_DOORS:
-        _draw_door(float(spec[0]), float(spec[1]), str(spec[2]))
+        _draw_facade(str(spec[2]), float(spec[0]), float(spec[1]))
+
+
+func _kit(region: Rect2, dest: Rect2) -> void:
+    if _platform_kit != null:
+        draw_texture_rect_region(_platform_kit, dest, region)
+
+
+func _kit_or_ledge(region: Rect2, x0: float, x1: float, top: float) -> void:
+    if _platform_kit != null:
+        draw_texture_rect_region(_platform_kit, Rect2(x0, top - 6, x1 - x0, 66), region)
+    else:
+        _draw_ledge((x0 + x1) * 0.5, top + 11.0, x1 - x0, Color("6a5b45"), Color("9a8560"))
+
+
+func _kit_or_ladder(cx: float, top: float, bottom: float) -> void:
+    if _platform_kit != null:
+        draw_texture_rect_region(_platform_kit, Rect2(cx - 24, top, 48, bottom - top), PK_LADDER)
+    else:
+        _draw_ladder(cx, top, bottom)
+
+
+func _draw_facade(label: String, cx: float, feet_y: float) -> void:
+    var region := PF_OPEN
+    var height := 300.0
+    match label:
+        "OPEN LANDS":
+            region = PF_OPEN
+            height = 300.0
+        "MARKET":
+            region = PF_MARKET
+            height = 330.0
+        "APOTHECARY":
+            region = PF_APOTHECARY
+            height = 300.0
+        "TRAINERS":
+            region = PF_TRAINERS
+            height = 300.0
+        "STRONGHOLD":
+            region = PF_STRONGHOLD
+            height = 390.0
+    if _portal_facades != null:
+        var width := height * region.size.x / region.size.y
+        draw_texture_rect_region(
+            _portal_facades, Rect2(cx - width * 0.5, feet_y - height, width, height), region
+        )
+    else:
+        _draw_door(cx, feet_y, label)
+        return
+    # Up-arrow "enter" cue above the facade.
+    var top := feet_y - height
+    draw_colored_polygon(
+        PackedVector2Array([Vector2(cx, top - 22), Vector2(cx - 11, top - 6), Vector2(cx + 11, top - 6)]),
+        Color("b991ff")
+    )
+    var font := ThemeDB.fallback_font
+    if font != null:
+        draw_string(font, Vector2(cx - 80, top - 30), label, HORIZONTAL_ALIGNMENT_CENTER, 160, 13, Color("cbe6ff"))
 
 
 func _draw_ladder(cx: float, top: float, bottom: float) -> void:
