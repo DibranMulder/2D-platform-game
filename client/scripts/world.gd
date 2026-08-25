@@ -106,19 +106,19 @@ const SQ_WAYSTONE := Vector2(2480, 2400)
 # source rects into the atlases (see the atlas READMEs).
 const PLATFORM_KIT_PATH := "res://assets/maps/village-square/platform-kit-v1.png"
 const PORTAL_FACADES_PATH := "res://assets/maps/village-square/portal-facades-v1.png"
-# platform kit (1448x1086, 4x3 cells of ~362)
-const PK_WALL := Rect2(24, 250, 320, 96)      # cobble wall-ledge (stone strip)
-const PK_LADDER := Rect2(505, 735, 110, 330)  # wooden ladder
-const PK_TOWER := Rect2(1110, 724, 330, 362)  # watch/bell tower
-const PK_FOUNTAIN := Rect2(732, 850, 344, 150) # fountain rim
-const PK_CART := Rect2(742, 470, 320, 210)    # wooden cart
-const PK_ORCHARD := Rect2(378, 120, 330, 236) # orchard terrace + tree
-# portal facades (1536x1024)
-const PF_OPEN := Rect2(20, 120, 480, 380)
-const PF_MARKET := Rect2(560, 60, 470, 440)
-const PF_APOTHECARY := Rect2(1064, 90, 440, 410)
-const PF_TRAINERS := Rect2(110, 555, 650, 460)
-const PF_STRONGHOLD := Rect2(778, 528, 748, 490)
+# platform kit (1448x1086) — tight opaque bounding boxes (so nothing hovers/pads)
+const PK_WALL := Rect2(31, 253, 329, 67)      # cobble wall-ledge (stone strip)
+const PK_LADDER := Rect2(518, 700, 88, 254)   # wooden ladder
+const PK_TOWER := Rect2(1120, 690, 267, 306)  # watch/bell tower
+const PK_FOUNTAIN := Rect2(720, 874, 350, 88) # fountain rim
+const PK_CART := Rect2(750, 480, 330, 149)    # wooden cart
+const PK_ORCHARD := Rect2(360, 106, 360, 215) # orchard terrace + tree
+# portal facades (1536x1024) — tight opaque bounding boxes
+const PF_OPEN := Rect2(18, 132, 522, 334)
+const PF_MARKET := Rect2(540, 71, 434, 396)
+const PF_APOTHECARY := Rect2(1068, 73, 400, 402)
+const PF_TRAINERS := Rect2(141, 597, 669, 337)
+const PF_STRONGHOLD := Rect2(770, 539, 567, 390)
 
 var _network: NetworkClient
 var _camera: Camera2D
@@ -731,14 +731,16 @@ func _draw_facade(label: String, cx: float, feet_y: float) -> void:
             height = 390.0
     if _portal_facades != null:
         var width := height * region.size.x / region.size.y
+        # Sink the base a little into the stone crust so it rests on the ground.
+        var base := feet_y + 10.0
         draw_texture_rect_region(
-            _portal_facades, Rect2(cx - width * 0.5, feet_y - height, width, height), region
+            _portal_facades, Rect2(cx - width * 0.5, base - height, width, height), region
         )
     else:
         _draw_door(cx, feet_y, label)
         return
     # Up-arrow "enter" cue above the facade.
-    var top := feet_y - height
+    var top := feet_y + 10.0 - height
     draw_colored_polygon(
         PackedVector2Array([Vector2(cx, top - 22), Vector2(cx - 11, top - 6), Vector2(cx + 11, top - 6)]),
         Color("b991ff")
