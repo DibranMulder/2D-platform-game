@@ -107,9 +107,7 @@ const SQ_WAYSTONE := Vector2(2480, 2400)
 const PLATFORM_KIT_PATH := "res://assets/maps/village-square/platform-kit-v1.png"
 const PORTAL_FACADES_PATH := "res://assets/maps/village-square/portal-facades-v1.png"
 # platform kit (1448x1086) — tight opaque bounding boxes (so nothing hovers/pads)
-const PK_WALL := Rect2(31, 253, 329, 67)      # cobble wall-ledge (stone strip)
-const PK_LADDER := Rect2(518, 700, 88, 254)   # wooden ladder
-const PK_TOWER := Rect2(1120, 690, 267, 306)  # watch/bell tower
+const PK_WALL := Rect2(31, 253, 329, 67)      # cobble wall-ledge (legacy fallback)
 const PK_FOUNTAIN := Rect2(720, 874, 350, 88) # fountain rim
 const PK_CART := Rect2(750, 480, 330, 149)    # wooden cart
 const PK_ORCHARD := Rect2(360, 106, 360, 215) # orchard terrace + tree
@@ -119,6 +117,44 @@ const PF_MARKET := Rect2(540, 71, 434, 396)
 const PF_APOTHECARY := Rect2(1068, 73, 400, 402)
 const PF_TRAINERS := Rect2(141, 597, 669, 337)
 const PF_STRONGHOLD := Rect2(770, 539, 567, 390)
+
+# Modular construction kits (world-space pieces per platform-kits/README): the
+# east watchtower, walls/ledges, stairs, and segmented ladders are assembled
+# from these instead of complete painted structures. Regions are tight opaque
+# bounding boxes measured from each atlas cell.
+const WALL_KIT_PATH := "res://assets/maps/village-square/kits/wall-modules-v1.png"
+const TOWER_KIT_PATH := "res://assets/maps/village-square/kits/tower-modules-v1.png"
+const STAIR_KIT_PATH := "res://assets/maps/village-square/kits/stair-modules-v1.png"
+const LADDER_KIT_PATH := "res://assets/maps/village-square/kits/ladder-modules-v1.png"
+# wall-modules (3x2, 512 cells): plain / cracked / mossy / ivy / left / right
+const WM_PLAIN := Rect2(77, 70, 367, 373)
+const WM_CRACKED := Rect2(585, 66, 369, 376)
+const WM_MOSSY := Rect2(1090, 67, 370, 379)
+const WM_IVY := Rect2(73, 534, 371, 395)
+const WM_LEFT := Rect2(584, 539, 371, 387)
+const WM_RIGHT := Rect2(1092, 540, 369, 387)
+# tower-modules (3x2, 512 cells): shaft / window / slit / cornice / parapet / pier
+const TW_SHAFT := Rect2(49, 53, 422, 416)
+const TW_WINDOW := Rect2(559, 52, 418, 416)
+const TW_SLIT := Rect2(1069, 51, 418, 461)
+const TW_CORNICE := Rect2(40, 665, 472, 159)
+const TW_PARAPET := Rect2(512, 615, 512, 268)
+const TW_PIER := Rect2(1024, 512, 373, 481)
+# ladder-modules (3x1, 627x836 cells): top + repeatable middle x N + bottom
+const LD_TOP := Rect2(143, 168, 367, 346)
+const LD_MID := Rect2(775, 169, 331, 501)
+const LD_BOT := Rect2(1373, 252, 357, 418)
+# stair-modules (2x2, 768x512 cells): clean / worn / mossy / heavy-cap steps
+const ST_CLEAN := Rect2(214, 228, 434, 195)
+const ST_WORN := Rect2(885, 228, 435, 195)
+const ST_MOSSY := Rect2(213, 585, 436, 190)
+const ST_CAP := Rect2(879, 581, 448, 194)
+# East watchtower body (SVG y-down): the big rect x3540..4300, y760..2460.
+const TOWER_X0 := 3540.0
+const TOWER_X1 := 4300.0
+const TOWER_TOP := 720.0
+const TOWER_BASE := 2460.0
+const SQ_LEDGE := 150.0  # visual thickness of wall-module ledges / ground crust
 
 # NPC animation sheets (3x2, idle frames 1-3 on the top row). Per role:
 # [path, cell_w, cell_h, [character bbox within each idle frame]]. Per-frame
@@ -140,6 +176,10 @@ var _camera: Camera2D
 var _background: TextureRect
 var _platform_kit: Texture2D
 var _portal_facades: Texture2D
+var _wall_kit: Texture2D
+var _tower_kit: Texture2D
+var _stair_kit: Texture2D
+var _ladder_kit: Texture2D
 var _npc_textures: Dictionary = {}
 var _anim_time := 0.0
 var _hud_strip
@@ -169,6 +209,10 @@ func _ready() -> void:
     _resolve_identity()
     _platform_kit = load(PLATFORM_KIT_PATH) as Texture2D
     _portal_facades = load(PORTAL_FACADES_PATH) as Texture2D
+    _wall_kit = load(WALL_KIT_PATH) as Texture2D
+    _tower_kit = load(TOWER_KIT_PATH) as Texture2D
+    _stair_kit = load(STAIR_KIT_PATH) as Texture2D
+    _ladder_kit = load(LADDER_KIT_PATH) as Texture2D
     for role: String in NPC_SHEETS:
         _npc_textures[role] = load((NPC_SHEETS[role] as Array)[0] as String) as Texture2D
 
@@ -674,28 +718,164 @@ const LEDGE_H := 70.0  # visual thickness of cobble ledges / ground crust
 
 func _draw_square() -> void:
     # Earth foundation below the stone crust; the parallax vista shows above.
-    draw_rect(Rect2(0, SQ_GROUND_Y + LEDGE_H - 6, 5120, 2880 - SQ_GROUND_Y), Color("2a241c"), true)
-    # Stone floor: the same cobble as the platforms, tiled (never stretched).
-    _tile_wall(0, 5120, SQ_GROUND_Y - 4)
+    draw_rect(Rect2(0, SQ_GROUND_Y + SQ_LEDGE - 6, 5120, 2880 - SQ_GROUND_Y), Color("2a241c"), true)
 
-    # Decorative kit modules, each drawn at its native aspect ratio.
-    _kit_h(PK_TOWER, 3900, 780, 470)
+    # East watchtower: assembled from the tower kit (shaft, windows, piers,
+    # cornices, parapet), standing behind its wrap-around balcony ledges.
+    _draw_tower()
+
+    # Stone floor: square wall modules tiled across the plaza (never stretched).
+    _tile_wall_kit(0, 5120, SQ_GROUND_Y - 4, SQ_LEDGE)
+
+    # Decorative kit props, each drawn at its native aspect ratio.
     _kit_h(PK_ORCHARD, 470, SQ_GROUND_Y + 10, 210)
     _kit_h(PK_FOUNTAIN, 2430, SQ_GROUND_Y + 24, 118)
     _kit_h(PK_CART, 3320, SQ_GROUND_Y + 14, 128)
 
-    # Standable ledges: the cobble wall-ledge tiled across each platform.
+    # Standable ledges: wall modules tiled across each platform (west + tower).
     for p: Vector3 in SQ_PLATFORMS:
-        _tile_wall(p.x, p.y, p.z - 4)
-    # Ladders (native aspect, centered).
+        _tile_wall_kit(p.x, p.y, p.z - 4, SQ_LEDGE)
+    # Corbel cornices supporting each east balcony (drawn after the ledges so
+    # they read below the tower balconies).
+    for by: float in [2000.0, 1580.0, 1160.0, 720.0]:
+        _tower_cornice(TOWER_X0, TOWER_X1, by + SQ_LEDGE)
+    # A short entrance stoop of stair modules at the tower foot.
+    _draw_stoop(3920.0, SQ_GROUND_Y, 3)
+    # Ladders: segmented top + middle x N + bottom from the ladder kit.
     for l: Vector3 in SQ_LADDERS:
-        _kit_or_ladder(l.x, l.y, l.z)
+        _draw_kit_ladder(l.x, l.y, l.z)
 
     _draw_waystone(SQ_WAYSTONE)
 
     # Portal facades (art), with an up-arrow cue for gameplay.
     for spec: Array in SQ_DOORS:
         _draw_facade(str(spec[2]), float(spec[0]), float(spec[1]))
+
+
+# Tile square wall modules across [x0, x1] with their top at `top`, each `height`
+# tall. Interior tiles vary (plain/mossy/cracked) and long runs get edge caps.
+func _tile_wall_kit(x0: float, x1: float, top: float, height: float) -> void:
+    if _wall_kit == null:
+        _tile_wall(x0, x1, top)
+        return
+    var span := x1 - x0
+    var n := maxi(1, int(ceil(span / height)))
+    var tw := span / float(n)
+    for i in range(n):
+        var x := x0 + i * tw
+        var region := WM_PLAIN
+        if n >= 3 and i == 0:
+            region = WM_LEFT
+        elif n >= 3 and i == n - 1:
+            region = WM_RIGHT
+        elif (i * 7 + int(x0 / 100.0)) % 5 == 0:
+            region = WM_MOSSY
+        elif (i * 3 + int(x0 / 100.0)) % 7 == 0:
+            region = WM_CRACKED
+        draw_texture_rect_region(_wall_kit, Rect2(x, top, tw + 1.0, height), region)
+
+
+# Assemble the east watchtower from tower-kit modules.
+func _draw_tower() -> void:
+    if _tower_kit == null:
+        return
+    var pier_w := 104.0
+    var ix0 := TOWER_X0 + pier_w * 0.5
+    var ix1 := TOWER_X1 - pier_w * 0.5
+    var cols := 3
+    var cell := (ix1 - ix0) / float(cols)
+    var rows := maxi(1, int(round((TOWER_BASE - TOWER_TOP) / cell)))
+    var rh := (TOWER_BASE - TOWER_TOP) / float(rows)
+    var covers := [2000.0, 1580.0, 1160.0, 720.0]  # balcony floor tops
+    for r in range(rows):
+        var y := TOWER_TOP + r * rh
+        var cy := y + rh * 0.5
+        var hidden := false  # a balcony ledge sits over this row
+        for f: float in covers:
+            if cy >= f and cy <= f + SQ_LEDGE:
+                hidden = true
+        for c in range(cols):
+            var x := ix0 + c * cell
+            var region := TW_SHAFT
+            if not hidden:
+                if c == 1 and r % 2 == 1:
+                    region = TW_WINDOW
+                elif (r + c) % 3 == 0:
+                    region = TW_SLIT
+            draw_texture_rect_region(_tower_kit, Rect2(x, y, cell + 1.0, rh + 1.0), region)
+    # Corner piers, full height.
+    draw_texture_rect_region(_tower_kit, Rect2(TOWER_X0, TOWER_TOP, pier_w, TOWER_BASE - TOWER_TOP), TW_PIER)
+    draw_texture_rect_region(_tower_kit, Rect2(TOWER_X1 - pier_w, TOWER_TOP, pier_w, TOWER_BASE - TOWER_TOP), TW_PIER)
+    # Parapet crown framing the top balcony.
+    _tower_parapet(TOWER_X0, TOWER_X1, TOWER_TOP + 60.0)
+
+
+# Tile the cornice band horizontally across [x0, x1] centered on `y`.
+func _tower_cornice(x0: float, x1: float, y: float) -> void:
+    if _tower_kit == null:
+        return
+    var h := 62.0
+    var pw := h * TW_CORNICE.size.x / TW_CORNICE.size.y
+    var x := x0
+    while x < x1 - 0.5:
+        var w: float = minf(pw, x1 - x)
+        var src := Rect2(TW_CORNICE.position, Vector2(TW_CORNICE.size.x * (w / pw), TW_CORNICE.size.y))
+        draw_texture_rect_region(_tower_kit, Rect2(x, y - h * 0.5, w, h), src)
+        x += pw
+
+
+# Tile the crenellated parapet across [x0, x1] with its base at `base_y`.
+func _tower_parapet(x0: float, x1: float, base_y: float) -> void:
+    if _tower_kit == null:
+        return
+    var h := 150.0
+    var pw := h * TW_PARAPET.size.x / TW_PARAPET.size.y
+    var x := x0
+    while x < x1 - 0.5:
+        var w: float = minf(pw, x1 - x)
+        var src := Rect2(TW_PARAPET.position, Vector2(TW_PARAPET.size.x * (w / pw), TW_PARAPET.size.y))
+        draw_texture_rect_region(_tower_kit, Rect2(x, base_y - h, w, h), src)
+        x += pw
+
+
+# Segmented ladder: top + repeatable middle x N + bottom, rails aligned by
+# fitting each module's opaque bbox to a common width.
+func _draw_kit_ladder(cx: float, top: float, bottom: float) -> void:
+    if _ladder_kit == null:
+        _draw_ladder(cx, top, bottom)
+        return
+    var w := 92.0
+    var left := cx - w * 0.5
+    var h_top := LD_TOP.size.y * w / LD_TOP.size.x
+    var h_bot := LD_BOT.size.y * w / LD_BOT.size.x
+    var total := bottom - top
+    if total <= h_top + h_bot:
+        var half := total * 0.5
+        draw_texture_rect_region(_ladder_kit, Rect2(left, top, w, half), LD_TOP)
+        draw_texture_rect_region(_ladder_kit, Rect2(left, top + half, w, total - half), LD_BOT)
+        return
+    var remaining := total - h_top - h_bot
+    var h_mid_full := LD_MID.size.y * w / LD_MID.size.x
+    var n := maxi(1, int(round(remaining / h_mid_full)))
+    var mh := remaining / float(n)
+    draw_texture_rect_region(_ladder_kit, Rect2(left, top, w, h_top), LD_TOP)
+    var y := top + h_top
+    for _i in range(n):
+        draw_texture_rect_region(_ladder_kit, Rect2(left, y, w, mh + 1.0), LD_MID)
+        y += mh
+    draw_texture_rect_region(_ladder_kit, Rect2(left, y, w, h_bot), LD_BOT)
+
+
+# A small pyramidal entrance stoop of stair modules at the tower foot.
+func _draw_stoop(cx: float, y_base: float, steps: int) -> void:
+    if _stair_kit == null:
+        return
+    var sh := 46.0
+    for i in range(steps):
+        var w := 320.0 - i * 66.0
+        var y := y_base - float(i + 1) * sh
+        var region := ST_WORN if i % 2 == 1 else ST_CLEAN
+        draw_texture_rect_region(_stair_kit, Rect2(cx - w * 0.5, y, w, sh * 1.9), region)
 
 
 # Tile the cobble wall-ledge horizontally across [x0, x1] with its top at `top`,
@@ -720,16 +900,6 @@ func _kit_h(region: Rect2, center_x: float, base_y: float, height: float) -> voi
         return
     var width := height * region.size.x / region.size.y
     draw_texture_rect_region(_platform_kit, Rect2(center_x - width * 0.5, base_y - height, width, height), region)
-
-
-func _kit_or_ladder(cx: float, top: float, bottom: float) -> void:
-    if _platform_kit != null:
-        # Ladder native aspect ~ width:height of its region; keep a slim width.
-        var w := (bottom - top) * PK_LADDER.size.x / PK_LADDER.size.y
-        w = clampf(w, 40.0, 70.0)
-        draw_texture_rect_region(_platform_kit, Rect2(cx - w * 0.5, top, w, bottom - top), PK_LADDER)
-    else:
-        _draw_ladder(cx, top, bottom)
 
 
 func _draw_facade(label: String, cx: float, feet_y: float) -> void:
