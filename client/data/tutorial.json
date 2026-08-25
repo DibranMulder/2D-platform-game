@@ -1,0 +1,98 @@
+{
+  "schema_version": 1,
+  "tutorial_id": "hometown_basics_v1",
+  "steps": [
+    {
+      "id": "move",
+      "title": "Find your footing",
+      "instruction": "Move left and right to follow the road through your home town.",
+      "image_path": "res://assets/tutorial/v1/01-move.png",
+      "completion_event": "hero_moved",
+      "starter_item_id": "leather_boots"
+    },
+    {
+      "id": "jump",
+      "title": "Take the high road",
+      "instruction": "Jump onto the ledge. You can steer while you are in the air.",
+      "image_path": "res://assets/tutorial/v1/02-jump.png",
+      "completion_event": "hero_jumped",
+      "starter_item_id": "rations"
+    },
+    {
+      "id": "loot",
+      "title": "Claim fallen loot",
+      "instruction": "Approach the glowing bundle and collect it into your Item Pouch.",
+      "image_path": "res://assets/tutorial/v1/03-loot.png",
+      "completion_event": "loot_collected",
+      "starter_item_id": "crag_ore"
+    },
+    {
+      "id": "consume_potion",
+      "title": "Mend your wounds",
+      "instruction": "Open your Item Pouch, select the Redleaf Potion, and consume it.",
+      "image_path": "res://assets/tutorial/v1/04-consume-potion.png",
+      "completion_event": "item_consumed",
+      "starter_item_id": "potion"
+    },
+    {
+      "id": "equip_armor",
+      "title": "Suit up",
+      "instruction": "Move armor from your Item Pouch into its matching Equipment Slot.",
+      "image_path": "res://assets/tutorial/v1/05-equip-armor.png",
+      "completion_event": "armor_equipped",
+      "starter_item_id": "traveler_tunic"
+    },
+    {
+      "id": "equip_weapon",
+      "title": "Ready your weapon",
+      "instruction": "Equip a one-handed weapon in Main Hand. It leaves Off Hand free for a Shield.",
+      "image_path": "res://assets/tutorial/v1/06-equip-weapon.png",
+      "completion_event": "weapon_equipped",
+      "starter_item_id": "rusty_sword"
+    },
+    {
+      "id": "basic_combat",
+      "title": "Strike and guard",
+      "instruction": "Use your Basic Attack, then hold Guard to soften a frontal hit.",
+      "image_path": "res://assets/tutorial/v1/07-basic-combat.png",
+      "completion_event": "attack_guard_completed",
+      "starter_item_id": "driftwood_buckler"
+    },
+    {
+      "id": "combat_skill",
+      "title": "Use a Combat Skill",
+      "instruction": "Trigger a hotbar skill and watch its resource cost and cooldown before using it again.",
+      "image_path": "res://assets/tutorial/v1/08-combat-skill.png",
+      "completion_event": "combat_skill_used",
+      "starter_item_id": "sky_feather"
+    },
+    {
+      "id": "disciplines",
+      "title": "Grow your Disciplines",
+      "instruction": "Open Disciplines & Levels to inspect Martial, Mystic, and World progress.",
+      "image_path": "res://assets/tutorial/v1/09-disciplines.png",
+      "completion_event": "disciplines_opened",
+      "starter_item_id": "frog_pearl"
+    },
+    {
+      "id": "talent_tree",
+      "title": "Shape your Talents",
+      "instruction": "Open the Talent Tree and spend a Talent Point on an available node connected to the root.",
+      "image_path": "res://assets/tutorial/v1/10-talent-tree.png",
+      "completion_event": "talent_unlocked",
+      "starter_item_id": "bronze_helm"
+    }
+  ],
+  "starter_kit": [
+    { "item_id": "rusty_sword", "quantity": 1 },
+    { "item_id": "driftwood_buckler", "quantity": 1 },
+    { "item_id": "traveler_tunic", "quantity": 1 },
+    { "item_id": "leather_boots", "quantity": 1 },
+    { "item_id": "bronze_helm", "quantity": 1 },
+    { "item_id": "potion", "quantity": 3 },
+    { "item_id": "rations", "quantity": 5 },
+    { "item_id": "frog_pearl", "quantity": 1 },
+    { "item_id": "crag_ore", "quantity": 8 },
+    { "item_id": "sky_feather", "quantity": 2 }
+  ]
+}
