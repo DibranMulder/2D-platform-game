@@ -120,11 +120,23 @@ const PF_APOTHECARY := Rect2(1068, 73, 400, 402)
 const PF_TRAINERS := Rect2(141, 597, 669, 337)
 const PF_STRONGHOLD := Rect2(770, 539, 567, 390)
 
+# NPC animation sheets (3x2, idle frames 1-3 on the top row). Per role:
+# [path, cell_w, cell_h, character bbox within frame 0].
+const NPC_SHEETS := {
+    "exchange_broker": ["res://assets/maps/village-square/npcs/exchange-broker-v1.png", 512, 512, Rect2(231, 17, 211, 495)],
+    "lorekeeper": ["res://assets/maps/village-square/npcs/herald-v1.png", 342, 768, Rect2(5, 27, 337, 717)],
+    "sentry": ["res://assets/maps/village-square/npcs/gate-sentry-v1.png", 342, 768, Rect2(28, 8, 267, 733)],
+}
+const NPC_DISPLAY_H := 158.0
+const NPC_IDLE_FPS := 3.5
+
 var _network: NetworkClient
 var _camera: Camera2D
 var _background: TextureRect
 var _platform_kit: Texture2D
 var _portal_facades: Texture2D
+var _npc_textures: Dictionary = {}
+var _anim_time := 0.0
 var _hud_strip
 var _character_panels
 var _map_label: Label
@@ -152,6 +164,8 @@ func _ready() -> void:
     _resolve_identity()
     _platform_kit = load(PLATFORM_KIT_PATH) as Texture2D
     _portal_facades = load(PORTAL_FACADES_PATH) as Texture2D
+    for role: String in NPC_SHEETS:
+        _npc_textures[role] = load((NPC_SHEETS[role] as Array)[0] as String) as Texture2D
 
     _camera = Camera2D.new()
     _camera.position = Vector2(640, 360)
@@ -290,6 +304,7 @@ func _make_button(text: String) -> Button:
 # --- per-frame input + interpolation ---
 
 func _process(delta: float) -> void:
+    _anim_time += delta
     _sample_edges()
     _intent_accumulator += delta
     if _intent_accumulator >= INTENT_INTERVAL:
@@ -798,14 +813,39 @@ func _draw_door(cx: float, cy: float, label: String) -> void:
 
 func _draw_npc(pos: Vector2, data: Dictionary) -> void:
     var role := str(data.get("role", ""))
-    var color := _npc_color(role)
-    draw_rect(Rect2(pos.x - 13, pos.y - 46, 26, 46), color, true)
-    draw_rect(Rect2(pos.x - 13, pos.y - 46, 26, 46), Color(0, 0, 0, 0.5), false, 1.0)
-    draw_circle(pos + Vector2(0, -52), 9.0, Color("f2d0a7"))
+    var label_top := pos.y - 60.0
+    if _npc_textures.get(role) != null:
+        label_top = _draw_npc_sprite(role, pos)
+    else:
+        # Placeholder for roles without artwork yet (weaponsmith, wildlife, ...).
+        var color := _npc_color(role)
+        draw_rect(Rect2(pos.x - 13, pos.y - 46, 26, 46), color, true)
+        draw_rect(Rect2(pos.x - 13, pos.y - 46, 26, 46), Color(0, 0, 0, 0.5), false, 1.0)
+        draw_circle(pos + Vector2(0, -52), 9.0, Color("f2d0a7"))
     var font := ThemeDB.fallback_font
     var label := str(data.get("name", ""))
     if font != null and not label.is_empty():
-        draw_string(font, pos + Vector2(-70, -66), label, HORIZONTAL_ALIGNMENT_CENTER, 140, 11, Color("f4ecd6"))
+        draw_string(font, Vector2(pos.x - 70, label_top), label, HORIZONTAL_ALIGNMENT_CENTER, 140, 11, Color("f4ecd6"))
+
+
+# Draw a feet-anchored, aspect-correct NPC from its idle sheet; returns the y to
+# place the nameplate above the head.
+func _draw_npc_sprite(role: String, pos: Vector2) -> float:
+    var cfg := NPC_SHEETS[role] as Array
+    var cw := float(cfg[1])
+    var ch := float(cfg[2])
+    var bb := cfg[3] as Rect2
+    # Idle loop over the top row (frames 1-3), desynced per NPC by x.
+    var frame := (int(_anim_time * NPC_IDLE_FPS) + int(pos.x / 130.0)) % 3
+    var src := Rect2(frame * cw, 0.0, cw, ch)
+    var scale := NPC_DISPLAY_H / bb.size.y
+    var feet_in_cell := bb.position.y + bb.size.y
+    var cx_in_cell := bb.position.x + bb.size.x * 0.5
+    var dest := Rect2(
+        pos.x - cx_in_cell * scale, pos.y - feet_in_cell * scale, cw * scale, ch * scale
+    )
+    draw_texture_rect_region(_npc_textures[role], dest, src)
+    return pos.y - NPC_DISPLAY_H - 14.0
 
 
 func _npc_color(role: String) -> Color:
