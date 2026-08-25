@@ -648,23 +648,24 @@ func _draw_entities() -> void:
                 _draw_npc(pos, data)
 
 
+const LEDGE_H := 70.0  # visual thickness of cobble ledges / ground crust
+
 func _draw_square() -> void:
-    # Plaza floor from the ground line down; the parallax vista shows above it.
-    draw_rect(Rect2(0, SQ_GROUND_Y, 5120, 2880 - SQ_GROUND_Y), Color(0.20, 0.19, 0.14, 0.9), true)
-    draw_rect(Rect2(0, SQ_GROUND_Y, 5120, 10), Color("c8b27a"), true)
+    # Earth foundation below the stone crust; the parallax vista shows above.
+    draw_rect(Rect2(0, SQ_GROUND_Y + LEDGE_H - 6, 5120, 2880 - SQ_GROUND_Y), Color("2a241c"), true)
+    # Stone floor: the same cobble as the platforms, tiled (never stretched).
+    _tile_wall(0, 5120, SQ_GROUND_Y - 4)
 
-    # East watch-tower backdrop, behind its floor ledges.
-    _kit(PK_TOWER, Rect2(3500, 560, 840, 1860))
+    # Decorative kit modules, each drawn at its native aspect ratio.
+    _kit_h(PK_TOWER, 3900, 780, 470)
+    _kit_h(PK_ORCHARD, 470, SQ_GROUND_Y + 10, 210)
+    _kit_h(PK_FOUNTAIN, 2430, SQ_GROUND_Y + 24, 118)
+    _kit_h(PK_CART, 3320, SQ_GROUND_Y + 14, 128)
 
-    # Decorative kit modules for local life.
-    _kit(PK_ORCHARD, Rect2(300, 2210, 360, 200))
-    _kit(PK_FOUNTAIN, Rect2(2250, 2320, 360, 120))
-    _kit(PK_CART, Rect2(3180, 2300, 250, 120))
-
-    # Standable surfaces: the cobble wall-ledge stretched across each platform.
+    # Standable ledges: the cobble wall-ledge tiled across each platform.
     for p: Vector3 in SQ_PLATFORMS:
-        _kit_or_ledge(PK_WALL, p.x, p.y, p.z)
-    # Ladders.
+        _tile_wall(p.x, p.y, p.z - 4)
+    # Ladders (native aspect, centered).
     for l: Vector3 in SQ_LADDERS:
         _kit_or_ladder(l.x, l.y, l.z)
 
@@ -675,21 +676,36 @@ func _draw_square() -> void:
         _draw_facade(str(spec[2]), float(spec[0]), float(spec[1]))
 
 
-func _kit(region: Rect2, dest: Rect2) -> void:
-    if _platform_kit != null:
-        draw_texture_rect_region(_platform_kit, dest, region)
+# Tile the cobble wall-ledge horizontally across [x0, x1] with its top at `top`,
+# keeping the stone's aspect ratio (the last tile is clipped in the source).
+func _tile_wall(x0: float, x1: float, top: float) -> void:
+    if _platform_kit == null:
+        _draw_ledge((x0 + x1) * 0.5, top + LEDGE_H * 0.5, x1 - x0, Color("6a5b45"), Color("9a8560"))
+        return
+    var tile_w := LEDGE_H * PK_WALL.size.x / PK_WALL.size.y
+    var x := x0
+    while x < x1 - 0.5:
+        var w: float = minf(tile_w, x1 - x)
+        var src := Rect2(PK_WALL.position, Vector2(PK_WALL.size.x * (w / tile_w), PK_WALL.size.y))
+        draw_texture_rect_region(_platform_kit, Rect2(x, top, w, LEDGE_H), src)
+        x += tile_w
 
 
-func _kit_or_ledge(region: Rect2, x0: float, x1: float, top: float) -> void:
-    if _platform_kit != null:
-        draw_texture_rect_region(_platform_kit, Rect2(x0, top - 6, x1 - x0, 66), region)
-    else:
-        _draw_ledge((x0 + x1) * 0.5, top + 11.0, x1 - x0, Color("6a5b45"), Color("9a8560"))
+# Draw an atlas region at a target height, width derived to preserve aspect,
+# with its base at `base_y` and centered on `center_x`.
+func _kit_h(region: Rect2, center_x: float, base_y: float, height: float) -> void:
+    if _platform_kit == null:
+        return
+    var width := height * region.size.x / region.size.y
+    draw_texture_rect_region(_platform_kit, Rect2(center_x - width * 0.5, base_y - height, width, height), region)
 
 
 func _kit_or_ladder(cx: float, top: float, bottom: float) -> void:
     if _platform_kit != null:
-        draw_texture_rect_region(_platform_kit, Rect2(cx - 24, top, 48, bottom - top), PK_LADDER)
+        # Ladder native aspect ~ width:height of its region; keep a slim width.
+        var w := (bottom - top) * PK_LADDER.size.x / PK_LADDER.size.y
+        w = clampf(w, 40.0, 70.0)
+        draw_texture_rect_region(_platform_kit, Rect2(cx - w * 0.5, top, w, bottom - top), PK_LADDER)
     else:
         _draw_ladder(cx, top, bottom)
 
