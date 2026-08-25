@@ -391,7 +391,12 @@ impl Hero {
         let mut best = i32::MAX;
         for volume in &geom.climbs {
             let distance = (self.pos_x - volume.center_x).abs();
-            if distance < best && distance <= CLIMB_GRAB_DISTANCE {
+            // The hero must be horizontally near the ladder AND vertically within
+            // its span — otherwise standing on the ground under a ladder whose
+            // base sits on a higher floor would snap the hero up to it.
+            let within_span = self.pos_y >= volume.bottom_exit_y - CLIMB_GRAB_DISTANCE
+                && self.pos_y <= volume.top_exit_y + CLIMB_GRAB_DISTANCE;
+            if distance < best && distance <= CLIMB_GRAB_DISTANCE && within_span {
                 best = distance;
                 nearest = Some(volume);
             }

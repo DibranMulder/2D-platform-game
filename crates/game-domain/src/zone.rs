@@ -465,6 +465,31 @@ mod tests {
     }
 
     #[test]
+    fn standing_below_a_high_ladder_does_not_teleport_up() {
+        let mut geom = bare_geometry();
+        // A ladder whose base sits well above the ground (like an upper-floor ladder).
+        geom.climbs.push(ClimbVolume {
+            center_x: 0,
+            top_exit_y: 10_000,
+            bottom_exit_y: 5_000,
+            kind: ClimbKind::Ladder,
+        });
+        let mut zone = Zone::new(geom);
+        zone.insert_hero(Hero::new(PlayerId::new(1), descriptor(WeaponId::Sword), spawn_at(0, 0)));
+
+        // Stand on the ground under the ladder and press up for a while.
+        for tick in 1..12 {
+            zone.submit_intent(PlayerId::new(1), intent(tick, 0, 1, false, 0)).unwrap();
+            zone.advance_tick(tick);
+        }
+        let y = zone.snapshot(99).entities.iter().find_map(|e| match e {
+            EntitySnapshot::Hero(h) => Some(h.position_y),
+            _ => None,
+        }).unwrap();
+        assert!(y < 2_000, "hero must not snap up to a ladder whose base is above (got {y})");
+    }
+
+    #[test]
     fn sword_strike_damages_the_nearest_enemy_in_reach() {
         let mut geom = bare_geometry();
         geom.enemy_spawns.push(EnemySpawn {
